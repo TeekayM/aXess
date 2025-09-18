@@ -128,7 +128,7 @@ public class NetworkCreationScreen extends Screen {
         int textLen = font.width(CREATE_LABEL);
         //int textLen2 = font.width(network.getName());
 
-        pGuiGraphics.drawString(this.font, CREATE_LABEL, this.leftPos + (this.imageWidth - textLen) / 2, this.topPos+8, AxessColors.MAIN.colorInt, false);
+        pGuiGraphics.drawString(this.font, CREATE_LABEL, this.leftPos + (this.imageWidth - textLen) / 2, this.topPos+8, AxessColors.MAIN.getRGB(), false);
         //pGuiGraphics.drawString(this.font, network.getName(), this.leftPos + (this.imageWidth - textLen2) / 2, this.topPos+30, 0xFFFFFF, false);
     }
 

@@ -1,13 +1,7 @@
 package net.teekay.axess.screen.component;
 
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractWidget;
-import net.minecraft.client.gui.components.Renderable;
-import net.minecraft.client.gui.components.Tooltip;
-import net.minecraft.client.gui.components.events.GuiEventListener;
-import net.minecraft.client.gui.narration.NarratableEntry;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -15,11 +9,8 @@ import net.teekay.axess.Axess;
 import net.teekay.axess.access.AccessLevel;
 import net.teekay.axess.access.AccessNetwork;
 import net.teekay.axess.client.AxessClientMenus;
-import net.teekay.axess.screen.NetworkEditorScreen;
 import net.teekay.axess.utilities.MathUtil;
-import org.checkerframework.checker.units.qual.A;
 
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -53,9 +44,7 @@ public class AccessLevelList extends AbstractWidget {
 
     private boolean orderDirty = false;
 
-    private NetworkEditorScreen screen;
-
-    public AccessLevelList(NetworkEditorScreen screen, Consumer<AbstractWidget> childrenAdder, Consumer<AbstractWidget> childrenRemover, AccessNetwork network, int leftPos, int topPos, int width, int height) {
+    public AccessLevelList(Consumer<AbstractWidget> childrenAdder, Consumer<AbstractWidget> childrenRemover, AccessNetwork network, int leftPos, int topPos, int width, int height) {
         super(leftPos, topPos, width, height, Component.empty());
 
         this.width = width;
@@ -65,7 +54,6 @@ public class AccessLevelList extends AbstractWidget {
         this.network = network;
         this.childrenAdder = childrenAdder;
         this.childrenRemover = childrenRemover;
-        this.screen = screen;
     }
 
     private void updateMaxScroll() {
@@ -78,6 +66,7 @@ public class AccessLevelList extends AbstractWidget {
     }
 
     public AccessLevelEntry addElement(AccessLevel level) {
+        // on edit icon
         AccessLevelEntry newButton = new AccessLevelEntry(childrenAdder, childrenRemover, level, leftPos, topPos, width, elemHeight,
             () -> removeElement(level), // TRASH
             (entry) -> { // start drag
@@ -86,9 +75,8 @@ public class AccessLevelList extends AbstractWidget {
             (entry) -> { // end drag
                 
             },
-            (entry) -> { // on edit icon
-                AxessClientMenus.openIconEditorScreen(screen, entry);
-            }
+                AxessClientMenus::openIconSelectionScreen,
+                AxessClientMenus::openColorSelectionScreen //AxessClientMenus::openIconSelectionScreen
         );
 
         buttons.add(newButton);

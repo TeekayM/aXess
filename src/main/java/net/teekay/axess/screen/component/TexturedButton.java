@@ -60,7 +60,7 @@ public class TexturedButton extends Button {
             offset = (int) (Math.sin(timePassed) * ((textWidth - this.width) / 2));
         }
 
-        graphics.drawString(font, this.getMessage(), textX + offset, textY, isHovering ? 0xFFFFFF : AxessColors.MAIN.colorInt, false);
+        graphics.drawString(font, this.getMessage(), textX + offset, textY, isHovering ? 0xFFFFFF : AxessColors.MAIN.getRGB(), false);
 
         graphics.disableScissor();
 

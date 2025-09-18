@@ -1,5 +1,6 @@
 package net.teekay.axess.screen;
 
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.*;
 import net.minecraft.client.gui.screens.Screen;
@@ -10,6 +11,7 @@ import net.teekay.axess.Axess;
 import net.teekay.axess.access.AccessNetwork;
 import net.teekay.axess.access.AccessNetworkDataClient;
 import net.teekay.axess.client.AxessClientMenus;
+import net.teekay.axess.screen.component.HelpButton;
 import net.teekay.axess.screen.component.HumbleImageButton;
 import net.teekay.axess.screen.component.NetworkEntry;
 import net.teekay.axess.screen.component.NetworkList;
@@ -26,6 +28,8 @@ public class NetworkManagerScreen extends Screen {
 
     private static final ResourceLocation TEXTURE = ResourceLocation.fromNamespaceAndPath(Axess.MODID, "textures/gui/network_manager.png");
     private static final ResourceLocation ADD_TEXTURE = ResourceLocation.fromNamespaceAndPath(Axess.MODID, "textures/gui/create_button.png");
+
+    private static final Component HELP_LABEL = Component.translatable("gui."+Axess.MODID+".help.network_manager");
 
     private final int imageWidth, imageHeight;
 
@@ -53,6 +57,8 @@ public class NetworkManagerScreen extends Screen {
         ClientLevel level = this.minecraft.level;
         if (level == null) return;
 
+        addRenderableWidget(new HelpButton(leftPos, topPos, imageWidth, imageHeight, HELP_LABEL));
+
         HumbleImageButton addButton = new HumbleImageButton(
                 this.leftPos + 163,
                 this.topPos + 25,
@@ -75,6 +81,7 @@ public class NetworkManagerScreen extends Screen {
         this.networkList = new NetworkList(leftPos + 14, topPos + 51, 169, 116);
 
         for (AccessNetwork network : AccessNetworkDataClient.getNetworkRegistry().values()) {
+            if (!network.getOwnerUUID().equals(Minecraft.getInstance().player.getUUID())) continue;
             NetworkEntry btn = this.networkList.addElement(network);
             addWidget(btn.button);
             addWidget(btn.trashButton);
@@ -93,8 +100,8 @@ public class NetworkManagerScreen extends Screen {
 
         int networks = this.networkList.getSize();
         pGuiGraphics.drawString(this.font, Component.literal(String.valueOf(networks)).append(" ").append(networks == 1 ? NETWORK_LABEL : NETWORKS_LABEL),
-                this.leftPos+13, this.topPos+32, AxessColors.MAIN.colorInt, false);
-        pGuiGraphics.drawString(this.font, TITLE_LABEL, this.leftPos+8, this.topPos+8, AxessColors.MAIN.colorInt, false);
+                this.leftPos+13, this.topPos+32, AxessColors.MAIN.getRGB(), false);
+        pGuiGraphics.drawString(this.font, TITLE_LABEL, this.leftPos+8, this.topPos+8, AxessColors.MAIN.getRGB(), false);
     }
 
     @Override

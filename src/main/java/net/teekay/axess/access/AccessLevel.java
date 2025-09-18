@@ -5,6 +5,7 @@ import net.teekay.axess.registry.AxessIconRegistry;
 import net.teekay.axess.utilities.AxessColors;
 import org.checkerframework.checker.units.qual.A;
 
+import java.awt.*;
 import java.util.UUID;
 
 public class AccessLevel {
@@ -17,7 +18,7 @@ public class AccessLevel {
 
     private AxessIconRegistry.AxessIcon icon;
 
-    private AxessColors.Color color;
+    private Color color;
 
     public AccessLevel(UUID networkUUID) {
         this(networkUUID, UUID.randomUUID());
@@ -35,7 +36,6 @@ public class AccessLevel {
     public int getPriority() {
         return priority;
     }
-
     public void setPriority(int priority) {
         this.priority = priority;
     }
@@ -43,7 +43,6 @@ public class AccessLevel {
     public String getDisplayName() {
         return displayName;
     }
-
     public void setDisplayName(String displayName) {
         this.displayName = displayName;
     }
@@ -51,9 +50,15 @@ public class AccessLevel {
     public AxessIconRegistry.AxessIcon getIcon() {
         return icon;
     }
-
     public void setIcon(AxessIconRegistry.AxessIcon icon) {
         this.icon = icon;
+    }
+
+    public Color getColor() {
+        return color;
+    }
+    public void setColor(Color color) {
+        this.color = color;
     }
 
     public UUID getUUID() { return this.uuid; }
@@ -66,7 +71,7 @@ public class AccessLevel {
 
         tag.putString("Name", displayName);
         tag.putString("Icon", icon.ID);
-        tag.putInt("Color", color.colorInt);
+        tag.putInt("Color", color.getRGB());
 
         tag.putInt("Priority", priority);
 
@@ -81,7 +86,7 @@ public class AccessLevel {
 
         newAccessLevel.displayName = tag.getString("Name");
         newAccessLevel.icon = AxessIconRegistry.getIcon(tag.getString("Icon"));
-        newAccessLevel.color = new AxessColors.Color(tag.getInt("Color"));
+        newAccessLevel.color = new Color(tag.getInt("Color"));
 
         newAccessLevel.priority = tag.getInt("Priority");
 

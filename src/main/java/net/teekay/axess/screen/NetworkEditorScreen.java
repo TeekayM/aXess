@@ -25,6 +25,7 @@ public class NetworkEditorScreen extends Screen {
     private static final Component CANCEL_BUTTON_LABEL = Component.translatable("gui."+Axess.MODID+".buttons.cancel");
     private static final Component ADD_BUTTON_LABEL = Component.translatable("gui."+Axess.MODID+".buttons.add_access_level");
     private static final Component NETWORK_NAME_LABEL = Component.translatable("gui."+Axess.MODID+".inputs.network_name");
+    private static final Component HELP_LABEL = Component.translatable("gui."+Axess.MODID+".help.network_editor");
 
     private static final ResourceLocation TEXTURE = ResourceLocation.fromNamespaceAndPath(Axess.MODID, "textures/gui/network_editor.png");
     private static final ResourceLocation ADD_TEXTURE = ResourceLocation.fromNamespaceAndPath(Axess.MODID, "textures/gui/create_button.png");
@@ -61,6 +62,8 @@ public class NetworkEditorScreen extends Screen {
         if (this.minecraft == null) return;
         ClientLevel level = this.minecraft.level;
         if (level == null) return;
+
+        addRenderableWidget(new HelpButton(leftPos, topPos, imageWidth, imageHeight, HELP_LABEL));
 
         this.nameEdit = addRenderableWidget(
                 new TexturedEditBox(Minecraft.getInstance().font,
@@ -101,7 +104,7 @@ public class NetworkEditorScreen extends Screen {
             pastPos = this.accessLevelList.scrollPos;
         }
 
-        this.accessLevelList = new AccessLevelList(this, this::addWidget, this::removeWidget, network, leftPos + 14, topPos + 51, 224, 116);
+        this.accessLevelList = new AccessLevelList(this::addWidget, this::removeWidget, network, leftPos + 14, topPos + 51, 224, 116);
         this.accessLevelList.scrollPos = pastPos;
 
         HumbleImageButton addButton = new HumbleImageButton(
@@ -144,7 +147,7 @@ public class NetworkEditorScreen extends Screen {
         //int networks = this.accessLevelList.getSize();
         //pGuiGraphics.drawString(this.font, Component.literal(String.valueOf(networks)).append(" ").append(networks == 1 ? NETWORK_LABEL : NETWORKS_LABEL),
         //        this.leftPos+13, this.topPos+32, AxessColors.MAIN, false);
-        pGuiGraphics.drawString(this.font, TITLE_LABEL, this.leftPos+8, this.topPos+8, AxessColors.MAIN.colorInt, false);
+        pGuiGraphics.drawString(this.font, TITLE_LABEL, this.leftPos+8, this.topPos+8, AxessColors.MAIN.getRGB(), false);
     }
 
     @Override

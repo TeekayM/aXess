@@ -27,8 +27,13 @@ public class AxessClientMenus {
         return true;
     }
 
-    public static boolean openIconEditorScreen(NetworkEditorScreen s, AccessLevelEntry e) {
-        Minecraft.getInstance().pushGuiLayer(new IconSelectionScreen(s, e));
+    public static boolean openIconSelectionScreen(AccessLevelEntry e) {
+        Minecraft.getInstance().pushGuiLayer(new IconSelectionScreen(e));
+        return true;
+    }
+
+    public static boolean openColorSelectionScreen(AccessLevelEntry e) {
+        Minecraft.getInstance().pushGuiLayer(new ColorSelectionScreen(e));
         return true;
     }
 

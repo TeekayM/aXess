@@ -21,12 +21,10 @@ public class IconSelectionScreen extends Screen {
     private static final ResourceLocation TEXTURE = ResourceLocation.fromNamespaceAndPath(Axess.MODID, "textures/gui/icon_selector.png");
     private static final ResourceLocation EMPTY_BUTTON_TEXTURE = ResourceLocation.fromNamespaceAndPath(Axess.MODID, "textures/gui/empty_button.png");
 
-    private NetworkEditorScreen parent;
     private AccessLevelEntry entry;
 
-    public IconSelectionScreen(NetworkEditorScreen toReturnTo, AccessLevelEntry entry) {
+    public IconSelectionScreen(AccessLevelEntry entry) {
         super(TITLE);
-        this.parent = toReturnTo;
         this.entry = entry;
 
         this.imageWidth = 150;
@@ -103,7 +101,7 @@ public class IconSelectionScreen extends Screen {
         this.renderBackground(pGuiGraphics);
         pGuiGraphics.blit(TEXTURE, this.leftPos, this.topPos, 0, 0, this.imageWidth, this.imageHeight);
 
-        pGuiGraphics.enableScissor(this.windowX, this.windowY, this.windowX + this.windowWidth + this.scrollerWidth + 1, this.windowY + this.windowHeight);
+        pGuiGraphics.enableScissor(this.windowX, this.windowY, this.windowX + this.windowWidth + this.scrollerWidth + 10, this.windowY + this.windowHeight);
 
         for (int index = 0; index < iconButtons.size(); index++) {
             HumbleImageButton btn = iconButtons.get(index);
@@ -111,21 +109,18 @@ public class IconSelectionScreen extends Screen {
 
             btn.setY(this.windowY + (index / itemsPerRow) * (20 + 1) - this.scrollPos);
             btn.render(pGuiGraphics, pMouseX, pMouseY, pPartialTick);
-
-            if (!btn.isHoveredOrFocused()) pGuiGraphics.setColor(AxessColors.MAIN.getRed(), AxessColors.MAIN.getGreen(), AxessColors.MAIN.getBlue(), 1f);
             pGuiGraphics.blit(icon.TEXTURE, btn.getX() + 1, btn.getY() + 1, 0, 0, 18, 18, 18, 18);
-            pGuiGraphics.setColor(1f, 1f, 1f, 1f);
         }
 
-        int scrollerImgPos = (int) ((float)(height-scrollerHeight+1) * ((float)scrollPos / (float)maxScrollPos));
-        pGuiGraphics.blit(TEXTURE, leftPos+width+1, topPos+scrollerImgPos, 150, 0, scrollerWidth, scrollerHeight);
+        int scrollerImgPos = (int) ((float)(windowHeight-scrollerHeight+1) * ((float)scrollPos / (float)maxScrollPos));
+        pGuiGraphics.blit(TEXTURE, windowX+windowWidth+1, windowY+scrollerImgPos, 150, 0, scrollerWidth, scrollerHeight);
 
         pGuiGraphics.disableScissor();
 
         super.render(pGuiGraphics, pMouseX, pMouseY, pPartialTick);
 
         int textLen = font.width(TITLE);
-        pGuiGraphics.drawString(this.font, TITLE, this.leftPos + (this.imageWidth - textLen) / 2, this.topPos+8, AxessColors.MAIN.colorInt, false);
+        pGuiGraphics.drawString(this.font, TITLE, this.leftPos + (this.imageWidth - textLen) / 2, this.topPos+8, AxessColors.MAIN.getRGB(), false);
     }
 
     @Override
