@@ -1,33 +1,29 @@
 package net.teekay.axess.screen;
 
 import com.mojang.blaze3d.systems.RenderSystem;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.ImageButton;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.network.PacketDistributor;
+import net.minecraft.world.item.Items;
 import net.teekay.axess.Axess;
 import net.teekay.axess.access.AccessLevel;
 import net.teekay.axess.access.AccessNetwork;
 import net.teekay.axess.access.AccessNetworkDataClient;
-import net.teekay.axess.block.keycardeditor.KeycardEditorBlock;
 import net.teekay.axess.block.keycardeditor.KeycardEditorBlockEntity;
-import net.teekay.axess.item.AbstractKeycardItem;
+import net.teekay.axess.item.keycard.AbstractKeycardItem;
+import net.teekay.axess.network.AxessPacketHandler;
+import net.teekay.axess.network.packets.server.CtSModifyKeycardPacket;
 import net.teekay.axess.screen.component.HumbleImageButton;
 import net.teekay.axess.screen.component.TexturedButton;
 import net.teekay.axess.utilities.AxessColors;
-import org.checkerframework.checker.units.qual.A;
-import org.checkerframework.checker.units.qual.C;
+import net.teekay.axess.utilities.MathUtil;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 public class KeycardEditorScreen extends AbstractContainerScreen<KeycardEditorMenu> {
@@ -49,8 +45,12 @@ public class KeycardEditorScreen extends AbstractContainerScreen<KeycardEditorMe
     private ArrayList<SelectableLevelEntry> levelEntries = new ArrayList<>();
     private ImageButton applyButton;
 
+    private int scrollerWidth = 3;
+
     private int scrollPosNetworks = 0;
+    private int scrollMaxNetworks = 0;
     private int scrollPosLevels = 0;
+    private int scrollMaxLevels = 0;
 
     private ItemStack lastItemStack;
 
@@ -78,7 +78,8 @@ public class KeycardEditorScreen extends AbstractContainerScreen<KeycardEditorMe
                         CONFIRM_BUTTON_TEXTURE,
                         32, 96,
                         btn -> {
-
+                            if (menu.blockEntity == null || selectedNetwork == null || selectedLevel == null) return;
+                            AxessPacketHandler.sendToServer(new CtSModifyKeycardPacket(menu.blockEntity.getBlockPos(), selectedNetwork, selectedLevel));
                         })
         );
         this.applyButton.active = false;
@@ -117,6 +118,15 @@ public class KeycardEditorScreen extends AbstractContainerScreen<KeycardEditorMe
         }
         pGuiGraphics.disableScissor();
 
+        int netScrollerHeight = MathUtil.calcScrollHeight(NETWORKS_HEIGHT, scrollMaxNetworks);
+        int netScrollerPos = MathUtil.calcScrollPos(NETWORKS_HEIGHT, netScrollerHeight, scrollPosNetworks, scrollMaxNetworks);
+        pGuiGraphics.fill(
+                leftPos+NETWORKS_X+NETWORKS_WIDTH+1,
+                topPos+NETWORKS_Y+netScrollerPos,
+                leftPos+NETWORKS_X+NETWORKS_WIDTH+1+scrollerWidth,
+                topPos+NETWORKS_Y+netScrollerPos+netScrollerHeight,
+                AxessColors.MAIN.getRGB());
+
         // LEVEL ENTRIES
         pGuiGraphics.enableScissor(leftPos + LEVELS_X, topPos + LEVELS_Y, leftPos + LEVELS_X + LEVELS_WIDTH, topPos + LEVELS_Y + LEVELS_HEIGHT);
         for (SelectableLevelEntry entry:
@@ -124,6 +134,15 @@ public class KeycardEditorScreen extends AbstractContainerScreen<KeycardEditorMe
             entry.render(pGuiGraphics,pMouseX,pMouseY,pPartialTick);
         }
         pGuiGraphics.disableScissor();
+
+        int lvlScrollerHeight = MathUtil.calcScrollHeight(LEVELS_HEIGHT, scrollMaxLevels);
+        int lvlScrollerPos = MathUtil.calcScrollPos(LEVELS_HEIGHT, lvlScrollerHeight, scrollPosLevels, scrollMaxLevels);
+        pGuiGraphics.fill(
+                leftPos+LEVELS_X+LEVELS_WIDTH+1,
+                topPos+LEVELS_Y+lvlScrollerPos,
+                leftPos+LEVELS_X+LEVELS_WIDTH+1+scrollerWidth,
+                topPos+NETWORKS_Y+lvlScrollerPos+lvlScrollerHeight,
+                AxessColors.MAIN.getRGB());
 
         applyButton.active = false;
 
@@ -139,7 +158,7 @@ public class KeycardEditorScreen extends AbstractContainerScreen<KeycardEditorMe
         } else {
             ItemStack item = this.menu.getSlot(KEYCARD_SLOT).getItem();
             AbstractKeycardItem keycard = (AbstractKeycardItem) item.getItem();
-            if (keycard.getAccessNetwork(item) != selectedNetwork || keycard.getAccessLevel(item) != selectedLevel) {
+            if (keycard.getAccessNetwork(item, menu.blockEntity.getLevel()) != selectedNetwork || keycard.getAccessLevel(item, menu.blockEntity.getLevel()) != selectedLevel) {
                 textComp = APPLY_CHANGES_LABEL;
                 applyButton.active = true;
             }
@@ -148,7 +167,7 @@ public class KeycardEditorScreen extends AbstractContainerScreen<KeycardEditorMe
 
         ItemStack item = this.menu.getSlot(KEYCARD_SLOT).getItem();
         if (item != lastItemStack) {
-            if (item == null) {
+            if (item.getItem().equals(Items.AIR)) {
                 clearEntries();
             } else if (item.getItem() instanceof AbstractKeycardItem) {
                 updateEntries(item);
@@ -186,6 +205,9 @@ public class KeycardEditorScreen extends AbstractContainerScreen<KeycardEditorMe
             levelEntries.add(entry);
             addWidget(entry);
         }
+
+        int totalHeight = levels.size() * (ENTRY_HEIGHT + ENTRY_PADDING) - ENTRY_PADDING;
+        scrollMaxLevels = totalHeight - LEVELS_HEIGHT;
     }
 
     public void updateNetworkEntries() {
@@ -197,11 +219,14 @@ public class KeycardEditorScreen extends AbstractContainerScreen<KeycardEditorMe
             networkEntries.add(entry);
             addWidget(entry);
         }
+
+        int totalHeight = networks.size() * (ENTRY_HEIGHT + ENTRY_PADDING) - ENTRY_PADDING;
+        scrollMaxNetworks = totalHeight - NETWORKS_HEIGHT;
     }
 
     public void updateEntries(ItemStack itemStack) {
-        selectedNetwork = ((AbstractKeycardItem)itemStack.getItem()).getAccessNetwork(itemStack);
-        selectedLevel = ((AbstractKeycardItem)itemStack.getItem()).getAccessLevel(itemStack);
+        selectedNetwork = ((AbstractKeycardItem)itemStack.getItem()).getAccessNetwork(itemStack, menu.blockEntity.getLevel());
+        selectedLevel = ((AbstractKeycardItem)itemStack.getItem()).getAccessLevel(itemStack, menu.blockEntity.getLevel());
 
         updateNetworkEntries();
         updateLevelEntries();
@@ -212,6 +237,9 @@ public class KeycardEditorScreen extends AbstractContainerScreen<KeycardEditorMe
             removeWidget(entry);
         }
         networkEntries.clear();
+
+        scrollPosNetworks = 0;
+        scrollMaxNetworks = 0;
     }
 
     public void clearLevelEntries() {
@@ -219,12 +247,24 @@ public class KeycardEditorScreen extends AbstractContainerScreen<KeycardEditorMe
             removeWidget(entry);
         }
         levelEntries.clear();
+
+        scrollPosLevels = 0;
+        scrollMaxLevels = 0;
     }
 
     public void clearEntries() {
         // clear networks and levels
         clearLevelEntries();
         clearNetworkEntries();
+    }
+
+    @Override
+    public boolean mouseScrolled(double pMouseX, double pMouseY, double pDelta) {
+        if ((int)pMouseX <= leftPos + NETWORKS_X + NETWORKS_WIDTH + 4)
+            scrollPosNetworks = Math.max(Math.min(scrollPosNetworks + (int)(pDelta * -7), scrollMaxNetworks), 0);
+        else
+            scrollPosLevels = Math.max(Math.min(scrollPosLevels + (int)(pDelta * -7), scrollMaxLevels), 0);
+        return super.mouseScrolled(pMouseX, pMouseY, pDelta);
     }
 
     // CONSTANTS
@@ -244,8 +284,6 @@ public class KeycardEditorScreen extends AbstractContainerScreen<KeycardEditorMe
     private static int LEVELS_Y = 27;
     private static int LEVELS_WIDTH = 124;
     private static int LEVELS_HEIGHT = 93;
-
-    private static int BOTH_Y = 27;
 
     private class SelectableNetworkEntry extends TexturedButton {
         private AccessNetwork network;
@@ -268,6 +306,14 @@ public class KeycardEditorScreen extends AbstractContainerScreen<KeycardEditorMe
         }
 
         @Override
+        public boolean mouseClicked(double pMouseX, double pMouseY, int pButton) {
+            if (pMouseY < topPos + NETWORKS_Y) return false;
+            if (pMouseY > topPos + NETWORKS_Y + NETWORKS_HEIGHT) return false;
+
+            return super.mouseClicked(pMouseX, pMouseY, pButton);
+        }
+
+        @Override
         public boolean isHoveredOrFocused() {
             return selectedNetwork == this.network || super.isHovered;
         }
@@ -278,19 +324,33 @@ public class KeycardEditorScreen extends AbstractContainerScreen<KeycardEditorMe
         private int index;
 
         public SelectableLevelEntry(AccessLevel level, int index) {
-            super(leftPos + LEVELS_X, topPos + LEVELS_Y, LEVELS_WIDTH, ENTRY_HEIGHT, Component.literal(level.getName()), btn -> {
-                        selectLevel(level);
-                    }
+            super(leftPos + LEVELS_X, topPos + LEVELS_Y, LEVELS_WIDTH, ENTRY_HEIGHT, Component.literal(level.getName()),
+                    btn -> {selectLevel(level);}
             );
 
             this.level = level;
             this.index = index;
+            this.textPaddingLeft = 21;
         }
 
         @Override
         public void render(GuiGraphics pGuiGraphics, int pMouseX, int pMouseY, float pPartialTick) {
-            this.setY(topPos + LEVELS_Y + index * (ENTRY_HEIGHT + ENTRY_PADDING) - scrollPosLevels);
+            int y = topPos + LEVELS_Y + index * (ENTRY_HEIGHT + ENTRY_PADDING) - scrollPosLevels;
+            this.setY(y);
+
             super.render(pGuiGraphics, pMouseX, pMouseY, pPartialTick);
+
+            pGuiGraphics.setColor(level.getColor().getRed()/255f, level.getColor().getGreen()/255f, level.getColor().getBlue()/255f, 1f);
+            pGuiGraphics.blit(level.getIcon().TEXTURE, this.getX() + 2, y, 0, 0, 18, 18, 18, 18);
+            pGuiGraphics.setColor(1f,1f,1f,1f);
+        }
+
+        @Override
+        public boolean mouseClicked(double pMouseX, double pMouseY, int pButton) {
+            if (pMouseY < topPos + LEVELS_Y) return false;
+            if (pMouseY > topPos + LEVELS_Y + LEVELS_HEIGHT) return false;
+
+            return super.mouseClicked(pMouseX, pMouseY, pButton);
         }
 
         @Override

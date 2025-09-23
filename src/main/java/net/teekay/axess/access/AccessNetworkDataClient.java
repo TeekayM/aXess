@@ -1,5 +1,6 @@
 package net.teekay.axess.access;
 
+import net.minecraft.client.Minecraft;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.level.saveddata.SavedData;
@@ -15,15 +16,15 @@ public class AccessNetworkDataClient {
     }
 
     public static List<AccessNetwork> getNetworks() {
+        if (Minecraft.getInstance().player != null) {
+            return networkRegistry.values().stream().filter( (network) -> network.getOwnerUUID().equals(Minecraft.getInstance().player.getUUID()) ).toList();
+        }
         return networkRegistry.values().stream().toList();
     }
 
     public static void loadAllFromServer(AccessNetworkDataServer serverData) {
         networkRegistry.clear();
-
-        for (HashMap.Entry<UUID, AccessNetwork> entry : serverData.getNetworkRegistry().entrySet()){
-            networkRegistry.put(entry.getKey(), entry.getValue());
-        }
+        networkRegistry.putAll(serverData.getNetworkRegistry());
     }
 
     public static AccessNetwork getNetwork(UUID uuid) {

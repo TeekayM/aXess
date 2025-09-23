@@ -9,6 +9,7 @@ import net.teekay.axess.Axess;
 import net.teekay.axess.access.AccessLevel;
 import net.teekay.axess.access.AccessNetwork;
 import net.teekay.axess.client.AxessClientMenus;
+import net.teekay.axess.utilities.AxessColors;
 import net.teekay.axess.utilities.MathUtil;
 
 import java.util.ArrayList;
@@ -109,8 +110,18 @@ public class AccessLevelList extends AbstractWidget {
             }
         }
 
-        int scrollerImgPos = (int) ((float)(height-scrollerHeight+1) * ((float)scrollPos / (float)maxScrollPos));
-        graphics.blit(TEXTURE, leftPos+width+1, topPos+scrollerImgPos, 0, 198, scrollerWidth, scrollerHeight);
+        int totalElementsHeight = maxScrollPos + height;
+
+        int scrollerHeight;
+        if (height >= totalElementsHeight) {
+            scrollerHeight = height;
+        } else {
+            scrollerHeight = (int)Math.ceil((float)(height-1) * (float)height / (float)totalElementsHeight);
+        }
+
+        int scrollerPos = (int) ((float)(height-scrollerHeight+1) * ((float)scrollPos / (float)maxScrollPos));
+
+        graphics.fill(leftPos+width+1, topPos+scrollerPos, leftPos+width+1+scrollerWidth, topPos+scrollerPos+scrollerHeight, AxessColors.MAIN.getRGB());
 
         if (orderDirty) {
             updateOrder();

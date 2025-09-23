@@ -17,6 +17,7 @@ public class TexturedButton extends Button {
     private static ResourceLocation BUTTON_TEXTURE = ResourceLocation.fromNamespaceAndPath(Axess.MODID, "textures/gui/buttons.png");
 
     public float timePassed = 0f;
+    public int textPaddingLeft = 0;
 
     @Override
     public void renderWidget(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
@@ -34,10 +35,10 @@ public class TexturedButton extends Button {
         Font font = Minecraft.getInstance().font;
         int textWidth = font.width(this.getMessage());
 
-        int textX = this.getX() + (this.width - textWidth) / 2;
+        int textX = this.getX() + textPaddingLeft +  ((this.width - textPaddingLeft) - textWidth) / 2;
         int textY = this.getY() + (this.height - 8) / 2;
 
-        graphics.enableScissor(getX() + 1, getY(), getX() + width - 1 - 1, getY() + height);
+        graphics.enableScissor(getX() + textPaddingLeft + 1, getY(), getX() + width - 1 - 1, getY() + height);
 
         int offset = 0;
         if (textWidth > this.width - 2) {

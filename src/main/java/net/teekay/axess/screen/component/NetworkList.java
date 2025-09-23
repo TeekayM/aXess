@@ -7,6 +7,8 @@ import net.minecraft.resources.ResourceLocation;
 import net.teekay.axess.Axess;
 import net.teekay.axess.access.AccessNetwork;
 import net.teekay.axess.screen.NetworkManagerScreen;
+import net.teekay.axess.utilities.AxessColors;
+import net.teekay.axess.utilities.MathUtil;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -25,7 +27,6 @@ public class NetworkList {
     private int elemHeight = 20;
     private int padding = 1;
 
-    private int scrollerHeight = 14;
     private int scrollerWidth = 4;
 
     public NetworkList(int leftPos, int topPos, int width, int height) {
@@ -36,7 +37,7 @@ public class NetworkList {
     }
 
     private void updateMaxScroll() {
-        int totalHeight = buttons.size() * elemHeight + (buttons.size() - 1) * padding;
+        int totalHeight = buttons.size() * (elemHeight + padding) - padding;
         this.maxScrollPos = totalHeight - height;
     }
 
@@ -51,9 +52,10 @@ public class NetworkList {
     public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
         graphics.enableScissor(leftPos, topPos, leftPos+width+scrollerWidth+1, topPos+height);
 
-        int scrollerPos = (int) ((float)(height-scrollerHeight+1) * ((float)scrollPos / (float)maxScrollPos));
+        int scrollerHeight = MathUtil.calcScrollHeight(height, maxScrollPos);
+        int scrollerPos = MathUtil.calcScrollPos(height, scrollerHeight, scrollPos, maxScrollPos);
 
-        graphics.blit(TEXTURE, leftPos+width+1, topPos+scrollerPos, 201, 0, scrollerWidth, scrollerHeight);
+        graphics.fill(leftPos+width+1, topPos+scrollerPos, leftPos+width+1+scrollerWidth, topPos+scrollerPos+scrollerHeight, AxessColors.MAIN.getRGB());
 
         for (int index = 0; index < buttons.size(); index++) {
             NetworkEntry networkButton = buttons.get(index);

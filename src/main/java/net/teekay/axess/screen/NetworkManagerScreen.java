@@ -80,8 +80,7 @@ public class NetworkManagerScreen extends Screen {
 
         this.networkList = new NetworkList(leftPos + 14, topPos + 51, 169, 116);
 
-        for (AccessNetwork network : AccessNetworkDataClient.getNetworkRegistry().values()) {
-            if (!network.getOwnerUUID().equals(Minecraft.getInstance().player.getUUID())) continue;
+        for (AccessNetwork network : AccessNetworkDataClient.getNetworks()) {
             NetworkEntry btn = this.networkList.addElement(network);
             addWidget(btn.button);
             addWidget(btn.trashButton);
@@ -114,7 +113,4 @@ public class NetworkManagerScreen extends Screen {
         this.networkList.scroll((int) (pDelta) * -7);
         return super.mouseScrolled(pMouseX, pMouseY, pDelta);
     }
-
-
-
 }

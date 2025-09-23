@@ -13,6 +13,7 @@ import net.teekay.axess.network.packets.client.StCNetworkDeletedPacket;
 import net.teekay.axess.network.packets.client.StCNetworkModifiedPacket;
 import net.teekay.axess.screen.component.NetworkEntry;
 import org.checkerframework.checker.units.qual.A;
+import org.jetbrains.annotations.Nullable;
 import org.joml.Random;
 
 import java.util.HashMap;
@@ -60,6 +61,7 @@ public class AccessNetworkDataServer extends SavedData {
         return networkRegistry;
     }
 
+    @Nullable
     public AccessNetwork getNetwork(UUID uuid) {
         return networkRegistry.get(uuid);
     }

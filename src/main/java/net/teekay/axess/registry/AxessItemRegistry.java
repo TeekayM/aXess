@@ -5,7 +5,7 @@ import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
 import net.teekay.axess.Axess;
-import net.teekay.axess.item.KeycardItem;
+import net.teekay.axess.item.keycard.KeycardItem;
 import java.util.Collection;
 import java.util.function.Supplier;
 

@@ -10,26 +10,20 @@ import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
-import net.minecraft.world.inventory.ContainerData;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.fml.ISystemReportExtender;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemStackHandler;
 import net.teekay.axess.Axess;
-import net.teekay.axess.item.AbstractKeycardItem;
+import net.teekay.axess.item.keycard.AbstractKeycardItem;
 import net.teekay.axess.registry.AxessBlockEntityRegistry;
 import net.teekay.axess.screen.KeycardEditorMenu;
-import org.apache.maven.artifact.handler.ArtifactHandler;
-import org.checkerframework.checker.units.qual.K;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import oshi.jna.platform.unix.CLibrary;
 
 public class KeycardEditorBlockEntity extends BlockEntity implements MenuProvider {
     public static class KeycardItemStackHandler extends ItemStackHandler {
@@ -82,6 +76,7 @@ public class KeycardEditorBlockEntity extends BlockEntity implements MenuProvide
     public void load(CompoundTag pTag) {
         System.out.println(pTag);
         itemStackHandler.deserializeNBT(pTag.getCompound("inventory"));
+
         super.load(pTag);
     }
 
@@ -89,6 +84,18 @@ public class KeycardEditorBlockEntity extends BlockEntity implements MenuProvide
     protected void saveAdditional(CompoundTag pTag) {
         pTag.put("inventory", itemStackHandler.serializeNBT());
         super.saveAdditional(pTag);
+    }
+
+    @Override
+    public CompoundTag getUpdateTag() {
+        CompoundTag tag = super.getUpdateTag();
+        saveAdditional(tag);
+        return tag;
+    }
+
+    @Override
+    public void handleUpdateTag(CompoundTag tag) {
+        load(tag);
     }
 
     @Override

@@ -209,7 +209,7 @@ public class AccessLevelEntry extends AbstractWidget {
         this.dragButton.render(pGuiGraphics, pMouseX, pMouseY, pPartialTick);
         this.iconButton.render(pGuiGraphics, pMouseX, pMouseY, pPartialTick);
         this.colorButton.render(pGuiGraphics, pMouseX, pMouseY, pPartialTick);
-        pGuiGraphics.fill(this.colorButton.getX()+1, this.colorButton.getY()+1, this.colorButton.getX()+19, this.colorButton.getY()+19, accessLevel.getColor().getRGB());
+        pGuiGraphics.fill(this.colorButton.getX()+2, this.colorButton.getY()+2, this.colorButton.getX()+18, this.colorButton.getY()+18, accessLevel.getColor().getRGB());
         pGuiGraphics.blit(this.accessLevel.getIcon().TEXTURE, this.iconButton.getX() + 1, this.iconButton.getY() + 1, 0, 0, 18, 18, 18, 18);
         //this.priorityButtonUP.render(graphics, mouseX, mouseY, partialTick);
         //this.priorityButtonDOWN.render(graphics, mouseX, mouseY, partialTick);

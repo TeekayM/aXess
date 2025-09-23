@@ -11,6 +11,7 @@ import net.teekay.axess.network.packets.client.StCNetworkDeletedPacket;
 import net.teekay.axess.network.packets.client.StCNetworkModifiedPacket;
 import net.teekay.axess.network.packets.client.StCSyncAllNetworks;
 import net.teekay.axess.network.packets.server.CtSDeleteNetworkPacket;
+import net.teekay.axess.network.packets.server.CtSModifyKeycardPacket;
 import net.teekay.axess.network.packets.server.CtSModifyNetworkPacket;
 
 import java.util.List;
@@ -45,6 +46,11 @@ public class AxessPacketHandler {
                 CtSModifyNetworkPacket::encode,
                 CtSModifyNetworkPacket::new,
                 CtSModifyNetworkPacket::handle);
+        INSTANCE.registerMessage(id(),
+                CtSModifyKeycardPacket.class,
+                CtSModifyKeycardPacket::encode,
+                CtSModifyKeycardPacket::new,
+                CtSModifyKeycardPacket::handle);
 
         // SERVER TO CLIENT
         INSTANCE.registerMessage(id(),

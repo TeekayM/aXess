@@ -1,28 +1,46 @@
-package net.teekay.axess.item;
+package net.teekay.axess.item.keycard;
 
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResultHolder;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraftforge.client.extensions.common.IClientItemExtensions;
 import net.teekay.axess.Axess;
 import net.teekay.axess.access.AccessLevel;
 import net.teekay.axess.access.AccessNetwork;
 import net.teekay.axess.access.AccessNetworkDataClient;
 import net.teekay.axess.access.AccessNetworkDataServer;
+import net.teekay.axess.registry.AxessIconRegistry;
 import org.checkerframework.checker.index.qual.PolyUpperBound;
+import org.checkerframework.checker.units.qual.K;
 import org.jetbrains.annotations.Nullable;
 
+import java.awt.*;
 import java.util.List;
+import java.util.function.Consumer;
 
 public abstract class AbstractKeycardItem extends Item {
     private static final String ACCESS_LEVEL_KEY = "AccessLevel";
     private static final String ACCESS_NETWORK_KEY = "AccessNetwork";
+
+    private static final Component NETWORK_LABEL = Component.translatable("tooltip."+ Axess.MODID + ".keycard.access_network");
+    private static final Component ACCESS_LEVEL_LABEL = Component.translatable("tooltip."+ Axess.MODID + ".keycard.access_level");
+    private static final Component NO_LEVEL_LABEL = Component.translatable("tooltip."+ Axess.MODID + ".keycard.no_level");
+    private static final Component UNCONFIGURED_LABEL = Component.translatable("tooltip."+ Axess.MODID + ".keycard.unconfigured");
 
     public AbstractKeycardItem(Item.Properties properties) {
         super(properties);
@@ -56,6 +74,27 @@ public abstract class AbstractKeycardItem extends Item {
         return net.getAccessLevel(stack.getOrCreateTag().getUUID(ACCESS_LEVEL_KEY));
     }
 
+    public ResourceLocation getIconTex(ItemStack stack) {
+        AccessLevel level = getAccessLevel(stack, null);
+
+        if (level != null) {
+            return level.getIcon().TEXTURE;
+        } else {
+            return AxessIconRegistry.NONE.TEXTURE;
+        }
+    }
+
+    public Color getRenderColor(ItemStack stack) {
+        AccessNetwork network = getAccessNetwork(stack, null);
+        AccessLevel level = getAccessLevel(stack, null);
+
+        if (network != null && level != null) {
+            return level.getColor();
+        } else {
+            return Color.WHITE;
+        }
+    }
+
     public void setAccessNetwork(ItemStack stack, AccessNetwork network) {
         CompoundTag tag = stack.getOrCreateTag();
 
@@ -76,27 +115,51 @@ public abstract class AbstractKeycardItem extends Item {
         AccessNetwork net = getAccessNetwork(pStack, pLevel);
         AccessLevel level = getAccessLevel(pStack, pLevel);
 
-        if (net != null && level != null) {
+        if (net != null) {
             pTooltipComponents.add(
-                    Component.translatable("tooltip."+ Axess.MODID + ".keycard.access_network")
+                    NETWORK_LABEL.copy()
                             .append(": ")
                             .append(net.getName())
                             .withStyle(ChatFormatting.GRAY)
             );
 
             pTooltipComponents.add(
-                    Component.translatable("tooltip."+ Axess.MODID + ".keycard.access_level")
+                    ACCESS_LEVEL_LABEL.copy()
                             .append(": ")
-                            .append(level.getName())
+                            .append(level == null ? NO_LEVEL_LABEL : Component.empty())
+                            .append(level != null ? level.getName() : "")
                             .withStyle(ChatFormatting.GRAY)
             );
         } else {
             pTooltipComponents.add(
-                    Component.translatable("tooltip."+ Axess.MODID + ".keycard.unconfigured")
+                    UNCONFIGURED_LABEL.copy()
                         .withStyle(ChatFormatting.GRAY)
             );
         }
 
         super.appendHoverText(pStack, pLevel, pTooltipComponents, pIsAdvanced);
+    }
+
+    @Override
+    public void initializeClient(Consumer<IClientItemExtensions> consumer) {
+
+        consumer.accept(new IClientItemExtensions() {
+            KeycardItemRenderer renderer = new KeycardItemRenderer("keycard");
+
+            @Override
+            public BlockEntityWithoutLevelRenderer getCustomRenderer() {
+                return renderer;
+            }
+        });
+    }
+
+    @Override
+    public InteractionResultHolder<ItemStack> use(Level pLevel, Player pPlayer, InteractionHand pUsedHand) {
+        ItemStack stack = pPlayer.getItemInHand(pUsedHand);
+        if (stack.getItem() instanceof AbstractKeycardItem i) {
+            stack.getOrCreateTag().putBoolean("rotating",
+                    !stack.getOrCreateTag().getBoolean("rotating"));
+        }
+        return super.use(pLevel, pPlayer, pUsedHand);
     }
 }
