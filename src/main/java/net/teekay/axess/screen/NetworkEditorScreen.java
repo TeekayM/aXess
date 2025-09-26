@@ -9,6 +9,7 @@ import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.teekay.axess.Axess;
+import net.teekay.axess.AxessConfig;
 import net.teekay.axess.access.AccessLevel;
 import net.teekay.axess.access.AccessNetwork;
 import net.teekay.axess.access.AccessNetworkDataClient;
@@ -28,10 +29,13 @@ public class NetworkEditorScreen extends Screen {
     private static final Component CANCEL_BUTTON_LABEL = Component.translatable("gui."+Axess.MODID+".buttons.cancel");
     private static final Component ADD_BUTTON_LABEL = Component.translatable("gui."+Axess.MODID+".buttons.add_access_level");
     private static final Component NETWORK_NAME_LABEL = Component.translatable("gui."+Axess.MODID+".inputs.network_name");
+    private static final Component LEVELS_LABEL = Component.translatable("gui."+Axess.MODID+".inputs.network_name");
     private static final Component HELP_LABEL = Component.translatable("gui."+Axess.MODID+".help.network_editor");
 
     private static final ResourceLocation TEXTURE = ResourceLocation.fromNamespaceAndPath(Axess.MODID, "textures/gui/network_editor.png");
     private static final ResourceLocation ADD_TEXTURE = ResourceLocation.fromNamespaceAndPath(Axess.MODID, "textures/gui/create_button.png");
+    private static final ResourceLocation CONFIRM_BUTTON_TEXTURE = ResourceLocation.fromNamespaceAndPath(Axess.MODID, "textures/gui/confirm_button.png");
+    private static final ResourceLocation CANCEL_BUTTON_TEXTURE = ResourceLocation.fromNamespaceAndPath(Axess.MODID, "textures/gui/back_button.png");
 
     public final int imageWidth, imageHeight;
 
@@ -42,8 +46,8 @@ public class NetworkEditorScreen extends Screen {
     // UI Elements
     private HumbleImageButton addButton;
     private AccessLevelList accessLevelList;
-    private TexturedButton doneButton;
-    private TexturedButton cancelButton;
+    private HumbleImageButton doneButton;
+    private HumbleImageButton cancelButton;
     private EditBox nameEdit;
 
     public Consumer<AbstractWidget> childrenAdder = this::addWidget;
@@ -75,7 +79,7 @@ public class NetworkEditorScreen extends Screen {
                 new TexturedEditBox(Minecraft.getInstance().font,
                         this.leftPos + 12,
                         this.topPos + 26,
-                        180,
+                        140,
                         20,
                         Component.literal(network.getName())
                 )
@@ -86,24 +90,39 @@ public class NetworkEditorScreen extends Screen {
         this.nameEdit.setMaxLength(22);
 
         this.doneButton = addRenderableWidget(
-                new TexturedButton(leftPos + 12, topPos + 173, 108, 20, DONE_BUTTON_LABEL, btn -> {
-                    for (AccessLevel accessLevel :
-                            this.network.getAccessLevels()) {
-                        if (accessLevel.getName().isEmpty()) return;
-                    }
-                    if (network.getName().isEmpty()) return;
-                    AccessNetworkDataClient.setNetwork(this.network);
-                    AxessPacketHandler.sendToServer(new CtSModifyNetworkPacket(this.network));
-                    AxessClientMenus.openNetworkManagerScreen();
-                })
+                new HumbleImageButton(
+                        leftPos + 12, topPos + 173,
+                        20, 20,
+                        0, 0,
+                        20,
+                        CONFIRM_BUTTON_TEXTURE,
+                        32, 96,
+                        btn -> {
+                            for (AccessLevel accessLevel :
+                                    this.network.getAccessLevels()) {
+                                if (accessLevel.getName().isEmpty()) return;
+                            }
+                            if (network.getName().isEmpty()) return;
+                            AccessNetworkDataClient.setNetwork(this.network);
+                            AxessPacketHandler.sendToServer(new CtSModifyNetworkPacket(this.network));
+                            AxessClientMenus.openNetworkManagerScreen();
+                         })
         );
+        this.doneButton.setTooltip(Tooltip.create(DONE_BUTTON_LABEL));
 
         this.cancelButton = addRenderableWidget(
-                new TexturedButton(leftPos + 136, topPos + 173, 108, 20, CANCEL_BUTTON_LABEL, btn -> {
-                    AxessClientMenus.openNetworkManagerScreen();
-                })
+                new HumbleImageButton(
+                        leftPos + 12 + 20 + 5, topPos + 173,
+                        20, 20,
+                        0, 0,
+                        20,
+                        CANCEL_BUTTON_TEXTURE,
+                        32, 64,
+                        btn -> {
+                            AxessClientMenus.openNetworkManagerScreen();
+                        })
         );
-
+        this.cancelButton.setTooltip(Tooltip.create(CANCEL_BUTTON_LABEL));
 
         int pastPos = 0;
         if (this.accessLevelList != null) {
@@ -116,13 +135,11 @@ public class NetworkEditorScreen extends Screen {
         HumbleImageButton addButton = new HumbleImageButton(
                 this.leftPos + 218,
                 this.topPos + 26,
-                20,
-                20,
-                0,
-                0,
+                20, 20,
+                0, 0,
                 20,
                 ADD_TEXTURE,
-                32, 64,
+                32, 96,
                 btn -> {
                     AccessLevel newAl = new AccessLevel(this.network.getUUID());
                     newAl.setPriority(999999);
@@ -153,6 +170,16 @@ public class NetworkEditorScreen extends Screen {
         //int networks = this.accessLevelList.getSize();
         //pGuiGraphics.drawString(this.font, Component.literal(String.valueOf(networks)).append(" ").append(networks == 1 ? NETWORK_LABEL : NETWORKS_LABEL),
         //        this.leftPos+13, this.topPos+32, AxessColors.MAIN, false);
+        pGuiGraphics.drawString(this.font, TITLE_LABEL, this.leftPos+8, this.topPos+8, AxessColors.MAIN.getRGB(), false);
+
+        int accessLevelCount = this.accessLevelList.getSize();
+        int accessLevelMaxCount = AxessConfig.maxLevelsPerNetwork;
+
+        this.addButton.active = accessLevelCount < accessLevelMaxCount;
+
+        String countLabel = accessLevelCount + "/" + accessLevelMaxCount + " " + LEVELS_LABEL.getString();
+
+        pGuiGraphics.drawString(this.font, countLabel, this.leftPos + 239 - this.font.width(countLabel), this.topPos + 179, AxessColors.MAIN.getRGB(), false);
         pGuiGraphics.drawString(this.font, TITLE_LABEL, this.leftPos+8, this.topPos+8, AxessColors.MAIN.getRGB(), false);
     }
 

@@ -3,11 +3,13 @@ package net.teekay.axess.network.packets.server;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.network.NetworkEvent;
+import net.teekay.axess.Axess;
 import net.teekay.axess.access.AccessLevel;
 import net.teekay.axess.access.AccessNetwork;
 import net.teekay.axess.access.AccessNetworkDataServer;
@@ -15,6 +17,7 @@ import net.teekay.axess.block.keycardeditor.KeycardEditorBlockEntity;
 import net.teekay.axess.item.keycard.AbstractKeycardItem;
 import net.teekay.axess.network.IAxessPacket;
 import net.teekay.axess.screen.KeycardEditorMenu;
+import net.teekay.axess.utilities.AccessUtils;
 
 import java.util.Optional;
 import java.util.UUID;
@@ -57,13 +60,6 @@ public class CtSModifyKeycardPacket implements IAxessPacket {
             ServerPlayer player = context.getSender();
             if (player == null) return;
 
-            AccessNetworkDataServer serverNetworkData = AccessNetworkDataServer.get(player.getServer());
-            AccessNetwork network = serverNetworkData.getNetwork(networkUUID);
-            if (network == null) return;
-
-            AccessLevel accessLevel = network.getAccessLevel(accessLevelUUID);
-            if (accessLevel == null) return;
-
             if (!(player.containerMenu instanceof KeycardEditorMenu menu)) return;
             KeycardEditorBlockEntity keycardEditor = menu.blockEntity;
 
@@ -73,8 +69,20 @@ public class CtSModifyKeycardPacket implements IAxessPacket {
             ItemStack stack = itemHandler.get().getStackInSlot(KeycardEditorBlockEntity.KEYCARD_SLOT);
             if (!(stack.getItem() instanceof AbstractKeycardItem keycardItem)) return;
 
+            AccessNetwork prevNetwork = keycardItem.getAccessNetwork(stack, player.level());
+            if (prevNetwork != null) if (!AccessUtils.canPlayerEditNetwork(player, prevNetwork)) return;
+
+            AccessNetworkDataServer serverNetworkData = AccessNetworkDataServer.get(player.getServer());
+            AccessNetwork network = serverNetworkData.getNetwork(networkUUID);
+            if (network == null) return;
+
+            AccessLevel accessLevel = network.getAccessLevel(accessLevelUUID);
+            if (accessLevel == null) return;
+
             keycardItem.setAccessNetwork(stack, network);
             keycardItem.setAccessLevel(stack, accessLevel);
+
+            stack.setHoverName(Component.literal(accessLevel.getName()).append(" ").append(Component.translatable("item." + Axess.MODID + ".keycard")));
 
             keycardEditor.setChanged();
         } catch (Exception e) {}

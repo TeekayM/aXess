@@ -10,6 +10,7 @@ import net.teekay.axess.access.AccessNetwork;
 import net.teekay.axess.access.AccessNetworkDataClient;
 import net.teekay.axess.access.AccessNetworkDataServer;
 import net.teekay.axess.network.IAxessPacket;
+import net.teekay.axess.utilities.AccessUtils;
 
 import java.util.Objects;
 import java.util.UUID;
@@ -42,19 +43,9 @@ public class CtSModifyNetworkPacket implements IAxessPacket {
 
         try {
             AccessNetworkDataServer serverNetworkData = AccessNetworkDataServer.get(Objects.requireNonNull(context.getSender()).server);
-            AccessNetwork networkToChange = serverNetworkData.getNetwork(network.getUUID());
             ServerPlayer player = context.getSender();
 
-            if (
-                    (networkToChange == null && player.getUUID().equals(network.getOwnerUUID())) // network is being created
-                    || (networkToChange != null && networkToChange.getOwnerUUID().equals(player.getUUID())) // network is being modified
-            ) {
-                serverNetworkData.setNetwork(network);
-            } else {
-                context.setPacketHandled(false);
-                return;
-            }
-
+            context.setPacketHandled(serverNetworkData.playerModifyNetwork(player, network));
         } catch (Exception e) {
             context.setPacketHandled(false);
             return;

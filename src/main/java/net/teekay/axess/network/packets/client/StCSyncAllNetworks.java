@@ -41,14 +41,5 @@ public class StCSyncAllNetworks implements IAxessPacket {
         }
 
         AccessNetworkDataClient.loadAllFromServer(serverDataModel);
-
-
-        // TODO: REMOVE LATER!
-        LocalPlayer player = Minecraft.getInstance().player;
-        for (AccessNetwork network :
-                serverDataModel.getNetworkRegistry().values()) {
-            System.out.println("Loaded network " + network.getName());
-        }
-
     }
 }

@@ -8,6 +8,7 @@ import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.teekay.axess.Axess;
+import net.teekay.axess.AxessConfig;
 import net.teekay.axess.access.AccessNetwork;
 import net.teekay.axess.access.AccessNetworkDataClient;
 import net.teekay.axess.client.AxessClientMenus;
@@ -23,7 +24,6 @@ public class NetworkManagerScreen extends Screen {
 
     private static final Component EXIT_BUTTON_LABEL = Component.translatable("gui."+Axess.MODID+".buttons.exit");
     private static final Component ADD_BUTTON_LABEL = Component.translatable("gui."+Axess.MODID+".buttons.add_network");
-    private static final Component NETWORK_LABEL = Component.translatable("gui."+Axess.MODID+".network_manager.network");
     private static final Component NETWORKS_LABEL = Component.translatable("gui."+Axess.MODID+".network_manager.networks");
 
     private static final ResourceLocation TEXTURE = ResourceLocation.fromNamespaceAndPath(Axess.MODID, "textures/gui/network_manager.png");
@@ -68,7 +68,7 @@ public class NetworkManagerScreen extends Screen {
                 0,
                 20,
                 ADD_TEXTURE,
-                32, 64,
+                32, 96,
                 btn -> {
                     AxessClientMenus.openNetworkCreationScreen();
                 }
@@ -97,8 +97,12 @@ public class NetworkManagerScreen extends Screen {
 
         super.render(pGuiGraphics, pMouseX, pMouseY, pPartialTick);
 
-        int networks = this.networkList.getSize();
-        pGuiGraphics.drawString(this.font, Component.literal(String.valueOf(networks)).append(" ").append(networks == 1 ? NETWORK_LABEL : NETWORKS_LABEL),
+        int networksCount = AccessNetworkDataClient.getNetworks().stream().filter((network -> network.isOwnedBy(getMinecraft().player))).toList().size();
+        int maxNetworksCount = AxessConfig.maxNetworksPerPlayer;
+
+        this.addButton.active = networksCount < maxNetworksCount;
+
+        pGuiGraphics.drawString(this.font, Component.literal(String.valueOf(networksCount)).append("/").append(String.valueOf(AxessConfig.maxNetworksPerPlayer)).append(" ").append(NETWORKS_LABEL),
                 this.leftPos+13, this.topPos+32, AxessColors.MAIN.getRGB(), false);
         pGuiGraphics.drawString(this.font, TITLE_LABEL, this.leftPos+8, this.topPos+8, AxessColors.MAIN.getRGB(), false);
     }

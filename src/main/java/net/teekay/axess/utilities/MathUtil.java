@@ -5,6 +5,12 @@ public class MathUtil {
         return Math.max(Math.min(val, max), min);
     }
 
+    public static float clampFloat(float val, float min, float max) {
+        if (val <= max && val >= min) return val;
+        if (val >= max) return max;
+        return min;
+    }
+
     public static int calcScrollHeight(int height, int maxScrollPos) {
         if (maxScrollPos <= 0) {
             return height;

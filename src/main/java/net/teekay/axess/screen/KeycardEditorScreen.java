@@ -1,6 +1,7 @@
 package net.teekay.axess.screen;
 
 import com.mojang.blaze3d.systems.RenderSystem;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.ImageButton;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
@@ -10,6 +11,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.item.MapItem;
 import net.teekay.axess.Axess;
 import net.teekay.axess.access.AccessLevel;
 import net.teekay.axess.access.AccessNetwork;
@@ -20,6 +22,7 @@ import net.teekay.axess.network.AxessPacketHandler;
 import net.teekay.axess.network.packets.server.CtSModifyKeycardPacket;
 import net.teekay.axess.screen.component.HumbleImageButton;
 import net.teekay.axess.screen.component.TexturedButton;
+import net.teekay.axess.utilities.AccessUtils;
 import net.teekay.axess.utilities.AxessColors;
 import net.teekay.axess.utilities.MathUtil;
 
@@ -34,6 +37,7 @@ public class KeycardEditorScreen extends AbstractContainerScreen<KeycardEditorMe
     public static final Component NO_KEYCARD_LABEL = Component.translatable("gui."+Axess.MODID+".keycard_editor.no_keycard");
     public static final Component NO_NETWORK_LABEL = Component.translatable("gui."+Axess.MODID+".keycard_editor.no_network");
     public static final Component NO_LEVEL_LABEL = Component.translatable("gui."+Axess.MODID+".keycard_editor.no_level");
+    public static final Component NO_PERMISSIONS_LABEL = Component.translatable("gui."+Axess.MODID+".keycard_editor.no_permissions");
     public static final Component APPLY_CHANGES_LABEL = Component.translatable("gui."+Axess.MODID+".keycard_editor.apply_changes");
 
     public static final int KEYCARD_SLOT = 36 + KeycardEditorBlockEntity.KEYCARD_SLOT;
@@ -156,6 +160,8 @@ public class KeycardEditorScreen extends AbstractContainerScreen<KeycardEditorMe
             textComp = NO_KEYCARD_LABEL;
         } else if (selectedNetwork == null) {
             textComp = NO_NETWORK_LABEL;
+        } else if (!AccessUtils.canPlayerEditNetwork(Minecraft.getInstance().player, selectedNetwork)) {
+            textComp = NO_PERMISSIONS_LABEL;
         } else if (selectedLevel == null) {
             textComp = NO_LEVEL_LABEL;
         } else {
@@ -231,8 +237,12 @@ public class KeycardEditorScreen extends AbstractContainerScreen<KeycardEditorMe
         selectedNetwork = ((AbstractKeycardItem)itemStack.getItem()).getAccessNetwork(itemStack, menu.blockEntity.getLevel());
         selectedLevel = ((AbstractKeycardItem)itemStack.getItem()).getAccessLevel(itemStack, menu.blockEntity.getLevel());
 
-        updateNetworkEntries();
-        updateLevelEntries();
+        if (selectedNetwork == null || AccessUtils.canPlayerEditNetwork(Minecraft.getInstance().player, selectedNetwork)) {
+            updateNetworkEntries();
+            updateLevelEntries();
+        } else {
+            clearEntries();
+        }
     }
 
     public void clearNetworkEntries() {
@@ -274,9 +284,6 @@ public class KeycardEditorScreen extends AbstractContainerScreen<KeycardEditorMe
 
     private static int ENTRY_HEIGHT = 18;
     private static int ENTRY_PADDING = 1;
-
-    private static int SCROLLER_WIDTH = 2;
-    private static int SCROLLER_HEIGHT = 18;
 
     private static int NETWORKS_X = 9;
     private static int NETWORKS_Y = 27;

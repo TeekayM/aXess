@@ -8,6 +8,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.teekay.axess.Axess;
 import net.teekay.axess.utilities.AxessColors;
+import net.teekay.axess.utilities.MathUtil;
 
 public class TexturedButton extends Button {
     public TexturedButton(int x, int y, int width, int height, Component title, OnPress onPress) {
@@ -70,14 +71,15 @@ public class TexturedButton extends Button {
         Font font = Minecraft.getInstance().font;
         int textWidth = font.width(this.getMessage());
 
-        int textX = this.getX() + textPaddingLeft +  ((this.width - textPaddingLeft) - textWidth) / 2;
+        int textX = this.getX() + textPaddingLeft +  ((this.width - textPaddingLeft) - textWidth) / 2 + 1;
         int textY = this.getY() + (this.height - 8) / 2;
 
-        graphics.enableScissor(getX() + textPaddingLeft + 1, getY(), getX() + width - 1 - 1, getY() + height);
+        graphics.enableScissor(getX() + textPaddingLeft + 2, getY(), getX() + width - 2, getY() + height);
 
         int offset = 0;
-        if (textWidth > this.width - 2) {
-            offset = (int) (Math.sin(timePassed) * ((textWidth - this.width) / 2));
+        if (textWidth > this.width - 4) {
+            float x = ((textWidth - this.width + 4f) / 2f);
+            offset = Math.round(MathUtil.clampFloat((float) (Math.sin(timePassed / 20f) * x * 2f), -x, x));
         }
 
         graphics.drawString(font, this.getMessage(), textX + offset, textY, isHoveredOrFocused() ? 0xFFFFFF : AxessColors.MAIN.getRGB(), false);

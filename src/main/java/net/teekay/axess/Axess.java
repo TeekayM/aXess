@@ -11,7 +11,6 @@ import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.config.ModConfig;
-import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.RegistryObject;
@@ -46,6 +45,8 @@ public class Axess {
     public Axess(FMLJavaModLoadingContext context) {
         IEventBus modEventBus = context.getModEventBus();
 
+        AxessConfig.registerConfig(context);
+
         AxessBlockRegistry.register(modEventBus);
         AxessItemRegistry.register(modEventBus);
         AxessBlockEntityRegistry.register(modEventBus);
@@ -55,7 +56,7 @@ public class Axess {
 
         MinecraftForge.EVENT_BUS.register(this);
 
-        context.registerConfig(ModConfig.Type.COMMON, Config.SPEC);
+        context.registerConfig(ModConfig.Type.COMMON, AxessConfig.SPEC);
     }
 
     @SubscribeEvent

@@ -10,6 +10,7 @@ import net.teekay.axess.access.AccessNetwork;
 import net.teekay.axess.access.AccessNetworkDataClient;
 import net.teekay.axess.access.AccessNetworkDataServer;
 import net.teekay.axess.network.IAxessPacket;
+import net.teekay.axess.utilities.AccessUtils;
 
 import java.util.Objects;
 import java.util.UUID;
@@ -42,19 +43,10 @@ public class CtSDeleteNetworkPacket implements IAxessPacket {
 
         try {
             AccessNetworkDataServer serverData = AccessNetworkDataServer.get(Objects.requireNonNull(context.getSender()).server);
-            AccessNetwork networkToDelete = serverData.getNetwork(deletedNetwork);
-            ServerPlayer player = context.getSender();
 
-            if (!networkToDelete.getOwnerUUID().equals(player.getUUID())) {
-                System.out.println(networkToDelete.getOwnerUUID() + " is not equal to " + player.getUUID());
-                context.setPacketHandled(false);
-                return;
-            }
-
-            serverData.removeNetwork(deletedNetwork);
+            context.setPacketHandled(serverData.playerDeleteNetwork(context.getSender(), deletedNetwork));
         } catch (Exception e) {
             context.setPacketHandled(false);
-            e.printStackTrace();
             return;
         }
 

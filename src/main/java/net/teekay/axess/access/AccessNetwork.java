@@ -2,6 +2,7 @@ package net.teekay.axess.access;
 
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
+import net.minecraft.world.entity.player.Player;
 
 import java.util.*;
 
@@ -139,6 +140,10 @@ public class AccessNetwork {
         for (int i = 0; i < accessLevels.size(); i++) {
             accessLevels.get(i).setPriority(i);
         }
+    }
+
+    public boolean isOwnedBy(Player player) {
+        return player.getUUID().equals(ownerUUID);
     }
 
 }
