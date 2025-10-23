@@ -32,7 +32,7 @@ public class KeycardEditorBlock extends BaseEntityBlock {
 
     public KeycardEditorBlock() {
         super(BlockBehaviour.Properties.copy(Blocks.IRON_BLOCK)
-                .strength(1.5f, 6)
+                .strength(4f, 6)
                 .noOcclusion()
                 .requiresCorrectToolForDrops());
     }

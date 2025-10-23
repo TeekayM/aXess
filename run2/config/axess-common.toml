@@ -4,4 +4,7 @@ max_networks_per_player = 5
 #The maximum amount of access levels a network can have.
 #Range: 1 ~ 100
 max_levels_per_network = 20
+#The maximum distance there can be between two linked devices.
+#Range: 1 ~ 100
+max_pair_distance = 32
 

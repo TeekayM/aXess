@@ -4,6 +4,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.event.level.LevelEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -21,14 +22,14 @@ public class AxessServerEvents {
 
     @SubscribeEvent
     public static void onPlayerJoin(PlayerEvent.PlayerLoggedInEvent event) {
-        if (event.getEntity() instanceof LocalPlayer) return;
+        if (!event.getEntity().level().isClientSide) {
+            Player player = event.getEntity();
 
-        if (event.getEntity() instanceof ServerPlayer player) {
             AccessNetworkDataServer data = AccessNetworkDataServer.get(Objects.requireNonNull(player.getServer()));
             CompoundTag tag = new CompoundTag();
             data.save(tag);
 
-            AxessPacketHandler.sendToPlayer(new StCSyncAllNetworks(data), player);
+            AxessPacketHandler.sendToPlayer(new StCSyncAllNetworks(data), (ServerPlayer) player);
         }
     }
 

@@ -32,8 +32,8 @@ public class ColorSelectionScreen extends Screen {
     private static final ResourceLocation CONFIRM_BUTTON_TEXTURE = ResourceLocation.fromNamespaceAndPath(Axess.MODID, "textures/gui/confirm_button.png");
     private static final ResourceLocation BACK_BUTTON_TEXTURE = ResourceLocation.fromNamespaceAndPath(Axess.MODID, "textures/gui/back_button.png");
 
-    private static final Component CONFIRM_BUTTON_LABEL = Component.translatable("gui."+Axess.MODID+".buttons.confirm");
-    private static final Component BACK_BUTTON_LABEL = Component.translatable("gui."+Axess.MODID+".buttons.back");
+    private static final Component CONFIRM_BUTTON_LABEL = Component.translatable("gui."+Axess.MODID+".button.confirm");
+    private static final Component BACK_BUTTON_LABEL = Component.translatable("gui."+Axess.MODID+".button.back");
 
     private AccessLevelEntry entry;
     private Color displayedColor;

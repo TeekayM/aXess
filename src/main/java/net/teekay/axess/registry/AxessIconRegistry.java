@@ -32,6 +32,7 @@ public class AxessIconRegistry {
     public static AxessIcon ACCEPT = registerMetaIcon("accept");
     public static AxessIcon DENY = registerMetaIcon("deny");
     public static AxessIcon DEBUG = registerMetaIcon("debug");
+    public static AxessIcon CONFIGURE = registerMetaIcon("configure");
 
     // NORMAL ALPHABET
     public static AxessIcon A = registerIcon("a");

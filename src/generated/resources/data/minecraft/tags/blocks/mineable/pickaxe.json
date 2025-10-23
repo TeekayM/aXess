@@ -2,6 +2,7 @@
   "values": [
     "axess:keycard_reader",
     "axess:network_manager",
-    "axess:keycard_editor"
+    "axess:keycard_editor",
+    "axess:receiver"
   ]
 }

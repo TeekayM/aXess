@@ -110,6 +110,7 @@ minecraft {
 
         server {
             property 'forge.enabledGameTestNamespaces', mod_id
+            workingDirectory project.file("server")
             args '--nogui'
         }
 

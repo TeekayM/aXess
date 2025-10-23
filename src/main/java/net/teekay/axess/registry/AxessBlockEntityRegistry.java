@@ -11,6 +11,7 @@ import net.teekay.axess.Axess;
 import net.teekay.axess.block.keycardeditor.KeycardEditorBlockEntity;
 import net.teekay.axess.block.readers.AbstractKeycardReaderBlock;
 import net.teekay.axess.block.readers.KeycardReaderBlockEntity;
+import net.teekay.axess.block.receiver.ReceiverBlockEntity;
 
 import java.util.Collection;
 
@@ -21,13 +22,19 @@ public class AxessBlockEntityRegistry {
 
 
     // REGISTRY
-    public static final RegistryObject<BlockEntityType<KeycardReaderBlockEntity>> IRON_KEYCARD_READER = registerKeycardReader(
-            "iron_keycard_reader", AxessBlockRegistry.IRON_KEYCARD_READER);
+    public static final RegistryObject<BlockEntityType<KeycardReaderBlockEntity>> KEYCARD_READER = registerKeycardReader(
+            "keycard_reader", AxessBlockRegistry.KEYCARD_READER);
 
     public static final RegistryObject<BlockEntityType<KeycardEditorBlockEntity>> KEYCARD_EDITOR = DEFERRED_REGISTER.register("keycard_editor",
             () -> BlockEntityType.Builder.of(
                     KeycardEditorBlockEntity::new,
                     AxessBlockRegistry.KEYCARD_EDITOR.get()
+            ).build(null));
+
+    public static final RegistryObject<BlockEntityType<ReceiverBlockEntity>> RECEIVER = DEFERRED_REGISTER.register("receiver",
+            () -> BlockEntityType.Builder.of(
+                    ReceiverBlockEntity::new,
+                    AxessBlockRegistry.RECEIVER.get()
             ).build(null));
 
 

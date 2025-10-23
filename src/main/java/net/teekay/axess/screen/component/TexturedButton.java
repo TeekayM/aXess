@@ -1,5 +1,6 @@
 package net.teekay.axess.screen.component;
 
+import com.sun.jna.platform.win32.WinBase;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
@@ -38,8 +39,40 @@ public class TexturedButton extends Button {
     }
 
     @Override
-    public boolean isHovered() {
-        return super.isHovered() && this.mouseInBoundingBox;
+    public boolean isFocused() {
+        return false;
+    }
+
+    @Override
+    public boolean isHoveredOrFocused() {
+        return super.isHoveredOrFocused() && this.mouseInBoundingBox;
+    }
+
+    public enum ButtonColor {
+        NORMAL(0, AxessColors.MAIN.getRGB()),
+        RED(40, AxessColors.RED.getRGB()),
+        GREEN(80, AxessColors.GREEN.getRGB()),
+        GREEN_LESS(120, AxessColors.GREEN_LESS.getRGB());
+
+        int offset;
+        int color;
+
+        public int getOffset() {
+            return offset;
+        }
+
+        public int getColor() {
+            return color;
+        }
+
+        ButtonColor(int offset, int color) {
+            this.offset = offset;
+            this.color = color;
+        }
+    }
+
+    public ButtonColor getColor() {
+        return ButtonColor.NORMAL;
     }
 
     @Override
@@ -66,7 +99,7 @@ public class TexturedButton extends Button {
                 this.width, this.height,
                 1, 1,
                 200, 20,
-                0, (isHoveredOrFocused() ? 20 : 0));
+                0, getColor().getOffset() + (isHoveredOrFocused() ? 20 : 0));
 
         Font font = Minecraft.getInstance().font;
         int textWidth = font.width(this.getMessage());
@@ -82,7 +115,7 @@ public class TexturedButton extends Button {
             offset = Math.round(MathUtil.clampFloat((float) (Math.sin(timePassed / 20f) * x * 2f), -x, x));
         }
 
-        graphics.drawString(font, this.getMessage(), textX + offset, textY, isHoveredOrFocused() ? 0xFFFFFF : AxessColors.MAIN.getRGB(), false);
+        graphics.drawString(font, this.getMessage(), textX + offset, textY, isHoveredOrFocused() ? 0xFFFFFF : getColor().getColor(), false);
 
         graphics.disableScissor();
 

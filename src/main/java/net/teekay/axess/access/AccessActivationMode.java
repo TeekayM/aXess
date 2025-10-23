@@ -1,20 +1,33 @@
 package net.teekay.axess.access;
 
-import java.io.Serializable;
+import net.minecraft.network.chat.Component;
+import net.teekay.axess.Axess;
 
-public enum AccessCompareMode {
+public enum AccessActivationMode {
 
-    SPECIFIC("SPECIFIC"),
-    LESSER_THAN_OR_EQUAL("LESSER_THAN_OR_EQUAL"),
-    BIGGER_THAN_OR_EQUAL("BIGGER_THAN_OR_EQUAL");
+    TOGGLE("TOGGLE"),
+    PULSE("PULSE");
 
     public String id;
+    public Component name;
+    public Component description;
 
-    AccessCompareMode(String id) {
+    AccessActivationMode(String id) {
         this.id = id;
+        this.name = Component.translatable("gui." + Axess.MODID + ".activation_mode."+id);
+        this.description = Component.translatable("gui." + Axess.MODID + ".activation_mode."+id+".description");
     }
 
     public String toString() {
         return this.id;
     }
+
+    public Component getDescription() {
+        return description;
+    }
+
+    public Component getName() {
+        return name;
+    }
+
 }

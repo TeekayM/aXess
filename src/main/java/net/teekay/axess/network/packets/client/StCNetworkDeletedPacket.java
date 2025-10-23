@@ -45,9 +45,5 @@ public class StCNetworkDeletedPacket implements IAxessPacket {
         }
 
         AccessNetworkDataClient.removeNetwork(deletedNetwork);
-
-        // TODO: REMOVE LATER!
-        LocalPlayer player = Minecraft.getInstance().player;
-        player.sendSystemMessage(Component.literal("Deleted network " + deletedNetwork.toString()));
     }
 }

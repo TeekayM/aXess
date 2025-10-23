@@ -4,24 +4,21 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.ImageButton;
+import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
-import net.minecraft.world.item.MapItem;
 import net.teekay.axess.Axess;
-import net.teekay.axess.access.AccessLevel;
-import net.teekay.axess.access.AccessNetwork;
-import net.teekay.axess.access.AccessNetworkDataClient;
-import net.teekay.axess.block.keycardeditor.KeycardEditorBlockEntity;
-import net.teekay.axess.item.keycard.AbstractKeycardItem;
+import net.teekay.axess.access.*;
+import net.teekay.axess.block.readers.KeycardReaderBlockEntity;
 import net.teekay.axess.network.AxessPacketHandler;
-import net.teekay.axess.network.packets.server.CtSModifyKeycardPacket;
+import net.teekay.axess.network.packets.server.CtSModifyKeycardReaderPacket;
 import net.teekay.axess.screen.component.HumbleImageButton;
 import net.teekay.axess.screen.component.TexturedButton;
+import net.teekay.axess.screen.component.TexturedSlider;
 import net.teekay.axess.utilities.AccessUtils;
 import net.teekay.axess.utilities.AxessColors;
 import net.teekay.axess.utilities.MathUtil;
@@ -29,25 +26,37 @@ import net.teekay.axess.utilities.MathUtil;
 import java.util.ArrayList;
 import java.util.List;
 
-public class KeycardEditorScreen extends AbstractContainerScreen<KeycardEditorMenu> {
-    public static final ResourceLocation TEXTURE = ResourceLocation.fromNamespaceAndPath(Axess.MODID, "textures/gui/keycard_editor.png");
+public class KeycardReaderScreen extends AbstractContainerScreen<KeycardReaderMenu> {
+    public static final ResourceLocation TEXTURE = ResourceLocation.fromNamespaceAndPath(Axess.MODID, "textures/gui/keycard_reader.png");
     private static final ResourceLocation CONFIRM_BUTTON_TEXTURE = ResourceLocation.fromNamespaceAndPath(Axess.MODID, "textures/gui/confirm_button.png");
 
-    public static final Component TITLE_LABEL = Component.translatable("gui."+Axess.MODID+".keycard_editor");
-    public static final Component NO_KEYCARD_LABEL = Component.translatable("gui."+Axess.MODID+".keycard_editor.no_keycard");
-    public static final Component NO_NETWORK_LABEL = Component.translatable("gui."+Axess.MODID+".keycard_editor.no_network");
-    public static final Component NO_LEVEL_LABEL = Component.translatable("gui."+Axess.MODID+".keycard_editor.no_level");
-    public static final Component NO_PERMISSIONS_LABEL = Component.translatable("gui."+Axess.MODID+".keycard_editor.no_permissions");
-    public static final Component APPLY_CHANGES_LABEL = Component.translatable("gui."+Axess.MODID+".keycard_editor.apply_changes");
+    public static final Component TITLE_LABEL = Component.translatable("gui."+Axess.MODID+".keycard_reader");
+    public static final Component NO_NETWORK_LABEL = Component.translatable("gui."+Axess.MODID+".keycard_reader.no_network");
+    public static final Component NO_LEVEL_LABEL = Component.translatable("gui."+Axess.MODID+".keycard_reader.no_level");
+    public static final Component APPLY_CHANGES_LABEL = Component.translatable("gui."+Axess.MODID+".keycard_reader.apply_changes");
 
-    public static final int KEYCARD_SLOT = 36 + KeycardEditorBlockEntity.KEYCARD_SLOT;
+    public static final Component ACTIVATION_MODE_PREFIX = Component.translatable("gui."+Axess.MODID+".activation_mode");
+    public static final Component COMPARE_MODE_PREFIX = Component.translatable("gui."+Axess.MODID+".compare_mode");
+
+    public static final Component PULSE_DURATION_LABEL_PREFIX = Component.translatable("gui."+Axess.MODID+".keycard_reader.pulse_duration.prefix");
+    public static final Component PULSE_DURATION_LABEL_SUFFIX = Component.translatable("gui."+Axess.MODID+".keycard_reader.pulse_duration.suffix");
+    public static final Component PULSE_DURATION_LABEL = Component.translatable("gui."+Axess.MODID+".keycard_reader.pulse_duration");
+
+    public static final Component SYNCED_LABEL = Component.translatable("gui."+Axess.MODID+".keycard_reader.synced");
 
     private AccessNetwork selectedNetwork;
-    private AccessLevel selectedLevel;
+    private ArrayList<AccessLevel> selectedLevels = new ArrayList<>();
+    private AccessActivationMode selectedActivationMode;
+    private AccessCompareMode selectedCompareMode;
+    private int selectedPulseDurationTicks;
 
     private ArrayList<SelectableNetworkEntry> networkEntries = new ArrayList<>();
     private ArrayList<SelectableLevelEntry> levelEntries = new ArrayList<>();
-    private ImageButton applyButton;
+    private HumbleImageButton applyButton;
+    private TexturedButton compareModeButton;
+    private TexturedButton activationModeButton;
+    private TexturedSlider pulseDurationTicksSlider;
+    private ImageButton syncIcon;
 
     private int scrollerWidth = 3;
 
@@ -58,7 +67,7 @@ public class KeycardEditorScreen extends AbstractContainerScreen<KeycardEditorMe
 
     private ItemStack lastItemStack;
 
-    public KeycardEditorScreen(KeycardEditorMenu pMenu, Inventory pPlayerInventory, Component pTitle) {
+    public KeycardReaderScreen(KeycardReaderMenu pMenu, Inventory pPlayerInventory, Component pTitle) {
         super(pMenu, pPlayerInventory, pTitle);
     }
 
@@ -72,8 +81,8 @@ public class KeycardEditorScreen extends AbstractContainerScreen<KeycardEditorMe
 
         this.applyButton = addRenderableWidget(
                 new HumbleImageButton(
-                        this.leftPos + 70,
-                        this.topPos + 126,
+                        this.leftPos + 229,
+                        this.topPos + 206,
                         20,
                         20,
                         0,
@@ -82,13 +91,86 @@ public class KeycardEditorScreen extends AbstractContainerScreen<KeycardEditorMe
                         CONFIRM_BUTTON_TEXTURE,
                         32, 96,
                         btn -> {
-                            if (menu.blockEntity == null || selectedNetwork == null || selectedLevel == null) return;
-                            AxessPacketHandler.sendToServer(new CtSModifyKeycardPacket(menu.blockEntity.getBlockPos(), selectedNetwork, selectedLevel));
+                            if (menu.blockEntity == null || selectedNetwork == null || selectedLevels.isEmpty()) return;
+                            AxessPacketHandler.sendToServer(new CtSModifyKeycardReaderPacket(menu.blockEntity.getBlockPos(), selectedNetwork, selectedLevels, selectedCompareMode, selectedActivationMode, selectedPulseDurationTicks));
                         })
         );
         this.applyButton.active = false;
 
-        updateEntries(this.menu.getSlot(KEYCARD_SLOT).getItem());
+        this.selectedCompareMode = this.menu.blockEntity.getCompareMode();
+        this.compareModeButton = addRenderableWidget(
+                new TexturedButton(
+                        this.leftPos + 7,
+                        this.topPos + 129,
+                        125, 18,
+                        COMPARE_MODE_PREFIX.copy().append(selectedCompareMode.getName()),
+                        btn -> {
+                            selectedCompareMode = switch (selectedCompareMode) {
+                                case SPECIFIC -> AccessCompareMode.BIGGER_THAN_OR_EQUAL;
+                                case BIGGER_THAN_OR_EQUAL -> AccessCompareMode.LESSER_THAN_OR_EQUAL;
+                                case LESSER_THAN_OR_EQUAL -> AccessCompareMode.SPECIFIC;
+                            };
+
+                            selectedLevels.clear();
+
+                            btn.setMessage(COMPARE_MODE_PREFIX.copy().append(selectedCompareMode.getName()));
+                            btn.setTooltip(Tooltip.create(selectedCompareMode.getDescription()));
+                        }
+                )
+        );
+        this.compareModeButton.setTooltip(Tooltip.create(selectedCompareMode.getDescription()));
+
+        this.selectedActivationMode = this.menu.blockEntity.getActivationMode();
+        this.activationModeButton = addRenderableWidget(
+                new TexturedButton(
+                        this.leftPos + 7,
+                        this.topPos + 154,
+                        125, 18,
+                        ACTIVATION_MODE_PREFIX.copy().append(selectedActivationMode.getName()),
+                        btn -> {
+                            selectedActivationMode = switch (selectedActivationMode) {
+                                case TOGGLE -> AccessActivationMode.PULSE;
+                                case PULSE -> AccessActivationMode.TOGGLE;
+                            };
+
+                            this.pulseDurationTicksSlider.visible = selectedActivationMode == AccessActivationMode.PULSE;
+
+                            btn.setMessage(ACTIVATION_MODE_PREFIX.copy().append(selectedActivationMode.getName()));
+                            btn.setTooltip(Tooltip.create(selectedActivationMode.getDescription()));
+                        }
+                )
+        );
+        this.activationModeButton.setTooltip(Tooltip.create(selectedActivationMode.getDescription()));
+
+        this.selectedPulseDurationTicks = this.menu.blockEntity.getPulseDurationTicks();
+        this.pulseDurationTicksSlider = addRenderableWidget(
+                new TexturedSlider(
+                        this.leftPos + 7,
+                        this.topPos + 179,
+                        125, 18,
+                        PULSE_DURATION_LABEL_PREFIX,
+                        PULSE_DURATION_LABEL_SUFFIX,
+                        2, 100,
+                        this.selectedPulseDurationTicks, 1,
+                        0, true
+                )
+        );
+        this.pulseDurationTicksSlider.setTooltip(Tooltip.create(PULSE_DURATION_LABEL));
+        this.pulseDurationTicksSlider.visible = selectedActivationMode == AccessActivationMode.PULSE;
+
+        //this.syncIcon = addRenderableWidget(new TexturedButton(this.leftPos + 140, this.topPos + 170, 11, 11, Component.empty(), btn -> {}));
+        this.syncIcon = addRenderableWidget(new ImageButton(
+                this.leftPos + 140, this.topPos + 170,
+                11, 11,
+                0, 233,
+                0,
+                TEXTURE,
+                btn -> {}
+        ));
+        this.syncIcon.setTooltip(Tooltip.create(SYNCED_LABEL));
+        this.syncIcon.active = false;
+
+        updateEntries();
     }
 
     @Override
@@ -100,14 +182,12 @@ public class KeycardEditorScreen extends AbstractContainerScreen<KeycardEditorMe
         int y = (height - imageHeight) / 2;
 
         pGuiGraphics.blit(TEXTURE, x, y, 0, 0, imageWidth, imageHeight);
-
-        if (!this.menu.getSlot(KEYCARD_SLOT).hasItem()) {
-            pGuiGraphics.blit(TEXTURE, this.leftPos+48, this.topPos + 128, 0, 233, 16, 16 );
-        }
     }
 
     @Override
     public void render(GuiGraphics pGuiGraphics, int pMouseX, int pMouseY, float pPartialTick) {
+        this.selectedPulseDurationTicks = pulseDurationTicksSlider.getValueInt();
+
         renderBackground(pGuiGraphics);
 
         scrollPosLevels   = MathUtil.clampInt(scrollPosLevels,   0, scrollMaxLevels  );
@@ -156,35 +236,38 @@ public class KeycardEditorScreen extends AbstractContainerScreen<KeycardEditorMe
         // tip
         Component textComp = Component.empty();
         int color = AxessColors.MAIN.getRGB();
-        if (!this.menu.getSlot(KEYCARD_SLOT).hasItem()) {
-            textComp = NO_KEYCARD_LABEL;
-        } else if (selectedNetwork == null) {
+        if (selectedNetwork == null) {
             textComp = NO_NETWORK_LABEL;
-        } else if (!AccessUtils.canPlayerEditNetwork(Minecraft.getInstance().player, selectedNetwork)) {
-            textComp = NO_PERMISSIONS_LABEL;
-        } else if (selectedLevel == null) {
+        } else if (selectedLevels.isEmpty()) {
             textComp = NO_LEVEL_LABEL;
         } else {
-            ItemStack item = this.menu.getSlot(KEYCARD_SLOT).getItem();
-            AbstractKeycardItem keycard = (AbstractKeycardItem) item.getItem();
-            if (keycard.getAccessNetwork(item, menu.blockEntity.getLevel()) != selectedNetwork || keycard.getAccessLevel(item, menu.blockEntity.getLevel()) != selectedLevel) {
+            KeycardReaderBlockEntity entity = this.menu.blockEntity;
+            boolean levelsDiff = true;
+
+            if (entity.getAccessLevels().size() == selectedLevels.size()) {
+                int cnt = 0;
+                for (AccessLevel level :
+                        selectedLevels) {
+                    if (entity.getAccessLevels().contains(level)) {
+                        cnt ++;
+                    }
+                }
+
+                if (cnt == selectedLevels.size()) levelsDiff = false;
+            }
+
+            if (
+                entity.getAccessNetwork() != selectedNetwork ||
+                levelsDiff ||
+                selectedCompareMode != menu.blockEntity.getCompareMode() ||
+                selectedActivationMode != menu.blockEntity.getActivationMode() ||
+                selectedPulseDurationTicks != menu.blockEntity.getPulseDurationTicks()
+            ) {
                 textComp = APPLY_CHANGES_LABEL;
                 applyButton.active = true;
             }
         }
-        pGuiGraphics.drawString(this.font, textComp, this.leftPos+94, this.topPos+132, color, false);
-
-        ItemStack item = this.menu.getSlot(KEYCARD_SLOT).getItem();
-        if (item != lastItemStack) {
-            if (item.getItem().equals(Items.AIR)) {
-                clearEntries();
-            } else if (item.getItem() instanceof AbstractKeycardItem) {
-                updateEntries(item);
-            } else {
-                clearEntries();
-            }
-            lastItemStack = item;
-        }
+        pGuiGraphics.drawString(this.font, textComp, this.leftPos+7, this.topPos+218, color, false);
 
         renderTooltip(pGuiGraphics, pMouseX, pMouseY);
     }
@@ -196,12 +279,32 @@ public class KeycardEditorScreen extends AbstractContainerScreen<KeycardEditorMe
 
     public void selectNetwork(AccessNetwork network) {
         selectedNetwork = network;
-        selectedLevel = null;
+        selectedLevels.clear();
         updateLevelEntries();
     }
 
-    public void selectLevel(AccessLevel level) {
-        selectedLevel = level;
+    public void toggleLevel(AccessLevel level) {
+        switch (selectedCompareMode) {
+            case SPECIFIC -> {
+                if (selectedLevels.contains(level)) {
+                    selectedLevels.remove(level);
+                } else {
+                    selectedLevels.add(level);
+                }
+
+                break;
+            }
+
+            case BIGGER_THAN_OR_EQUAL, LESSER_THAN_OR_EQUAL -> {
+                selectedLevels.clear();
+                selectedLevels.add(level);
+
+                break;
+            }
+        }
+
+
+
     }
 
     public void updateLevelEntries() {
@@ -233,9 +336,9 @@ public class KeycardEditorScreen extends AbstractContainerScreen<KeycardEditorMe
         scrollMaxNetworks = totalHeight - NETWORKS_HEIGHT;
     }
 
-    public void updateEntries(ItemStack itemStack) {
-        selectedNetwork = ((AbstractKeycardItem)itemStack.getItem()).getAccessNetwork(itemStack, menu.blockEntity.getLevel());
-        selectedLevel = ((AbstractKeycardItem)itemStack.getItem()).getAccessLevel(itemStack, menu.blockEntity.getLevel());
+    public void updateEntries() {
+        selectedNetwork = menu.blockEntity.getAccessNetwork();
+        selectedLevels = menu.blockEntity.getAccessLevels();
 
         if (selectedNetwork == null || AccessUtils.canPlayerEditNetwork(Minecraft.getInstance().player, selectedNetwork)) {
             updateNetworkEntries();
@@ -318,8 +421,9 @@ public class KeycardEditorScreen extends AbstractContainerScreen<KeycardEditorMe
         }
 
         @Override
-        public boolean isHoveredOrFocused() {
-            return selectedNetwork == this.network || super.isHovered;
+        public ButtonColor getColor() {
+            if (selectedNetwork == this.network) return ButtonColor.GREEN;
+            return super.getColor();
         }
     }
 
@@ -329,7 +433,7 @@ public class KeycardEditorScreen extends AbstractContainerScreen<KeycardEditorMe
 
         public SelectableLevelEntry(AccessLevel level, int index) {
             super(leftPos + LEVELS_X, topPos + LEVELS_Y, LEVELS_WIDTH, ENTRY_HEIGHT, Component.literal(level.getName()),
-                    btn -> {selectLevel(level);}
+                    btn -> {toggleLevel(level);}
             );
 
             this.level = level;
@@ -352,8 +456,27 @@ public class KeycardEditorScreen extends AbstractContainerScreen<KeycardEditorMe
         }
 
         @Override
-        public boolean isHoveredOrFocused() {
-            return selectedLevel == this.level || super.isHovered;
+        public ButtonColor getColor() {
+            if (selectedLevels.contains(this.level)) return ButtonColor.GREEN;
+
+            switch (selectedCompareMode) {
+                case BIGGER_THAN_OR_EQUAL -> {
+                    if (selectedLevels.size() == 0) {
+                        break;
+                    }
+
+                    if (level.getPriority() >= selectedLevels.get(0).getPriority()) return ButtonColor.GREEN_LESS;
+                }
+                case LESSER_THAN_OR_EQUAL -> {
+                    if (selectedLevels.size() == 0) {
+                        break;
+                    }
+
+                    if (level.getPriority() <= selectedLevels.get(0).getPriority()) return ButtonColor.GREEN_LESS;
+                }
+            }
+
+            return super.getColor();
         }
     }
 }

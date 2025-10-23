@@ -41,9 +41,5 @@ public class StCNetworkModifiedPacket implements IAxessPacket {
         }
 
         AccessNetworkDataClient.setNetwork(network);
-
-        // TODO: REMOVE LATER!
-        LocalPlayer player = Minecraft.getInstance().player;
-        player.sendSystemMessage(Component.literal("Modified network " + network.getName()));
     }
 }

@@ -8,6 +8,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.LivingEntity;
@@ -15,6 +16,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.item.UseAnim;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -74,6 +76,18 @@ public abstract class AbstractKeycardItem extends Item {
         return net.getAccessLevel(stack.getOrCreateTag().getUUID(ACCESS_LEVEL_KEY));
     }
 
+    public void setAccessNetwork(ItemStack stack, AccessNetwork network) {
+        CompoundTag tag = stack.getOrCreateTag();
+
+        tag.putUUID(ACCESS_NETWORK_KEY, network.getUUID());
+    }
+
+    public void setAccessLevel(ItemStack stack, AccessLevel level) {
+        CompoundTag tag = stack.getOrCreateTag();
+
+        tag.putUUID(ACCESS_LEVEL_KEY, level.getUUID());
+    }
+
     public ResourceLocation getIconTex(ItemStack stack) {
         AccessLevel level = getAccessLevel(stack, null);
 
@@ -93,18 +107,6 @@ public abstract class AbstractKeycardItem extends Item {
         } else {
             return Color.WHITE;
         }
-    }
-
-    public void setAccessNetwork(ItemStack stack, AccessNetwork network) {
-        CompoundTag tag = stack.getOrCreateTag();
-
-        tag.putUUID(ACCESS_NETWORK_KEY, network.getUUID());
-    }
-
-    public void setAccessLevel(ItemStack stack, AccessLevel level) {
-        CompoundTag tag = stack.getOrCreateTag();
-
-        tag.putUUID(ACCESS_LEVEL_KEY, level.getUUID());
     }
 
     @Override
@@ -153,13 +155,14 @@ public abstract class AbstractKeycardItem extends Item {
         });
     }
 
+    public boolean isSet(ItemStack pStack, @Nullable Level level) {
+        return getAccessLevel(pStack, level) != null && getAccessNetwork(pStack, level) != null;
+    }
+
     @Override
-    public InteractionResultHolder<ItemStack> use(Level pLevel, Player pPlayer, InteractionHand pUsedHand) {
-        ItemStack stack = pPlayer.getItemInHand(pUsedHand);
-        if (stack.getItem() instanceof AbstractKeycardItem i) {
-            stack.getOrCreateTag().putBoolean("rotating",
-                    !stack.getOrCreateTag().getBoolean("rotating"));
-        }
-        return super.use(pLevel, pPlayer, pUsedHand);
+    public Component getName(ItemStack pStack) {
+        if (isSet(pStack, null))
+            return Component.literal(getAccessLevel(pStack, null).getName()).append(" ").append(Component.translatable("item." + Axess.MODID + ".keycard"));
+        else return super.getName(pStack);
     }
 }

@@ -110,7 +110,6 @@ public class AccessLevelEntry extends AbstractWidget {
                 btn -> { // RELEASE
                     this.dragging = false;
                     this.dragButton.dragging = false;
-                    list.startDrag(this);
                 });
 
         this.iconButton = new HumbleImageButton(

@@ -1,6 +1,9 @@
 {
   "variants": {
-    "": {
+    "powered=false": {
+      "model": "axess:block/receiver_off"
+    },
+    "powered=true": {
       "model": "axess:block/receiver"
     }
   }

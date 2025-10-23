@@ -56,35 +56,37 @@ public class CtSModifyKeycardPacket implements IAxessPacket {
             return;
         }
 
-        try {
-            ServerPlayer player = context.getSender();
-            if (player == null) return;
+        context.enqueueWork(() -> {
+            try {
+                ServerPlayer player = context.getSender();
+                if (player == null) return;
 
-            if (!(player.containerMenu instanceof KeycardEditorMenu menu)) return;
-            KeycardEditorBlockEntity keycardEditor = menu.blockEntity;
+                if (!(player.containerMenu instanceof KeycardEditorMenu menu)) return;
+                KeycardEditorBlockEntity keycardEditor = menu.blockEntity;
 
-            Optional<IItemHandler> itemHandler = keycardEditor.getCapability(ForgeCapabilities.ITEM_HANDLER, Direction.NORTH).resolve();
-            if (itemHandler.isEmpty()) return;
+                Optional<IItemHandler> itemHandler = keycardEditor.getCapability(ForgeCapabilities.ITEM_HANDLER, Direction.NORTH).resolve();
+                if (itemHandler.isEmpty()) return;
 
-            ItemStack stack = itemHandler.get().getStackInSlot(KeycardEditorBlockEntity.KEYCARD_SLOT);
-            if (!(stack.getItem() instanceof AbstractKeycardItem keycardItem)) return;
+                ItemStack stack = itemHandler.get().getStackInSlot(KeycardEditorBlockEntity.KEYCARD_SLOT);
+                if (!(stack.getItem() instanceof AbstractKeycardItem keycardItem)) return;
 
-            AccessNetwork prevNetwork = keycardItem.getAccessNetwork(stack, player.level());
-            if (prevNetwork != null) if (!AccessUtils.canPlayerEditNetwork(player, prevNetwork)) return;
+                AccessNetwork prevNetwork = keycardItem.getAccessNetwork(stack, player.level());
+                if (prevNetwork != null) if (!AccessUtils.canPlayerEditNetwork(player, prevNetwork)) return;
 
-            AccessNetworkDataServer serverNetworkData = AccessNetworkDataServer.get(player.getServer());
-            AccessNetwork network = serverNetworkData.getNetwork(networkUUID);
-            if (network == null) return;
+                AccessNetworkDataServer serverNetworkData = AccessNetworkDataServer.get(player.getServer());
+                AccessNetwork network = serverNetworkData.getNetwork(networkUUID);
+                if (network == null) return;
 
-            AccessLevel accessLevel = network.getAccessLevel(accessLevelUUID);
-            if (accessLevel == null) return;
+                AccessLevel accessLevel = network.getAccessLevel(accessLevelUUID);
+                if (accessLevel == null) return;
 
-            keycardItem.setAccessNetwork(stack, network);
-            keycardItem.setAccessLevel(stack, accessLevel);
+                keycardItem.setAccessNetwork(stack, network);
+                keycardItem.setAccessLevel(stack, accessLevel);
 
-            stack.setHoverName(Component.literal(accessLevel.getName()).append(" ").append(Component.translatable("item." + Axess.MODID + ".keycard")));
+                //stack.setHoverName(Component.literal(accessLevel.getName()).append(" ").append(Component.translatable("item." + Axess.MODID + ".keycard")));
 
-            keycardEditor.setChanged();
-        } catch (Exception e) {}
+                keycardEditor.setChanged();
+            } catch (Exception e) {}
+        });
     }
 }

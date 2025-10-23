@@ -51,6 +51,7 @@ public class Axess {
         AxessItemRegistry.register(modEventBus);
         AxessBlockEntityRegistry.register(modEventBus);
         AxessMenuRegistry.register(modEventBus);
+        AxessSoundRegistry.register(modEventBus);
 
         CREATIVE_MODE_TABS.register(modEventBus);
 

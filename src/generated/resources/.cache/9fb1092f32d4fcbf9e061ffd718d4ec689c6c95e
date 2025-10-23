@@ -1,3 +1,13 @@
-// 1.20.1	2025-09-05T15:16:34.8817789	Recipes
-90091e1ea6c32111cf1d892cb471571cba28a370 data/axess/advancements/recipes/redstone/iron_keycard_reader.json
-2278a6b98f757bc44568543ccff6aece90881bfc data/axess/recipes/iron_keycard_reader.json
+// 1.20.1	2025-10-21T22:04:41.1374444	Recipes
+16904078384500354ab3ef79e484fee52ce4def6 data/axess/advancements/recipes/redstone/access_wrench.json
+07ae6263b137aff52fead330fe4dbce39b3f3439 data/axess/advancements/recipes/redstone/keycard_editor.json
+31c905da8c8a79bc9ae51b9b25a313e6514e60b4 data/axess/advancements/recipes/redstone/keycard_reader.json
+2fb4078b086de39e230ee2e02ad96bc9689b5740 data/axess/advancements/recipes/redstone/linker.json
+6df78fb39d832c001d36dde69e3abf20da2b2cff data/axess/advancements/recipes/redstone/network_manager.json
+ff6305ece3e0f7eb55dd68513e8819b6bfefe56c data/axess/advancements/recipes/redstone/receiver.json
+39f91e7e198c40cd4c83f94d3f214de271a2759d data/axess/recipes/access_wrench.json
+002a960f90cbdc33ece2f1425cb2c7530f12fb80 data/axess/recipes/keycard_editor.json
+6ea15f10b0ce1df1a241a57af5f109ca308ac12d data/axess/recipes/keycard_reader.json
+7e2d22ea3c97e581f754cd7c5786cca50b0673b6 data/axess/recipes/linker.json
+3f992a36e97cad4306a4656a24b142c6d2e1f4fc data/axess/recipes/network_manager.json
+647bc00b7746c37437d4e9b577cf31d8b3e823ed data/axess/recipes/receiver.json

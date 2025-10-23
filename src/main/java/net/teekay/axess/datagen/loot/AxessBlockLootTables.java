@@ -15,9 +15,10 @@ public class AxessBlockLootTables extends BlockLootSubProvider {
 
     @Override
     protected void generate() {
-        this.dropSelf(AxessBlockRegistry.IRON_KEYCARD_READER.get());
+        this.dropSelf(AxessBlockRegistry.KEYCARD_READER.get());
         this.dropSelf(AxessBlockRegistry.NETWORK_MANAGER.get());
         this.dropSelf(AxessBlockRegistry.KEYCARD_EDITOR.get());
+        this.dropSelf(AxessBlockRegistry.RECEIVER.get());
     }
 
     @Override

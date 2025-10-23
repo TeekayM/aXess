@@ -4,6 +4,10 @@ import java.awt.*;
 
 public class AxessColors {
     public static Color MAIN = new Color(0x1170FF);
+    public static Color RED = new Color(0xFF0000);
+    public static Color GREEN = new Color(0x00FF00);
+    public static Color GREEN_LESS = new Color(0x006B00);
+
 
     public static class HSVColor {
         public float h, s, v;

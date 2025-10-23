@@ -1,7 +1,8 @@
 {
   "values": [
-    "axess:iron_keycard_reader",
+    "axess:keycard_reader",
     "axess:network_manager",
-    "axess:keycard_editor"
+    "axess:keycard_editor",
+    "axess:receiver"
   ]
 }

@@ -22,8 +22,8 @@ public class NetworkManagerScreen extends Screen {
 
     private static final Component TITLE_LABEL = Component.translatable("gui."+Axess.MODID+".network_manager");
 
-    private static final Component EXIT_BUTTON_LABEL = Component.translatable("gui."+Axess.MODID+".buttons.exit");
-    private static final Component ADD_BUTTON_LABEL = Component.translatable("gui."+Axess.MODID+".buttons.add_network");
+    private static final Component EXIT_BUTTON_LABEL = Component.translatable("gui."+Axess.MODID+".button.exit");
+    private static final Component ADD_BUTTON_LABEL = Component.translatable("gui."+Axess.MODID+".button.add_network");
     private static final Component NETWORKS_LABEL = Component.translatable("gui."+Axess.MODID+".network_manager.networks");
 
     private static final ResourceLocation TEXTURE = ResourceLocation.fromNamespaceAndPath(Axess.MODID, "textures/gui/network_manager.png");

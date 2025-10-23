@@ -20,8 +20,8 @@ public class NetworkDeletionScreen extends Screen {
     private static final Component TITLE_LABEL = Component.translatable("gui."+Axess.MODID+".network_deletion");
     private static final Component DELETE_LABEL = Component.translatable("gui."+Axess.MODID+".network_deletion.text");
 
-    private static final Component DELETE_BUTTON_LABEL = Component.translatable("gui."+Axess.MODID+".buttons.delete");
-    private static final Component BACK_BUTTON_LABEL = Component.translatable("gui."+Axess.MODID+".buttons.back");
+    private static final Component DELETE_BUTTON_LABEL = Component.translatable("gui."+Axess.MODID+".button.delete");
+    private static final Component BACK_BUTTON_LABEL = Component.translatable("gui."+Axess.MODID+".button.back");
 
     private static final ResourceLocation TEXTURE = ResourceLocation.fromNamespaceAndPath(Axess.MODID, "textures/gui/network_deletion.png");
 

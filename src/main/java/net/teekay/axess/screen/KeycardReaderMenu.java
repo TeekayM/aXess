@@ -5,22 +5,27 @@ import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.ContainerLevelAccess;
+import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraftforge.common.capabilities.ForgeCapabilities;
+import net.minecraftforge.items.SlotItemHandler;
+import net.teekay.axess.block.keycardeditor.KeycardEditorBlockEntity;
 import net.teekay.axess.block.readers.KeycardReaderBlockEntity;
+import net.teekay.axess.registry.AxessBlockRegistry;
 import net.teekay.axess.registry.AxessMenuRegistry;
 
-public class KeycardReaderEditorMenu extends AbstractContainerMenu {
+public class KeycardReaderMenu extends AbstractContainerMenu {
     public final KeycardReaderBlockEntity blockEntity;
     private final Level level;
 
-    public KeycardReaderEditorMenu(int pContainerId, Inventory inv, FriendlyByteBuf buf) {
+    public KeycardReaderMenu(int pContainerId, Inventory inv, FriendlyByteBuf buf) {
         this(pContainerId, inv, inv.player.level().getBlockEntity(buf.readBlockPos()));
     }
 
-    public KeycardReaderEditorMenu(int pContainerId, Inventory inv, BlockEntity entity) {
-        super(AxessMenuRegistry.KEYCARD_EDITOR_MENU.get(), pContainerId);
+    public KeycardReaderMenu(int pContainerId, Inventory inv, BlockEntity entity) {
+        super(AxessMenuRegistry.KEYCARD_READER_MENU.get(), pContainerId);
 
         blockEntity = ((KeycardReaderBlockEntity) entity);
         this.level = inv.player.level();

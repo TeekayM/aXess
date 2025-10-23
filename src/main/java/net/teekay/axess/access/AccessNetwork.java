@@ -129,6 +129,14 @@ public class AccessNetwork {
         sortPriorities();
     }
 
+    public boolean hasAccessLevel(AccessLevel level) {
+        return hasAccessLevel(level.getUUID());
+    }
+
+    public boolean hasAccessLevel(UUID uuid) {
+        return accessLevelsHashMap.containsKey(uuid);
+    }
+
     public void moveLevelToPriority(AccessLevel level, int desiredIndex) {
         if (!accessLevels.contains(level)) return;
 

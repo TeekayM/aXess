@@ -27,7 +27,7 @@ public class NetworkManagerBlock extends HorizontalDirectionalBlock {
 
     public NetworkManagerBlock() {
         super(BlockBehaviour.Properties.copy(Blocks.IRON_BLOCK)
-                .strength(1.5f, 6)
+                .strength(4f, 6f)
                 .noOcclusion()
                 .requiresCorrectToolForDrops());
     }

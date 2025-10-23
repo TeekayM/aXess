@@ -23,8 +23,8 @@ public class NetworkCreationScreen extends Screen {
     private static final Component TITLE_LABEL = Component.translatable("gui."+Axess.MODID+".network_creation");
     private static final Component CREATE_LABEL = Component.translatable("gui."+Axess.MODID+".network_creation.text");
 
-    private static final Component CREATE_BUTTON_LABEL = Component.translatable("gui."+Axess.MODID+".buttons.create");
-    private static final Component BACK_BUTTON_LABEL = Component.translatable("gui."+Axess.MODID+".buttons.back");
+    private static final Component CREATE_BUTTON_LABEL = Component.translatable("gui."+Axess.MODID+".button.create");
+    private static final Component BACK_BUTTON_LABEL = Component.translatable("gui."+Axess.MODID+".button.back");
     private static final Component INPUT_LABEL = Component.translatable("gui."+Axess.MODID+".input.network_name");
 
     private static final ResourceLocation TEXTURE = ResourceLocation.fromNamespaceAndPath(Axess.MODID, "textures/gui/network_deletion.png");

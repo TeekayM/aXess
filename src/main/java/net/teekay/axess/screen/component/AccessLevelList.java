@@ -187,6 +187,7 @@ public class AccessLevelList extends AbstractWidget {
         for (AccessLevelEntry e :
                 buttons) {
             e.dragging = false;
+            e.dragButton.dragging = false;
         }
         
         return super.mouseReleased(pMouseX, pMouseY, pButton);

@@ -1,6 +1,8 @@
 package net.teekay.axess.client;
 
 import net.minecraft.client.gui.screens.MenuScreens;
+import net.minecraft.client.renderer.ItemBlockRenderTypes;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.EntityRenderersEvent;
 import net.minecraftforge.client.event.RegisterColorHandlersEvent;
@@ -12,11 +14,14 @@ import net.teekay.axess.access.AccessLevel;
 import net.teekay.axess.access.AccessNetwork;
 import net.teekay.axess.block.keycardeditor.KeycardEditorBlockEntityRenderer;
 import net.teekay.axess.block.readers.KeycardReaderBlockEntityRenderer;
+import net.teekay.axess.block.receiver.ReceiverBlockEntityRenderer;
 import net.teekay.axess.item.keycard.AbstractKeycardItem;
 import net.teekay.axess.registry.AxessBlockEntityRegistry;
+import net.teekay.axess.registry.AxessBlockRegistry;
 import net.teekay.axess.registry.AxessItemRegistry;
 import net.teekay.axess.registry.AxessMenuRegistry;
 import net.teekay.axess.screen.KeycardEditorScreen;
+import net.teekay.axess.screen.KeycardReaderScreen;
 
 @Mod.EventBusSubscriber(modid = Axess.MODID, bus = Mod.EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
 public class AxessClientHandler {
@@ -24,12 +29,14 @@ public class AxessClientHandler {
     @SubscribeEvent
     public static void onClientSetup(FMLClientSetupEvent event) {
         MenuScreens.register(AxessMenuRegistry.KEYCARD_EDITOR_MENU.get(), KeycardEditorScreen::new);
+        MenuScreens.register(AxessMenuRegistry.KEYCARD_READER_MENU.get(), KeycardReaderScreen::new);
     }
 
     @SubscribeEvent
     public static void registerRenderers(EntityRenderersEvent.RegisterRenderers event) {
-        event.registerBlockEntityRenderer(AxessBlockEntityRegistry.IRON_KEYCARD_READER.get(), KeycardReaderBlockEntityRenderer::new);
+        event.registerBlockEntityRenderer(AxessBlockEntityRegistry.KEYCARD_READER.get(), KeycardReaderBlockEntityRenderer::new);
         event.registerBlockEntityRenderer(AxessBlockEntityRegistry.KEYCARD_EDITOR.get(), KeycardEditorBlockEntityRenderer::new);
+        event.registerBlockEntityRenderer(AxessBlockEntityRegistry.RECEIVER.get(), ReceiverBlockEntityRenderer::new);
     }
 
     /*@SubscribeEvent

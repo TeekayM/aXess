@@ -5,6 +5,8 @@ import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
 import net.teekay.axess.Axess;
+import net.teekay.axess.item.AccessWrenchItem;
+import net.teekay.axess.item.LinkerItem;
 import net.teekay.axess.item.keycard.KeycardItem;
 import java.util.Collection;
 import java.util.function.Supplier;
@@ -16,6 +18,8 @@ public class AxessItemRegistry {
 
     // REGISTRY
     public static RegistryObject<Item> KEYCARD = registerItem("keycard", KeycardItem::new);
+    public static RegistryObject<Item> ACCESS_WRENCH = registerItem("access_wrench", AccessWrenchItem::new);
+    public static RegistryObject<Item> READER_LINKER = registerItem("linker", LinkerItem::new);
 
 
 

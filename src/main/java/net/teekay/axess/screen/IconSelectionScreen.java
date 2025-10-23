@@ -86,6 +86,7 @@ public class IconSelectionScreen extends Screen {
         for (HumbleImageButton btn :
                 iconButtons) {
             addWidget(btn);
+            btn.setBounds(this.windowX, this.windowY, this.windowX + this.windowWidth, this.windowY + this.windowHeight);
         }
 
         maxScrollPos = (iconButtons.size() / itemsPerRow) * (20 + 1) - windowHeight - 1;

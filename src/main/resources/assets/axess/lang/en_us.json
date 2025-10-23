@@ -1,6 +1,92 @@
 {
+  "sounds.axess.keycard_reader_success": "Keycard accepted",
+  "sounds.axess.keycard_reader_off": "Reader deacivated",
+  "sounds.axess.keycard_reader_decline": "Keycard declined",
+
   "item.axess.keycard": "Keycard",
+  "item.axess.access_wrench": "Access Wrench",
+  "item.axess.linker": "Linker",
+
+  "item.axess.linker.linkable_not_present": "Could not find linkable at original position",
+  "item.axess.linker.selected_first": "Selected linkable",
+  "item.axess.linker.linked_ok": "Linked!",
+  "item.axess.linker.cancel": "Cancelled linking",
+  "item.axess.linker.too_far": "Distance too far",
+  "item.axess.linker.no_permission": "You don't have permission for this linkable",
+  "item.axess.linker.clear_links": "Cleared links",
 
   "block.axess.keycard_reader": "Keycard Reader",
-  "block.axess.iron_keycard_reader": "Iron Keycard Reader"
+  "block.axess.iron_keycard_reader": "Iron Keycard Reader",
+
+  "block.axess.network_manager": "Network Manager",
+  "block.axess.keycard_editor": "Keycard Editor",
+
+  "block.axess.receiver": "Receiver",
+
+  "tooltip.axess.keycard.access_network": "Network",
+  "tooltip.axess.keycard.access_level": "Level",
+  "tooltip.axess.keycard.unconfigured": "Not configured",
+  "tooltip.axess.keycard.no_level": "-",
+  "tooltip.axess.keycard.no_network": "-",
+
+  "gui.axess.help.network_manager": "In the network manager, you can create and delete networks. Each network has different access levels.",
+  "gui.axess.help.network_editor": "Edit the network here. Each access level has an icon and a color. The order displayed dictates the PRIORITY of each level. To reorder, grab the handles to the left of the access levels.",
+
+  "gui.axess.button.add_network": "Add network",
+  "gui.axess.button.edit": "Edit",
+  "gui.axess.button.delete": "Delete",
+  "gui.axess.button.shift_delete": "Hold SHIFT to delete",
+  "gui.axess.button.back": "Back",
+  "gui.axess.button.create": "Create",
+  "gui.axess.button.done": "Done",
+  "gui.axess.button.cancel": "Cancel",
+  "gui.axess.button.add_access_level": "New access level",
+  "gui.axess.button.change_color": "Change color",
+  "gui.axess.button.change_icon": "Change icon",
+
+  "gui.axess.input.network_name": "Network name",
+  "gui.axess.input.access_level_name": "Access level name",
+
+  "gui.axess.network_manager": "Network Manager",
+  "gui.axess.network_manager.networks": "Networks",
+
+  "gui.axess.network_editor": "Network Editor",
+  "gui.axess.network_editor.access_levels": "Access levels",
+
+  "gui.axess.network_deletion.text": "Delete this network?",
+
+  "gui.axess.network_creation.text": "Create network",
+
+  "gui.axess.icon_selection_screen": "Icon Selection",
+  "gui.axess.color_selection_screen": "Color Selection",
+
+  "gui.axess.keycard_editor": "Keycard Editor",
+  "gui.axess.keycard_editor.no_keycard": "Insert keycard",
+  "gui.axess.keycard_editor.no_network": "Select network",
+  "gui.axess.keycard_editor.no_level": "Select level",
+  "gui.axess.keycard_editor.apply_changes": "Apply changes",
+  "gui.axess.keycard_editor.no_permissions": "You can't edit this keycard",
+
+  "gui.axess.keycard_reader": "Keycard Reader",
+  "gui.axess.keycard_reader.no_network": "Select network",
+  "gui.axess.keycard_reader.no_level": "Select access level(s)",
+  "gui.axess.keycard_reader.apply_changes": "Apply changes",
+  "gui.axess.keycard_reader.pulse_duration": "Duration in ticks for how long the reader should stay active.",
+  "gui.axess.keycard_reader.pulse_duration.prefix": "Pulse: ",
+  "gui.axess.keycard_reader.pulse_duration.suffix": " Ticks",
+  "gui.axess.keycard_reader.synced": "These properties are synced with the paired reader.",
+
+  "gui.axess.compare_mode": "Compare mode: ",
+  "gui.axess.compare_mode.BIGGER_THAN_OR_EQUAL": ">=",
+  "gui.axess.compare_mode.BIGGER_THAN_OR_EQUAL.description": "If the keycard's access level PRIORITY is bigger than or equal to the selected one, the reader activates.",
+  "gui.axess.compare_mode.LESSER_THAN_OR_EQUAL": "<=",
+  "gui.axess.compare_mode.LESSER_THAN_OR_EQUAL.description": "If the keycard's access level PRIORITY is lesser than or equal to the selected one, the reader activates.",
+  "gui.axess.compare_mode.SPECIFIC": "=",
+  "gui.axess.compare_mode.SPECIFIC.description": "If the keycard's access level is ANY of the selected ones, the reader activates.",
+
+  "gui.axess.activation_mode": "Activation mode: ",
+  "gui.axess.activation_mode.PULSE": "Pulse",
+  "gui.axess.activation_mode.PULSE.description": "The reader outputs redstone signal for the selected duration.",
+  "gui.axess.activation_mode.TOGGLE": "Toggle",
+  "gui.axess.activation_mode.TOGGLE.description": "The reader outputs redstone signal until it is deactivated manually."
 }

@@ -6,7 +6,6 @@ import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.config.ModConfig;
 import net.minecraftforge.fml.event.config.ModConfigEvent;
-import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 
 @Mod.EventBusSubscriber(modid = Axess.MODID, bus = Mod.EventBusSubscriber.Bus.MOD)
 public class AxessConfig
@@ -20,16 +19,24 @@ public class AxessConfig
             .comment("The maximum amount of access levels a network can have.")
             .defineInRange("max_levels_per_network", 20, 1, 100);
 
+    private static final ForgeConfigSpec.IntValue MAX_PAIR_DIST = BUILDER
+            .comment("The maximum distance there can be between two linked devices.")
+            .defineInRange("max_pair_distance", 32, 1, 100);
+
+
     static final ForgeConfigSpec SPEC = BUILDER.build();
 
     public static int maxNetworksPerPlayer;
     public static int maxLevelsPerNetwork;
+    public static int maxPairDistance;
+
 
     @SubscribeEvent
     static void onLoad(final ModConfigEvent event)
     {
         maxNetworksPerPlayer = MAX_NETWORKS_PER_PLAYER.get();
         maxLevelsPerNetwork = MAX_LEVELS_PER_NETWORK.get();
+        maxPairDistance = MAX_PAIR_DIST.get();
     }
 
     static void registerConfig(ModLoadingContext ctx) {

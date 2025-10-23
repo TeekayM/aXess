@@ -9,9 +9,9 @@ import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.minecraft.world.item.MapItem;
 import net.teekay.axess.Axess;
 import net.teekay.axess.access.AccessLevel;
 import net.teekay.axess.access.AccessNetwork;
@@ -87,8 +87,9 @@ public class KeycardEditorScreen extends AbstractContainerScreen<KeycardEditorMe
                         })
         );
         this.applyButton.active = false;
-
-        updateEntries(this.menu.getSlot(KEYCARD_SLOT).getItem());
+        ItemStack item = this.menu.getSlot(KEYCARD_SLOT).getItem();
+        if (!item.is(Items.AIR))
+            updateEntries(item);
     }
 
     @Override
@@ -318,8 +319,9 @@ public class KeycardEditorScreen extends AbstractContainerScreen<KeycardEditorMe
         }
 
         @Override
-        public boolean isHoveredOrFocused() {
-            return selectedNetwork == this.network || super.isHovered;
+        public ButtonColor getColor() {
+            if (selectedNetwork == this.network) return ButtonColor.GREEN;
+            return super.getColor();
         }
     }
 
@@ -352,8 +354,9 @@ public class KeycardEditorScreen extends AbstractContainerScreen<KeycardEditorMe
         }
 
         @Override
-        public boolean isHoveredOrFocused() {
-            return selectedLevel == this.level || super.isHovered;
+        public ButtonColor getColor() {
+            if (selectedLevel == this.level) return ButtonColor.GREEN;
+            return super.getColor();
         }
     }
 }

@@ -64,13 +64,6 @@ public class KeycardItemRenderer extends BlockEntityWithoutLevelRenderer {
 
         ps.pushPose();
 
-        if (stack.hasTag())
-        if (stack.getTag().contains("rotating"))
-        if (stack.getTag().getBoolean("rotating"))
-        if (Minecraft.getInstance().level != null)
-            ps.mulPose(Axis.YP.rotation((Minecraft.getInstance().level.getGameTime() + Minecraft.getInstance().getFrameTime()) / 4f));
-
-
         render(stack,ctx,false,ps,buffer,light,overlay,model);
 
 
@@ -124,7 +117,6 @@ public class KeycardItemRenderer extends BlockEntityWithoutLevelRenderer {
                     VertexConsumer vertexconsumer;
 
                     vertexconsumer = ItemRenderer.getFoilBufferDirect(pBuffer, rendertype, true, pItemStack.hasFoil());
-
 
                     Minecraft.getInstance().getItemRenderer().renderModelLists(model, pItemStack, pCombinedLight, pCombinedOverlay, pPoseStack, vertexconsumer);
                 }

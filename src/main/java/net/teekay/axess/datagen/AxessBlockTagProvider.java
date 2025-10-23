@@ -19,8 +19,15 @@ public class AxessBlockTagProvider extends BlockTagsProvider {
     @Override
     protected void addTags(HolderLookup.Provider pProvider) {
         this.tag(BlockTags.NEEDS_STONE_TOOL)
-                .add(AxessBlockRegistry.IRON_KEYCARD_READER.get())
+                .add(AxessBlockRegistry.KEYCARD_READER.get())
                 .add(AxessBlockRegistry.NETWORK_MANAGER.get())
-                .add(AxessBlockRegistry.KEYCARD_EDITOR.get());
+                .add(AxessBlockRegistry.KEYCARD_EDITOR.get())
+                .add(AxessBlockRegistry.RECEIVER.get());
+
+        this.tag(BlockTags.MINEABLE_WITH_PICKAXE)
+                .add(AxessBlockRegistry.KEYCARD_READER.get())
+                .add(AxessBlockRegistry.NETWORK_MANAGER.get())
+                .add(AxessBlockRegistry.KEYCARD_EDITOR.get())
+                .add(AxessBlockRegistry.RECEIVER.get());
     }
 }

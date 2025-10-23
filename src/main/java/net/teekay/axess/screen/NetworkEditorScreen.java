@@ -25,11 +25,11 @@ public class NetworkEditorScreen extends Screen {
 
     private static final Component TITLE_LABEL = Component.translatable("gui."+Axess.MODID+".network_editor");
 
-    private static final Component DONE_BUTTON_LABEL = Component.translatable("gui."+Axess.MODID+".buttons.done");
-    private static final Component CANCEL_BUTTON_LABEL = Component.translatable("gui."+Axess.MODID+".buttons.cancel");
-    private static final Component ADD_BUTTON_LABEL = Component.translatable("gui."+Axess.MODID+".buttons.add_access_level");
-    private static final Component NETWORK_NAME_LABEL = Component.translatable("gui."+Axess.MODID+".inputs.network_name");
-    private static final Component LEVELS_LABEL = Component.translatable("gui."+Axess.MODID+".inputs.network_name");
+    private static final Component DONE_BUTTON_LABEL = Component.translatable("gui."+Axess.MODID+".button.done");
+    private static final Component CANCEL_BUTTON_LABEL = Component.translatable("gui."+Axess.MODID+".button.cancel");
+    private static final Component ADD_BUTTON_LABEL = Component.translatable("gui."+Axess.MODID+".button.add_access_level");
+    private static final Component NETWORK_NAME_LABEL = Component.translatable("gui."+Axess.MODID+".input.network_name");
+    private static final Component LEVELS_LABEL = Component.translatable("gui."  + Axess.MODID + ".network_editor.access_levels");
     private static final Component HELP_LABEL = Component.translatable("gui."+Axess.MODID+".help.network_editor");
 
     private static final ResourceLocation TEXTURE = ResourceLocation.fromNamespaceAndPath(Axess.MODID, "textures/gui/network_editor.png");

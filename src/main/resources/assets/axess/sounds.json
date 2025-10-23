@@ -1,0 +1,20 @@
+{
+  "keycard_reader_success": {
+    "subtitle": "sounds.axess.keycard_reader_success",
+    "sounds": [
+      "axess:keycard_reader/success"
+    ]
+  },
+  "keycard_reader_off": {
+    "subtitle": "sounds.axess.keycard_reader_off",
+    "sounds": [
+      "axess:keycard_reader/off"
+    ]
+  },
+  "keycard_reader_decline": {
+    "subtitle": "sounds.axess.keycard_reader_decline",
+    "sounds": [
+      "axess:keycard_reader/decline"
+    ]
+  }
+}
