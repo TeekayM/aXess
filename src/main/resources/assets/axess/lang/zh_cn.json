@@ -1,0 +1,94 @@
+{
+  "gui.axess.creative_tab": "aXess",
+
+  "sounds.axess.keycard_reader_success": "凭据接受",
+  "sounds.axess.keycard_reader_off": "读卡机已关机",
+  "sounds.axess.keycard_reader_decline": "凭据被拒绝",
+
+  "item.axess.keycard": "钥匙卡",
+  "item.axess.access_wrench": "访问扳手",
+  "item.axess.linker": "连接器",
+
+  "item.axess.linker.linkable_not_present": "在原位置无法找到可连接物（被拆除/移动）",
+  "item.axess.linker.selected_first": "已选择可连接物",
+  "item.axess.linker.linked_ok": "已连接！",
+  "item.axess.linker.cancel": "已取消连接",
+  "item.axess.linker.too_far": "距离太远",
+  "item.axess.linker.no_permission": "你无权访问此可连接物",
+  "item.axess.linker.clear_links": "连接已清空",
+
+  "block.axess.keycard_reader": "读卡机",
+  "block.axess.iron_keycard_reader": "铁质读卡机",
+
+  "block.axess.network_manager": "权限网络管理器",
+  "block.axess.keycard_editor": "写卡机",
+
+  "block.axess.receiver": "接收器",
+
+  "tooltip.axess.keycard.access_network": "权限网络",
+  "tooltip.axess.keycard.access_level": "等级",
+  "tooltip.axess.keycard.unconfigured": "未配置",
+  "tooltip.axess.keycard.no_level": "-",
+  "tooltip.axess.keycard.no_network": "-",
+
+  "gui.axess.help.network_manager": "在权限网络管理器中，你可以创建和删除网络，每个权限网络有独立的权限等级。",
+  "gui.axess.help.network_editor": "在这里编辑网络。每个权限等级有一个图标和一个颜色。顺序决定了每个等级的优先级。如需重新排序，拖动权限等级左侧的滑块。 The order displayed dictates the PRIORITY of each level. To reorder, grab the handles to the left of the access levels.",
+
+  "gui.axess.button.add_network": "添加网络",
+  "gui.axess.button.edit": "编辑",
+  "gui.axess.button.delete": "删除",
+  "gui.axess.button.shift_delete": "按住Shift删除",
+  "gui.axess.button.back": "返回",
+  "gui.axess.button.create": "创建",
+  "gui.axess.button.done": "完成",
+  "gui.axess.button.cancel": "取消",
+  "gui.axess.button.add_access_level": "新权限等级",
+  "gui.axess.button.change_color": "改变颜色",
+  "gui.axess.button.change_icon": "改变图标",
+
+  "gui.axess.input.network_name": "权限网络名称",
+  "gui.axess.input.access_level_name": "权限等级名称",
+
+  "gui.axess.network_manager": "权限网络管理器",
+  "gui.axess.network_manager.networks": "权限网络群",
+
+  "gui.axess.network_editor": "权限网络编辑器",
+  "gui.axess.network_editor.access_levels": "权限等级",
+
+  "gui.axess.network_deletion.text": "删除这个权限网络？",
+
+  "gui.axess.network_creation.text": "创建权限网络",
+
+  "gui.axess.icon_selection_screen": "图标选择",
+  "gui.axess.color_selection_screen": "颜色选择",
+
+  "gui.axess.keycard_editor": "钥匙卡编辑器",
+  "gui.axess.keycard_editor.no_keycard": "插入钥匙卡",
+  "gui.axess.keycard_editor.no_network": "选择权限网络",
+  "gui.axess.keycard_editor.no_level": "选择等级",
+  "gui.axess.keycard_editor.apply_changes": "应用修改",
+  "gui.axess.keycard_editor.no_permissions": "你不能修改这个钥匙卡",
+
+  "gui.axess.keycard_reader": "读卡机",
+  "gui.axess.keycard_reader.no_network": "选择权限网络",
+  "gui.axess.keycard_reader.no_level": "选择访问权限等级（群）",
+  "gui.axess.keycard_reader.apply_changes": "应用修改",
+  "gui.axess.keycard_reader.pulse_duration": "读卡机应该保持激活的时长（ticks）。",
+  "gui.axess.keycard_reader.pulse_duration.prefix": "脉冲: ",
+  "gui.axess.keycard_reader.pulse_duration.suffix": " Ticks",
+  "gui.axess.keycard_reader.synced": "这些属性与配对的读卡机同步。",
+
+  "gui.axess.compare_mode": "比较模式: ",
+  "gui.axess.compare_mode.BIGGER_THAN_OR_EQUAL": ">=",
+  "gui.axess.compare_mode.BIGGER_THAN_OR_EQUAL.description": "如果钥匙卡的权限等级的优先级大于等于所选项，读卡机激活。",
+  "gui.axess.compare_mode.LESSER_THAN_OR_EQUAL": "<=",
+  "gui.axess.compare_mode.LESSER_THAN_OR_EQUAL.description": "如果钥匙卡的权限等级的优先级小于等于所选项，读卡机激活。",
+  "gui.axess.compare_mode.SPECIFIC": "=",
+  "gui.axess.compare_mode.SPECIFIC.description": "如果钥匙卡的权限等级对应任何已选项，读卡机激活。实际上是不定项多选题。",
+
+  "gui.axess.activation_mode": "激活模式: ",
+  "gui.axess.activation_mode.PULSE": "脉冲",
+  "gui.axess.activation_mode.PULSE.description": "读卡机输出给定时长的红石信号",
+  "gui.axess.activation_mode.TOGGLE": "切换",
+  "gui.axess.activation_mode.TOGGLE.description": "读卡机一直输出红石信号直到手动关闭。"
+}
