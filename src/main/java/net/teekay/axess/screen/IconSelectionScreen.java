@@ -13,6 +13,7 @@ import net.teekay.axess.screen.component.HumbleImageButton;
 import net.teekay.axess.utilities.AxessColors;
 
 import java.util.ArrayList;
+import java.util.function.Consumer;
 
 public class IconSelectionScreen extends Screen {
 
@@ -21,14 +22,15 @@ public class IconSelectionScreen extends Screen {
     private static final ResourceLocation TEXTURE = ResourceLocation.fromNamespaceAndPath(Axess.MODID, "textures/gui/icon_selector.png");
     private static final ResourceLocation EMPTY_BUTTON_TEXTURE = ResourceLocation.fromNamespaceAndPath(Axess.MODID, "textures/gui/empty_button.png");
 
-    private AccessLevelEntry entry;
+    private Consumer<AxessIconRegistry.AxessIcon> callback;
 
-    public IconSelectionScreen(AccessLevelEntry entry) {
+    public IconSelectionScreen(Consumer<AxessIconRegistry.AxessIcon> callback) {
         super(TITLE);
-        this.entry = entry;
 
         this.imageWidth = 150;
         this.imageHeight = 112;
+
+        this.callback = callback;
     }
 
     private int leftPos, topPos;
@@ -93,7 +95,7 @@ public class IconSelectionScreen extends Screen {
     }
 
     private void select(int index) {
-        this.entry.accessLevel.setIcon(this.icons.get(index));
+        callback.accept(this.icons.get(index));
         Minecraft.getInstance().popGuiLayer();
     }
 

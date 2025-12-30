@@ -1,5 +1,6 @@
 package net.teekay.axess.item.keycard;
 
+import com.mojang.blaze3d.platform.Lighting;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
@@ -69,11 +70,11 @@ public class KeycardItemRenderer extends BlockEntityWithoutLevelRenderer {
 
         VertexConsumer glow = buffer.getBuffer(RenderType.solid());
         for (var quad : model.getQuads(null, null, rS)) {
-            if (quad.getTintIndex() == 1) {
-                glow.putBulkData(ps.last(), quad,
-                        keycardColor.getRed() / 255f, keycardColor.getGreen() / 255f, keycardColor.getBlue() / 255f, 1f, // green tint
-                        LightTexture.FULL_BRIGHT, overlay, true);
-            }
+            if (quad.getTintIndex() != 1) continue;
+
+            glow.putBulkData(ps.last(), quad,
+                    keycardColor.getRed() / 255f, keycardColor.getGreen() / 255f, keycardColor.getBlue() / 255f, 1f,
+                    LightTexture.FULL_BRIGHT, overlay, true);
         }
 
         ResourceLocation icon = keycardItem.getIconTex(stack);

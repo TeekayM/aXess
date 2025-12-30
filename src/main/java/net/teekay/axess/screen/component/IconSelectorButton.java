@@ -4,32 +4,35 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.resources.ResourceLocation;
 import net.teekay.axess.Axess;
 import net.teekay.axess.client.AxessClientMenus;
+import net.teekay.axess.registry.AxessIconRegistry;
 
 import java.awt.*;
 import java.util.function.Consumer;
 
-public class ColorSelectorButton extends HumbleImageButton {
+public class IconSelectorButton extends HumbleImageButton {
 
     private static final ResourceLocation EMPTY_BUTTON_TEXTURE =
             ResourceLocation.fromNamespaceAndPath(Axess.MODID, "textures/gui/empty_button.png");
 
-    private final Consumer<Color> onSelectColor;
+    private final Consumer<AxessIconRegistry.AxessIcon> onSelectIcon;
     private final OnPress externalOnPress;
 
-    public Color sColor;
+    public AxessIconRegistry.AxessIcon icon;
 
-    public ColorSelectorButton(
+    public IconSelectorButton(
             int pX,
             int pY,
-            Color initColor,
-            Consumer<Color> onSelectColor,
+            int pWidth,
+            int pHegiht,
+            AxessIconRegistry.AxessIcon initIcon,
+            Consumer<AxessIconRegistry.AxessIcon> onSelectIcon,
             OnPress onPress
     ) {
         super(
                 pX,
                 pY,
-                20,
-                20,
+                pWidth,
+                pHegiht,
                 0,
                 0,
                 20,
@@ -39,8 +42,9 @@ public class ColorSelectorButton extends HumbleImageButton {
                 btn -> {}
         );
 
-        this.sColor = initColor;
-        this.onSelectColor = onSelectColor;
+        this.icon = initIcon;
+
+        this.onSelectIcon = onSelectIcon;
         this.externalOnPress = onPress;
     }
 
@@ -48,21 +52,16 @@ public class ColorSelectorButton extends HumbleImageButton {
     public void onPress() {
         externalOnPress.onPress(this);
 
-        AxessClientMenus.openColorSelectionScreen(color -> {
-            this.sColor = color;
-            onSelectColor.accept(color);
-        }, this.sColor);
+        AxessClientMenus.openIconSelectionScreen((icon) -> {
+            this.icon = icon;
+            onSelectIcon.accept(icon);
+        });
     }
 
     @Override
     public void render(GuiGraphics g, int mouseX, int mouseY, float partialTick) {
         super.render(g, mouseX, mouseY, partialTick);
-        g.fill(
-                getX() + 2,
-                getY() + 2,
-                getX() + 18,
-                getY() + 18,
-                sColor.getRGB()
-        );
+        g.blit(icon.TEXTURE, getX() + 1, getY() + 1, 0, 0,
+                getWidth() - 2, getHeight() - 2, getWidth() - 2, getHeight() - 2);
     }
 }

@@ -65,10 +65,17 @@ public class KeycardReaderBlockEntityRenderer implements BlockEntityRenderer<Key
             icon = ALLOW_ICON;
             color = AxessColors.GREEN;
         } else if (levels != 0) {
-            int index = (int) (Minecraft.getInstance().level.getGameTime() / CYCLE_TIME) % levels;
-            icon = accessLevels.get(index).getIcon();
-            color = accessLevels.get(index).getColor();
+            if (pBlockEntity.isOverrideDisplay()) {
+                icon = pBlockEntity.getOverrideIcon();
+                color = pBlockEntity.getOverrideColor();
+            } else {
+                int index = (int) (Minecraft.getInstance().level.getGameTime() / CYCLE_TIME) % levels;
+                icon = accessLevels.get(index).getIcon();
+                color = accessLevels.get(index).getColor();
+            }
         }
+
+
 
 
         VertexConsumer consumer = pBuffer.getBuffer(RenderType.eyes(icon != null ? icon.TEXTURE : NONE_ICON.TEXTURE));

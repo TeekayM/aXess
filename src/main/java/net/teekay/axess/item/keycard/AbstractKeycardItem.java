@@ -1,9 +1,7 @@
 package net.teekay.axess.item.keycard;
 
 import net.minecraft.ChatFormatting;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
-import net.minecraft.client.renderer.RenderType;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
@@ -21,6 +19,7 @@ import net.minecraft.world.level.Level;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.client.extensions.common.IClientItemExtensions;
+import net.minecraftforge.fml.DistExecutor;
 import net.teekay.axess.Axess;
 import net.teekay.axess.access.AccessLevel;
 import net.teekay.axess.access.AccessNetwork;
@@ -33,6 +32,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.awt.*;
 import java.util.List;
+import java.util.UUID;
 import java.util.function.Consumer;
 
 public abstract class AbstractKeycardItem extends Item {
@@ -48,6 +48,10 @@ public abstract class AbstractKeycardItem extends Item {
         super(properties);
     }
 
+    public String getID() {
+        return "keycard";
+    }
+
     @Nullable
     public AccessNetwork getAccessNetwork(ItemStack stack, @Nullable Level level) {
         CompoundTag tag = stack.getOrCreateTag();
@@ -56,11 +60,20 @@ public abstract class AbstractKeycardItem extends Item {
             return null;
         }
 
-        if (level == null || level.isClientSide()) {
-            return AccessNetworkDataClient.getNetwork(tag.getUUID(ACCESS_NETWORK_KEY));
-        } else {
-            return AccessNetworkDataServer.get(level.getServer()).getNetwork(tag.getUUID(ACCESS_NETWORK_KEY));
+        UUID id = tag.getUUID(ACCESS_NETWORK_KEY);
+
+        // Server side
+        if (level != null && !level.isClientSide()) {
+            return AccessNetworkDataServer
+                    .get(level.getServer())
+                    .getNetwork(id);
         }
+
+        // Client side — class-safe
+        return DistExecutor.unsafeRunForDist(
+                () -> () -> AccessNetworkDataClient.getNetwork(id),
+                () -> () -> null
+        );
     }
 
 
@@ -142,11 +155,12 @@ public abstract class AbstractKeycardItem extends Item {
         super.appendHoverText(pStack, pLevel, pTooltipComponents, pIsAdvanced);
     }
 
+    @OnlyIn(Dist.CLIENT)
     @Override
     public void initializeClient(Consumer<IClientItemExtensions> consumer) {
 
         consumer.accept(new IClientItemExtensions() {
-            KeycardItemRenderer renderer = new KeycardItemRenderer("keycard");
+            KeycardItemRenderer renderer = new KeycardItemRenderer(getID());
 
             @Override
             public BlockEntityWithoutLevelRenderer getCustomRenderer() {

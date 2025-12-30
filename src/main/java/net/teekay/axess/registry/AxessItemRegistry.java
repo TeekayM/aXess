@@ -8,6 +8,9 @@ import net.teekay.axess.Axess;
 import net.teekay.axess.item.AccessWrenchItem;
 import net.teekay.axess.item.LinkerItem;
 import net.teekay.axess.item.keycard.KeycardItem;
+import org.checkerframework.checker.units.qual.A;
+
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.function.Supplier;
 
@@ -15,6 +18,7 @@ public class AxessItemRegistry {
 
     public static final DeferredRegister<Item> DEFERRED_REGISTER = DeferredRegister.create(ForgeRegistries.ITEMS, Axess.MODID);
 
+    public static ArrayList<RegistryObject<Item>> keycards = new ArrayList<>();
 
     // REGISTRY
     public static RegistryObject<Item> KEYCARD = registerItem("keycard", KeycardItem::new);
@@ -24,7 +28,11 @@ public class AxessItemRegistry {
 
 
     public static RegistryObject<Item> registerItem(String id, Supplier<Item> supplier) {
-        return DEFERRED_REGISTER.register(id, supplier);
+        RegistryObject<Item> item = DEFERRED_REGISTER.register(id, supplier);
+        if (id.contains("keycard")) {
+            keycards.add(item);
+        }
+        return item;
     }
 
     public static void register(IEventBus eventBus) {
@@ -33,5 +41,14 @@ public class AxessItemRegistry {
 
     public static Collection<RegistryObject<Item>> getEntries() {
         return DEFERRED_REGISTER.getEntries();
+    }
+
+    public static ArrayList<Item> getKeycards() {
+        ArrayList<Item> iKeycards = new ArrayList<>();
+        for (RegistryObject<Item> k:
+                keycards){
+            iKeycards.add(k.get());
+        }
+        return iKeycards;
     }
 }

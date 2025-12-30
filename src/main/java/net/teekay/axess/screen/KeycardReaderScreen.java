@@ -10,19 +10,18 @@ import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
-import net.minecraft.world.item.ItemStack;
 import net.teekay.axess.Axess;
 import net.teekay.axess.access.*;
 import net.teekay.axess.block.readers.KeycardReaderBlockEntity;
 import net.teekay.axess.network.AxessPacketHandler;
 import net.teekay.axess.network.packets.server.CtSModifyKeycardReaderPacket;
-import net.teekay.axess.screen.component.HumbleImageButton;
-import net.teekay.axess.screen.component.TexturedButton;
-import net.teekay.axess.screen.component.TexturedSlider;
+import net.teekay.axess.registry.AxessIconRegistry;
+import net.teekay.axess.screen.component.*;
 import net.teekay.axess.utilities.AccessUtils;
 import net.teekay.axess.utilities.AxessColors;
 import net.teekay.axess.utilities.MathUtil;
 
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -34,6 +33,8 @@ public class KeycardReaderScreen extends AbstractContainerScreen<KeycardReaderMe
     public static final Component NO_NETWORK_LABEL = Component.translatable("gui."+Axess.MODID+".keycard_reader.no_network");
     public static final Component NO_LEVEL_LABEL = Component.translatable("gui."+Axess.MODID+".keycard_reader.no_level");
     public static final Component APPLY_CHANGES_LABEL = Component.translatable("gui."+Axess.MODID+".keycard_reader.apply_changes");
+
+    public static final Component OVERRIDE_DISPLAY_LABEL = Component.translatable("gui."+Axess.MODID+".keycard_reader.override_display");
 
     public static final Component ACTIVATION_MODE_PREFIX = Component.translatable("gui."+Axess.MODID+".activation_mode");
     public static final Component COMPARE_MODE_PREFIX = Component.translatable("gui."+Axess.MODID+".compare_mode");
@@ -49,6 +50,9 @@ public class KeycardReaderScreen extends AbstractContainerScreen<KeycardReaderMe
     private AccessActivationMode selectedActivationMode;
     private AccessCompareMode selectedCompareMode;
     private int selectedPulseDurationTicks;
+    private boolean selectedOverrideDisplay;
+    private AxessIconRegistry.AxessIcon selectedOverrideIcon;
+    private Color selectedOverrideColor;
 
     private ArrayList<SelectableNetworkEntry> networkEntries = new ArrayList<>();
     private ArrayList<SelectableLevelEntry> levelEntries = new ArrayList<>();
@@ -57,6 +61,9 @@ public class KeycardReaderScreen extends AbstractContainerScreen<KeycardReaderMe
     private TexturedButton activationModeButton;
     private TexturedSlider pulseDurationTicksSlider;
     private ImageButton syncIcon;
+    private IconSelectorButton iconSelectorButton;
+    private ColorSelectorButton colorSelectorButton;
+    private TexturedCheckbox overrideDisplayCheckbox;
 
     private int scrollerWidth = 3;
 
@@ -64,8 +71,6 @@ public class KeycardReaderScreen extends AbstractContainerScreen<KeycardReaderMe
     private int scrollMaxNetworks = 0;
     private int scrollPosLevels = 0;
     private int scrollMaxLevels = 0;
-
-    private ItemStack lastItemStack;
 
     public KeycardReaderScreen(KeycardReaderMenu pMenu, Inventory pPlayerInventory, Component pTitle) {
         super(pMenu, pPlayerInventory, pTitle);
@@ -92,7 +97,7 @@ public class KeycardReaderScreen extends AbstractContainerScreen<KeycardReaderMe
                         32, 96,
                         btn -> {
                             if (menu.blockEntity == null || selectedNetwork == null || selectedLevels.isEmpty()) return;
-                            AxessPacketHandler.sendToServer(new CtSModifyKeycardReaderPacket(menu.blockEntity.getBlockPos(), selectedNetwork, selectedLevels, selectedCompareMode, selectedActivationMode, selectedPulseDurationTicks));
+                            AxessPacketHandler.sendToServer(new CtSModifyKeycardReaderPacket(menu.blockEntity.getBlockPos(), selectedNetwork, selectedLevels, selectedCompareMode, selectedActivationMode, selectedPulseDurationTicks, selectedOverrideDisplay, selectedOverrideIcon, selectedOverrideColor));
                         })
         );
         this.applyButton.active = false;
@@ -124,7 +129,7 @@ public class KeycardReaderScreen extends AbstractContainerScreen<KeycardReaderMe
         this.activationModeButton = addRenderableWidget(
                 new TexturedButton(
                         this.leftPos + 7,
-                        this.topPos + 154,
+                        this.topPos + 152,
                         125, 18,
                         ACTIVATION_MODE_PREFIX.copy().append(selectedActivationMode.getName()),
                         btn -> {
@@ -146,7 +151,7 @@ public class KeycardReaderScreen extends AbstractContainerScreen<KeycardReaderMe
         this.pulseDurationTicksSlider = addRenderableWidget(
                 new TexturedSlider(
                         this.leftPos + 7,
-                        this.topPos + 179,
+                        this.topPos + 175,
                         125, 18,
                         PULSE_DURATION_LABEL_PREFIX,
                         PULSE_DURATION_LABEL_SUFFIX,
@@ -160,7 +165,7 @@ public class KeycardReaderScreen extends AbstractContainerScreen<KeycardReaderMe
 
         //this.syncIcon = addRenderableWidget(new TexturedButton(this.leftPos + 140, this.topPos + 170, 11, 11, Component.empty(), btn -> {}));
         this.syncIcon = addRenderableWidget(new ImageButton(
-                this.leftPos + 140, this.topPos + 170,
+                this.leftPos + 140, this.topPos + 167,
                 11, 11,
                 0, 233,
                 0,
@@ -169,6 +174,24 @@ public class KeycardReaderScreen extends AbstractContainerScreen<KeycardReaderMe
         ));
         this.syncIcon.setTooltip(Tooltip.create(SYNCED_LABEL));
         this.syncIcon.active = false;
+
+        this.selectedOverrideDisplay = this.menu.blockEntity.isOverrideDisplay();
+        this.overrideDisplayCheckbox = addRenderableWidget(new TexturedCheckbox(this.leftPos + 67, this.topPos + 197, 20, 20, Component.empty(), this.selectedOverrideDisplay,
+                (enabled) -> {
+                    this.selectedOverrideDisplay = enabled;
+                    this.iconSelectorButton.active = enabled;
+                    this.colorSelectorButton.active = enabled;
+                }));
+
+        this.selectedOverrideIcon = this.menu.blockEntity.getOverrideIcon();
+        this.iconSelectorButton = addRenderableWidget(new IconSelectorButton(this.leftPos + 91, this.topPos + 197, 20, 20,
+                this.selectedOverrideIcon, icon -> this.selectedOverrideIcon = icon, btn -> {}));
+        this.iconSelectorButton.active = this.selectedOverrideDisplay;
+
+        this.selectedOverrideColor = this.menu.blockEntity.getOverrideColor();
+        this.colorSelectorButton = addRenderableWidget(new ColorSelectorButton(this.leftPos + 112, this.topPos + 197, 20, 20,
+                this.selectedOverrideColor, color -> this.selectedOverrideColor = color, btn -> {}));
+        this.colorSelectorButton.active = this.selectedOverrideDisplay;
 
         updateEntries();
     }
@@ -261,13 +284,21 @@ public class KeycardReaderScreen extends AbstractContainerScreen<KeycardReaderMe
                 levelsDiff ||
                 selectedCompareMode != menu.blockEntity.getCompareMode() ||
                 selectedActivationMode != menu.blockEntity.getActivationMode() ||
-                selectedPulseDurationTicks != menu.blockEntity.getPulseDurationTicks()
+                selectedPulseDurationTicks != menu.blockEntity.getPulseDurationTicks() ||
+                selectedOverrideDisplay != menu.blockEntity.isOverrideDisplay() ||
+                selectedOverrideIcon.ID != menu.blockEntity.getOverrideIcon().ID ||
+                selectedOverrideColor.getRGB() != menu.blockEntity.getOverrideColor().getRGB()
             ) {
                 textComp = APPLY_CHANGES_LABEL;
                 applyButton.active = true;
             }
         }
-        pGuiGraphics.drawString(this.font, textComp, this.leftPos+7, this.topPos+218, color, false);
+
+        int tx = 226;
+        int ty = 212;
+
+        pGuiGraphics.drawString(this.font, OVERRIDE_DISPLAY_LABEL, this.leftPos+7, this.topPos+203, color, false);
+        pGuiGraphics.drawString(this.font, textComp, this.leftPos+tx-Minecraft.getInstance().font.width(textComp), this.topPos+ty, color, false);
 
         renderTooltip(pGuiGraphics, pMouseX, pMouseY);
     }

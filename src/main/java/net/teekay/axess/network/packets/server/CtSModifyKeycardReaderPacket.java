@@ -9,9 +9,11 @@ import net.minecraftforge.network.NetworkEvent;
 import net.teekay.axess.access.*;
 import net.teekay.axess.block.readers.KeycardReaderBlockEntity;
 import net.teekay.axess.network.IAxessPacket;
+import net.teekay.axess.registry.AxessIconRegistry;
 import net.teekay.axess.screen.KeycardReaderMenu;
 import net.teekay.axess.utilities.AccessUtils;
 
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.UUID;
 import java.util.function.Supplier;
@@ -23,8 +25,11 @@ public class CtSModifyKeycardReaderPacket implements IAxessPacket {
     public AccessCompareMode compareMode;
     public AccessActivationMode activationMode;
     public int pulseDurationTicks;
+    public boolean overrideDisplay;
+    public AxessIconRegistry.AxessIcon overrideIcon;
+    public Color overrideColor;
 
-    public CtSModifyKeycardReaderPacket(BlockPos blockEntityPos, AccessNetwork network, ArrayList<AccessLevel> levels, AccessCompareMode compareMode, AccessActivationMode activationMode, int pulseDurationTicks) {
+    public CtSModifyKeycardReaderPacket(BlockPos blockEntityPos, AccessNetwork network, ArrayList<AccessLevel> levels, AccessCompareMode compareMode, AccessActivationMode activationMode, int pulseDurationTicks, boolean overrideDisplay, AxessIconRegistry.AxessIcon overrideIcon, Color overrideColor) {
         this.blockEntityPos = blockEntityPos;
         this.networkUUID = network.getUUID();
         this.accessLevelsUUIDs = new ArrayList<>();
@@ -37,6 +42,10 @@ public class CtSModifyKeycardReaderPacket implements IAxessPacket {
                 levels) {
             this.accessLevelsUUIDs.add(level.getUUID());
         }
+
+        this.overrideDisplay = overrideDisplay;
+        this.overrideIcon = overrideIcon;
+        this.overrideColor = overrideColor;
     }
 
     public CtSModifyKeycardReaderPacket(FriendlyByteBuf buffer) {
@@ -56,6 +65,10 @@ public class CtSModifyKeycardReaderPacket implements IAxessPacket {
         this.compareMode = buffer.readEnum(AccessCompareMode.class);
         this.activationMode = buffer.readEnum(AccessActivationMode.class);
         this.pulseDurationTicks = buffer.readInt();
+
+        this.overrideDisplay = buffer.readBoolean();
+        this.overrideIcon = AxessIconRegistry.getIcon(buffer.readUtf());
+        this.overrideColor = new Color(buffer.readInt());
     }
 
     @Override
@@ -78,6 +91,10 @@ public class CtSModifyKeycardReaderPacket implements IAxessPacket {
         buffer.writeEnum(compareMode);
         buffer.writeEnum(activationMode);
         buffer.writeInt(pulseDurationTicks);
+
+        buffer.writeBoolean(overrideDisplay);
+        buffer.writeUtf(overrideIcon.ID);
+        buffer.writeInt(overrideColor.getRGB());
     }
 
     @Override
@@ -128,6 +145,10 @@ public class CtSModifyKeycardReaderPacket implements IAxessPacket {
                     keycardEditor.setPulseDurationTicks(pulseDurationTicks);
                     keycardEditor.execOnReaderPair(p -> p.setPulseDurationTicks(pulseDurationTicks));
                 }
+
+                keycardEditor.setOverrideDisplay(overrideDisplay);
+                keycardEditor.setOverrideIcon(overrideIcon);
+                keycardEditor.setOverrideColor(overrideColor);
 
                 keycardEditor.setAccessNetwork(network);
                 keycardEditor.setAccessLevels(accessLevels);

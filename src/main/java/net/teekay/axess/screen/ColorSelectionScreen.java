@@ -23,6 +23,8 @@ import org.checkerframework.checker.units.qual.C;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.Objects;
+import java.util.concurrent.Callable;
+import java.util.function.Consumer;
 
 public class ColorSelectionScreen extends Screen {
 
@@ -35,19 +37,20 @@ public class ColorSelectionScreen extends Screen {
     private static final Component CONFIRM_BUTTON_LABEL = Component.translatable("gui."+Axess.MODID+".button.confirm");
     private static final Component BACK_BUTTON_LABEL = Component.translatable("gui."+Axess.MODID+".button.back");
 
-    private AccessLevelEntry entry;
     private Color displayedColor;
     private AxessColors.HSVColor selColor;
 
-    public ColorSelectionScreen(AccessLevelEntry entry) {
-        super(TITLE);
-        this.entry = entry;
+    private Consumer<Color> callback;
 
+    public ColorSelectionScreen(Consumer<Color> callback, Color initColor) {
+        super(TITLE);
         //System.out.println("COLOR");
-        this.selColor = AxessColors.toHsv(entry.accessLevel.getColor());
+        this.selColor = AxessColors.toHsv(initColor);
 
         this.imageWidth = 150;
         this.imageHeight = 144;
+
+        this.callback = callback;
     }
 
     private int leftPos, topPos;
@@ -110,7 +113,7 @@ public class ColorSelectionScreen extends Screen {
                         CONFIRM_BUTTON_TEXTURE,
                         32, 96,
                         btn -> {
-                            entry.accessLevel.setColor(displayedColor);
+                            callback.accept(displayedColor);
                             Minecraft.getInstance().popGuiLayer();
                         })
         );

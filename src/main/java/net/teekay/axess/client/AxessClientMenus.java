@@ -3,8 +3,13 @@ package net.teekay.axess.client;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
 import net.teekay.axess.access.AccessNetwork;
+import net.teekay.axess.registry.AxessIconRegistry;
 import net.teekay.axess.screen.*;
 import net.teekay.axess.screen.component.AccessLevelEntry;
+
+import java.awt.*;
+import java.util.concurrent.Callable;
+import java.util.function.Consumer;
 
 public class AxessClientMenus {
     public static boolean openNetworkManagerScreen() {
@@ -27,13 +32,13 @@ public class AxessClientMenus {
         return true;
     }
 
-    public static boolean openIconSelectionScreen(AccessLevelEntry e) {
+    public static boolean openIconSelectionScreen(Consumer<AxessIconRegistry.AxessIcon> e) {
         Minecraft.getInstance().pushGuiLayer(new IconSelectionScreen(e));
         return true;
     }
 
-    public static boolean openColorSelectionScreen(AccessLevelEntry e) {
-        Minecraft.getInstance().pushGuiLayer(new ColorSelectionScreen(e));
+    public static boolean openColorSelectionScreen(Consumer<Color> e, Color initColor) {
+        Minecraft.getInstance().pushGuiLayer(new ColorSelectionScreen(e, initColor));
         return true;
     }
 

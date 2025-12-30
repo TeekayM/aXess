@@ -3,6 +3,8 @@ package net.teekay.axess.client;
 import net.minecraft.client.gui.screens.MenuScreens;
 import net.minecraft.client.renderer.ItemBlockRenderTypes;
 import net.minecraft.client.renderer.RenderType;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.level.ItemLike;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.EntityRenderersEvent;
 import net.minecraftforge.client.event.RegisterColorHandlersEvent;
@@ -16,6 +18,7 @@ import net.teekay.axess.block.keycardeditor.KeycardEditorBlockEntityRenderer;
 import net.teekay.axess.block.readers.KeycardReaderBlockEntityRenderer;
 import net.teekay.axess.block.receiver.ReceiverBlockEntityRenderer;
 import net.teekay.axess.item.keycard.AbstractKeycardItem;
+import net.teekay.axess.item.keycard.KeycardItem;
 import net.teekay.axess.registry.AxessBlockEntityRegistry;
 import net.teekay.axess.registry.AxessBlockRegistry;
 import net.teekay.axess.registry.AxessItemRegistry;
@@ -39,11 +42,11 @@ public class AxessClientHandler {
         event.registerBlockEntityRenderer(AxessBlockEntityRegistry.RECEIVER.get(), ReceiverBlockEntityRenderer::new);
     }
 
-    /*@SubscribeEvent
+    @SubscribeEvent
     public static void registerItemColors(RegisterColorHandlersEvent.Item event) {
         event.register(
                 (stack, tintIndex) -> {
-                    if (tintIndex == 1) {
+                    if (tintIndex == 3) {
                         AccessNetwork n = ((AbstractKeycardItem)stack.getItem()).getAccessNetwork(stack, null);
                         AccessLevel l = ((AbstractKeycardItem)stack.getItem()).getAccessLevel(stack, null);
 
@@ -55,8 +58,8 @@ public class AxessClientHandler {
                     }
                     return 0xFFFFFF; // no tint (white)
                 },
-                AxessItemRegistry.KEYCARD.get()
+                AxessItemRegistry.getKeycards().toArray(new ItemLike[0])
         );
-    }*/
+    }
 
 }

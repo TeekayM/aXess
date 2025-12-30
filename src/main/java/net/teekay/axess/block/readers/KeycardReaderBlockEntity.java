@@ -19,10 +19,12 @@ import net.teekay.axess.Axess;
 import net.teekay.axess.access.*;
 import net.teekay.axess.block.IPairableBlockEntity;
 import net.teekay.axess.block.receiver.ReceiverBlockEntity;
+import net.teekay.axess.registry.AxessIconRegistry;
 import net.teekay.axess.screen.KeycardReaderMenu;
 import net.teekay.axess.utilities.AccessUtils;
 import org.jetbrains.annotations.Nullable;
 
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.UUID;
 import java.util.function.Consumer;
@@ -34,6 +36,10 @@ public class KeycardReaderBlockEntity extends BlockEntity implements MenuProvide
     private AccessCompareMode compareMode = AccessCompareMode.BIGGER_THAN_OR_EQUAL;
     private AccessActivationMode activationMode = AccessActivationMode.TOGGLE;
     private int pulseDurationTicks = 30;
+
+    private boolean overrideDisplay = false;
+    private AxessIconRegistry.AxessIcon overrideIcon = AxessIconRegistry.NONE;
+    private Color overrideColor = Color.WHITE;
 
     private BlockPos reader_pairPos = null;
     private UUID reader_pairID = null;
@@ -58,6 +64,10 @@ public class KeycardReaderBlockEntity extends BlockEntity implements MenuProvide
 
     public static final String DISPLAY_PAIR_POS_KEY = "DisplayPairPos";
     public static final String DISPLAY_PAIR_ID_KEY = "DisplayPairID";
+
+    public static final String OVERRIDE_DISPLAY_KEY = "OverrideDisplay";
+    public static final String OVERRIDE_ICON_KEY = "OverrideIcon";
+    public static final String OVERRIDE_COLOR_KEY = "OverrideColor";
 
     public KeycardReaderBlockEntity(BlockEntityType<?> type, BlockPos pPos, BlockState pBlockState) {
         super(type, pPos, pBlockState);
@@ -307,6 +317,30 @@ public class KeycardReaderBlockEntity extends BlockEntity implements MenuProvide
         this.pulseDurationTicks = pulseDurationTicks;
     }
 
+    public boolean isOverrideDisplay() {
+        return overrideDisplay;
+    }
+
+    public void setOverrideDisplay(boolean overrideDisplay) {
+        this.overrideDisplay = overrideDisplay;
+    }
+
+    public AxessIconRegistry.AxessIcon getOverrideIcon() {
+        return overrideIcon;
+    }
+
+    public void setOverrideIcon(AxessIconRegistry.AxessIcon overrideIcon) {
+        this.overrideIcon = overrideIcon;
+    }
+
+    public Color getOverrideColor() {
+        return overrideColor;
+    }
+
+    public void setOverrideColor(Color overrideColor) {
+        this.overrideColor = overrideColor;
+    }
+
     @Override
     protected void saveAdditional(CompoundTag pTag) {
         CompoundTag modTag = new CompoundTag();
@@ -338,6 +372,10 @@ public class KeycardReaderBlockEntity extends BlockEntity implements MenuProvide
 
         if (display_pairPos != null) modTag.putLong(DISPLAY_PAIR_POS_KEY, display_pairPos.asLong());
         if (display_pairID != null) modTag.putUUID(DISPLAY_PAIR_ID_KEY, display_pairID);
+
+        modTag.putBoolean(OVERRIDE_DISPLAY_KEY, overrideDisplay);
+        modTag.putString(OVERRIDE_ICON_KEY, overrideIcon.ID);
+        modTag.putInt(OVERRIDE_COLOR_KEY, overrideColor.getRGB());
 
         pTag.put(Axess.MODID, modTag);
 
@@ -388,6 +426,15 @@ public class KeycardReaderBlockEntity extends BlockEntity implements MenuProvide
             display_pairPos = BlockPos.of(longDisplayPairPos);
         if (modTag.contains(DISPLAY_PAIR_ID_KEY))
             display_pairID = modTag.getUUID(DISPLAY_PAIR_ID_KEY);
+
+        if (modTag.contains(OVERRIDE_DISPLAY_KEY))
+            overrideDisplay = modTag.getBoolean(OVERRIDE_DISPLAY_KEY);
+
+        if (modTag.contains(OVERRIDE_ICON_KEY))
+            overrideIcon = AxessIconRegistry.getIcon(modTag.getString(OVERRIDE_ICON_KEY));
+
+        if (modTag.contains(OVERRIDE_COLOR_KEY))
+            overrideColor = new Color(modTag.getInt(OVERRIDE_COLOR_KEY));
 
         super.load(pTag);
         setChanged();

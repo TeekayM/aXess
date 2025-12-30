@@ -12,6 +12,7 @@ import net.teekay.axess.Axess;
 import net.teekay.axess.access.AccessLevel;
 import net.teekay.axess.client.AxessClientMenus;
 
+import java.awt.*;
 import java.util.function.Consumer;
 
 public class AccessLevelEntry extends AbstractWidget {
@@ -19,7 +20,6 @@ public class AccessLevelEntry extends AbstractWidget {
     public static ResourceLocation TRASH_BUTTON_DISABLED = ResourceLocation.fromNamespaceAndPath(Axess.MODID, "textures/gui/delete_button_disabled.png");
 
     public static ResourceLocation NETWORK_EDITOR_TEX = ResourceLocation.fromNamespaceAndPath(Axess.MODID, "textures/gui/network_editor.png");
-    private static final ResourceLocation EMPTY_BUTTON_TEXTURE = ResourceLocation.fromNamespaceAndPath(Axess.MODID, "textures/gui/empty_button.png");
 
     private static final Component NAME_TEXT = Component.translatable("gui."+Axess.MODID+".input.access_level_name");
     private static final Component DELETE_TEXT = Component.translatable("gui."+Axess.MODID+".button.delete");
@@ -112,35 +112,25 @@ public class AccessLevelEntry extends AbstractWidget {
                     this.dragButton.dragging = false;
                 });
 
-        this.iconButton = new HumbleImageButton(
+        this.iconButton = new IconSelectorButton(
                 pX + 4 + 1,
                 pY,
                 20,
                 20,
-                0,
-                0,
-                20,
-                EMPTY_BUTTON_TEXTURE,
-                32, 64,
-                btn -> {
-                    AxessClientMenus.openIconSelectionScreen(this);
-                }
+                accessLevel.getIcon(),
+                icon -> accessLevel.setIcon(icon),
+                btn -> {}
         );
         this.iconButton.setTooltip(Tooltip.create(ICON_TEXT));
 
-        this.colorButton = new HumbleImageButton(
+        this.colorButton = new ColorSelectorButton(
                 pX + 4 + 1 + 20 + 1,
                 pY,
                 20,
                 20,
-                0,
-                0,
-                20,
-                EMPTY_BUTTON_TEXTURE,
-                32, 64,
-                btn -> {
-                    AxessClientMenus.openColorSelectionScreen(this);
-                }
+                accessLevel.getColor(),
+                color -> accessLevel.setColor(color),
+                btn -> {}
         );
         this.colorButton.setTooltip(Tooltip.create(COLOR_TEXT));
 
@@ -222,8 +212,6 @@ public class AccessLevelEntry extends AbstractWidget {
         this.dragButton.render(pGuiGraphics, pMouseX, pMouseY, pPartialTick);
         this.iconButton.render(pGuiGraphics, pMouseX, pMouseY, pPartialTick);
         this.colorButton.render(pGuiGraphics, pMouseX, pMouseY, pPartialTick);
-        pGuiGraphics.fill(this.colorButton.getX()+2, this.colorButton.getY()+2, this.colorButton.getX()+18, this.colorButton.getY()+18, accessLevel.getColor().getRGB());
-        pGuiGraphics.blit(this.accessLevel.getIcon().TEXTURE, this.iconButton.getX() + 1, this.iconButton.getY() + 1, 0, 0, 18, 18, 18, 18);
         //this.priorityButtonUP.render(graphics, mouseX, mouseY, partialTick);
         //this.priorityButtonDOWN.render(graphics, mouseX, mouseY, partialTick);
     }

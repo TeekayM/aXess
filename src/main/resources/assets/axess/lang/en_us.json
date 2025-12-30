@@ -6,6 +6,8 @@
   "sounds.axess.keycard_reader_decline": "Keycard declined",
 
   "item.axess.keycard": "Keycard",
+  "item.axess.doohickey_keycard": "Doohickey Corp. Keycard",
+  "item.axess.doohickey_master_keycard": "Master Doohickey Corp. Keycard",
   "item.axess.access_wrench": "Access Wrench",
   "item.axess.linker": "Linker",
 
@@ -42,6 +44,7 @@
   "gui.axess.button.create": "Create",
   "gui.axess.button.done": "Done",
   "gui.axess.button.cancel": "Cancel",
+  "gui.axess.button.confirm": "Confirm",
   "gui.axess.button.add_access_level": "New access level",
   "gui.axess.button.change_color": "Change color",
   "gui.axess.button.change_icon": "Change icon",
@@ -77,6 +80,7 @@
   "gui.axess.keycard_reader.pulse_duration.prefix": "Pulse: ",
   "gui.axess.keycard_reader.pulse_duration.suffix": " Ticks",
   "gui.axess.keycard_reader.synced": "These properties are synced with the paired reader.",
+  "gui.axess.keycard_reader.override_display": "Custom icon:",
 
   "gui.axess.compare_mode": "Compare mode: ",
   "gui.axess.compare_mode.BIGGER_THAN_OR_EQUAL": ">=",

@@ -13,6 +13,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
@@ -20,6 +21,8 @@ import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.AttachFace;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
+import net.minecraft.world.level.material.FluidState;
+import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.BooleanOp;
 import net.minecraft.world.phys.shapes.CollisionContext;
@@ -38,7 +41,7 @@ import net.teekay.axess.utilities.VoxelShapeUtilities;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 
-public abstract class AbstractKeycardReaderBlock extends FaceAttachedHorizontalDirectionalBlock implements EntityBlock {
+public abstract class AbstractKeycardReaderBlock extends FaceAttachedHorizontalDirectionalBlock implements EntityBlock, SimpleWaterloggedBlock {
     public final VoxelShape VOXEL_SHAPE_1 = Block.box(3, 1, 15, 13, 15, 16);
     public final VoxelShape VOXEL_SHAPE_2 = Block.box(3, 5, 14, 13, 13, 15);
 
@@ -55,12 +58,17 @@ public abstract class AbstractKeycardReaderBlock extends FaceAttachedHorizontalD
     public final VoxelShape VOXEL_SHAPE_CEILING_Z = VoxelShapeUtilities.rotateShape(VOXEL_SHAPE_CEILING_X, Direction.NORTH, Direction.WEST);
 
     public static final BooleanProperty POWERED = BlockStateProperties.POWERED;
+    public static final BooleanProperty WATERLOGGED = BlockStateProperties.WATERLOGGED;
+
 
     public AbstractKeycardReaderBlock(BlockBehaviour.Properties properties) {
         super(properties
                 .lightLevel((bs) -> {
             return bs.getValue(POWERED) ? 6 : 6  ;
         }));
+        this.registerDefaultState(
+                this.stateDefinition.any().setValue(WATERLOGGED, false)
+        );
     }
 
     @Override
@@ -169,22 +177,26 @@ public abstract class AbstractKeycardReaderBlock extends FaceAttachedHorizontalD
         builder.add(FACING);
         builder.add(FACE);
         builder.add(POWERED);
+        builder.add(WATERLOGGED);
     }
 
     @Nullable
     public BlockState getStateForPlacement(BlockPlaceContext pContext) {
+        FluidState fluid = pContext.getLevel().getFluidState(pContext.getClickedPos());
         for(Direction direction : pContext.getNearestLookingDirections()) {
             BlockState blockstate;
             if (direction.getAxis() == Direction.Axis.Y) {
                 blockstate = this.defaultBlockState()
                         .setValue(FACE, direction == Direction.UP ? AttachFace.CEILING : AttachFace.FLOOR)
                         .setValue(FACING, direction == Direction.UP ? pContext.getHorizontalDirection() : pContext.getHorizontalDirection().getOpposite())
-                        .setValue(POWERED, false);
+                        .setValue(POWERED, false)
+                        .setValue(WATERLOGGED, fluid.getType() == Fluids.WATER);
             } else {
                 blockstate = this.defaultBlockState()
                         .setValue(FACE, AttachFace.WALL)
                         .setValue(FACING, direction.getOpposite())
-                        .setValue(POWERED, false);
+                        .setValue(POWERED, false)
+                        .setValue(WATERLOGGED, fluid.getType() == Fluids.WATER);
             }
 
             if (blockstate.canSurvive(pContext.getLevel(), pContext.getClickedPos())) {
@@ -194,6 +206,14 @@ public abstract class AbstractKeycardReaderBlock extends FaceAttachedHorizontalD
 
         return null;
     }
+
+    @Override
+    public FluidState getFluidState(BlockState state) {
+        return state.getValue(WATERLOGGED)
+                ? Fluids.WATER.getSource(false)
+                : super.getFluidState(state);
+    }
+
 
     @Override
     public boolean isSignalSource(BlockState state) {
@@ -225,4 +245,21 @@ public abstract class AbstractKeycardReaderBlock extends FaceAttachedHorizontalD
         pLevel.updateNeighborsAt(pPos, this);
         pLevel.updateNeighborsAt(pPos.relative(getConnectedDirection(pState).getOpposite()), this);
     }
+
+    @Override
+    public BlockState updateShape(
+            BlockState state,
+            Direction direction,
+            BlockState neighborState,
+            LevelAccessor level,
+            BlockPos pos,
+            BlockPos neighborPos
+    ) {
+        if (state.getValue(WATERLOGGED)) {
+            level.scheduleTick(pos, Fluids.WATER, Fluids.WATER.getTickDelay(level));
+        }
+
+        return super.updateShape(state, direction, neighborState, level, pos, neighborPos);
+    }
+
 }
