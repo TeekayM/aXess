@@ -1,12 +1,9 @@
 ![Logo](https://media.forgecdn.net/attachments/description/1372361/description_d6a4b6a5-67f2-4409-9cee-0c0969cf5122.png)
 
- 
-
-[![Available On GitHub](https://cdn.jsdelivr.net/npm/@intergrav/devins-badges@3/assets/cozy/available/github_64h.png)](https://github.com/TeekayM/aXess) ![Forge Supported](https://cdn.jsdelivr.net/npm/@intergrav/devins-badges@3/assets/cozy/supported/forge_64h.png) ![No Fabric :(](https://cdn.jsdelivr.net/npm/@intergrav/devins-badges@3/assets/cozy/unsupported/fabric_64h.png) [![Available on CurseForge](https://cdn.jsdelivr.net/npm/@intergrav/devins-badges@3/assets/cozy/available/curseforge_64h.png)](https://curseforge.com/minecraft/mc-mods/axess)
-
 **NOTICE - This project is still&nbsp;in development&nbsp;and may have many, MANY bugs. Please report them <a style="color: rgb(224, 62, 45);" href="https://github.com/TeekayM/aXess/issues" target="_blank" rel="noopener">here.</a>**
 
- 
+ [CurseForge](https://www.curseforge.com/minecraft/mc-mods/axess)
+ [Modrinth](https://modrinth.com/mod/axess-keycards)
 
 # **About This Mod**
 
