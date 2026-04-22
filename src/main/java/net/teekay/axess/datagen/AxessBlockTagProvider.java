@@ -24,7 +24,8 @@ public class AxessBlockTagProvider extends BlockTagsProvider {
                 .add(AxessBlockRegistry.MINI_KEYCARD_READER_RIGHT.get())
                 .add(AxessBlockRegistry.NETWORK_MANAGER.get())
                 .add(AxessBlockRegistry.KEYCARD_EDITOR.get())
-                .add(AxessBlockRegistry.RECEIVER.get());
+                .add(AxessBlockRegistry.RECEIVER.get())
+                .add(AxessBlockRegistry.LOCKDOWN_RECEIVER.get());
 
         this.tag(BlockTags.MINEABLE_WITH_PICKAXE)
                 .add(AxessBlockRegistry.KEYCARD_READER.get())
@@ -32,6 +33,7 @@ public class AxessBlockTagProvider extends BlockTagsProvider {
                 .add(AxessBlockRegistry.MINI_KEYCARD_READER_RIGHT.get())
                 .add(AxessBlockRegistry.NETWORK_MANAGER.get())
                 .add(AxessBlockRegistry.KEYCARD_EDITOR.get())
-                .add(AxessBlockRegistry.RECEIVER.get());
+                .add(AxessBlockRegistry.RECEIVER.get())
+                .add(AxessBlockRegistry.LOCKDOWN_RECEIVER.get());
     }
 }
