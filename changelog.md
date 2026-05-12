@@ -1,3 +1,7 @@
+# v0.3.2
+**Fixes:**
+- Fixed aXess breaking other keycard models from other mods
+
 # v0.3.1
 
 **Fixes:**
