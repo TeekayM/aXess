@@ -14,6 +14,7 @@ import net.teekay.axess.item.keycard.KeycardItemRenderer;
 import net.teekay.axess.registry.AxessItemRegistry;
 
 import java.util.HashMap;
+import java.util.logging.Logger;
 
 @Mod.EventBusSubscriber(modid = Axess.MODID, bus = Mod.EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
 public class AxessRendererHandler {
@@ -22,7 +23,7 @@ public class AxessRendererHandler {
     @SubscribeEvent
     public static void onModelBake(ModelEvent.ModifyBakingResult event) {
         event.getModels().forEach((r, m) -> {
-            if (r.toString().contains("keycard#inventory")) {
+            if (r.toString().contains("keycard#inventory") && r.toString().contains(Axess.MODID)) {
                 KeycardBakedModel newModel = new KeycardBakedModel(m);
                 event.getModels().put(r, newModel);
                 keycardBakedModelHashMap.put(ResourceLocation.fromNamespaceAndPath(Axess.MODID, r.getPath()), newModel);
