@@ -13,6 +13,10 @@ public class AxessConfig
 {
     private static final ForgeConfigSpec.Builder BUILDER = new ForgeConfigSpec.Builder();
 
+    private static final ForgeConfigSpec.IntValue MAX_READER_POWERED_TICKS = BUILDER
+            .comment("The maximum amount a reader can stay on for with the PULSE option selected.")
+            .defineInRange("max_reader_powered_ticks", 200, 1, 20*60);
+
     private static final ForgeConfigSpec.IntValue MAX_NETWORKS_PER_PLAYER = BUILDER
             .comment("The maximum amount of networks a player can own.")
             .defineInRange("max_networks_per_player", 5, 1, 20);
@@ -42,6 +46,7 @@ public class AxessConfig
 
     static final ForgeConfigSpec SPEC = BUILDER.build();
 
+    public static int maxReaderPoweredTicks;
     private static int maxNetworksPerPlayer;
     private static int maxLevelsPerNetwork;
     private static int opMaxNetworksPerPlayer;
@@ -53,6 +58,7 @@ public class AxessConfig
     @SubscribeEvent
     static void onLoad(final ModConfigEvent event)
     {
+        maxReaderPoweredTicks = MAX_READER_POWERED_TICKS.get();
         maxNetworksPerPlayer = MAX_NETWORKS_PER_PLAYER.get();
         maxLevelsPerNetwork = MAX_LEVELS_PER_NETWORK.get();
         opMaxNetworksPerPlayer = OP_MAX_NETWORKS_PER_PLAYER.get();

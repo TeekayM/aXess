@@ -12,6 +12,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
 import net.teekay.axess.Axess;
+import net.teekay.axess.AxessConfig;
 import net.teekay.axess.access.*;
 import net.teekay.axess.block.readers.KeycardReaderBlockEntity;
 import net.teekay.axess.client.AxessClientMenus;
@@ -161,7 +162,7 @@ public class KeycardReaderScreen extends AbstractContainerScreen<KeycardReaderMe
                         125, 18,
                         PULSE_DURATION_LABEL_PREFIX,
                         PULSE_DURATION_LABEL_SUFFIX,
-                        2, 100,
+                        2, AxessConfig.maxReaderPoweredTicks,
                         this.selectedPulseDurationTicks, 2,
                         0, true
                 )

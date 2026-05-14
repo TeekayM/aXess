@@ -1,3 +1,7 @@
+# v0.3.3
+**Changes:**
+- Added config option `max_reader_powered_ticks` (default 300): changes the maximum amount of ticks you can set for a PULSE reader.
+
 # v0.3.2
 **Fixes:**
 - Fixed aXess breaking other keycard models from other mods
