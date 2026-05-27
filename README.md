@@ -10,7 +10,7 @@
 Have you ever wanted to have a giant SCP-foundation type base with thousands of employees, all of whom have different access levels to different rooms in this facility but there are no mods that offer extensive customizability, QoL and usability?? …. No? Well, maybe I was too specific.
 
  
-[](https://www.youtube.com/watch?v=4WvYCj8aaw4)
+[![Watch the video](https://www.youtube.com/watch?v=4WvYCj8aaw4)](https://www.youtube.com/watch?v=4WvYCj8aaw4)
 
 
 ## Credits
