@@ -23,8 +23,10 @@ import net.teekay.axess.block.link.BlockLink;
 import net.teekay.axess.block.link.ILinkableBlockEntity;
 import net.teekay.axess.block.link.LinkingSystem;
 import net.teekay.axess.block.link.payload.AbstractLinkPayload;
+import net.teekay.axess.block.link.payload.LockdownUpdateLinkPayload;
 import net.teekay.axess.block.link.payload.ReaderPropertiesLinkPayload;
 import net.teekay.axess.block.link.payload.ReaderUpdateLinkPayload;
+import net.teekay.axess.block.lockdownreceiver.LockdownReceiverBlockEntity;
 import net.teekay.axess.block.receiver.ReceiverBlockEntity;
 import net.teekay.axess.registry.AxessIconRegistry;
 import net.teekay.axess.screen.KeycardReaderMenu;
@@ -143,6 +145,17 @@ public class KeycardReaderBlockEntity extends BlockEntity implements MenuProvide
         level.updateNeighborsAt(getBlockPos().relative(getConnectedDirection().getOpposite()), getBlockState().getBlock());
     }
 
+    private void _lock() {
+        level.setBlock(getBlockPos(), getBlockState().setValue(AbstractKeycardReaderBlock.POWERED, false).setValue(AbstractKeycardReaderBlock.LOCKED, true), 3);
+        level.updateNeighborsAt(getBlockPos(), getBlockState().getBlock());
+        level.updateNeighborsAt(getBlockPos().relative(getConnectedDirection().getOpposite()), getBlockState().getBlock());
+    }
+
+    private void _unlock() {
+        level.setBlock(getBlockPos(), getBlockState().setValue(AbstractKeycardReaderBlock.LOCKED, false), 3);
+        level.updateNeighborsAt(getBlockPos(), getBlockState().getBlock());
+        level.updateNeighborsAt(getBlockPos().relative(getConnectedDirection().getOpposite()), getBlockState().getBlock());
+    }
 
     @Override
     public void setChanged() {
@@ -221,7 +234,11 @@ public class KeycardReaderBlockEntity extends BlockEntity implements MenuProvide
 
     @Override
     public boolean canLinkWith(BlockEntity be) {
-        return be instanceof KeycardReaderBlockEntity || be instanceof ReceiverBlockEntity;
+        return be instanceof KeycardReaderBlockEntity
+                || be instanceof ReceiverBlockEntity
+                || (be instanceof LockdownReceiverBlockEntity && getLinks().stream().noneMatch(
+                        (v) -> level.getBlockEntity(v.getOther(getBlockPos())) instanceof LockdownReceiverBlockEntity
+        ));
     }
 
     @Override
@@ -254,12 +271,18 @@ public class KeycardReaderBlockEntity extends BlockEntity implements MenuProvide
             } else {
                 _deactivate();
             }
+        } else if (payload instanceof LockdownUpdateLinkPayload luPayload) {
+            if (luPayload.getNewState()) {
+                _lock();
+            } else {
+                _unlock();
+            }
         }
     }
 
     @Override
     public void onClearLinks() {
-        //_deactivate();
+        _deactivate();
     }
 
     public void setAccessNetwork(AccessNetwork network) {

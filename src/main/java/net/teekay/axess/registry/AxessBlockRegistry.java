@@ -9,6 +9,7 @@ import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
 import net.teekay.axess.Axess;
 import net.teekay.axess.block.keycardeditor.KeycardEditorBlock;
+import net.teekay.axess.block.lockdownreceiver.LockdownReceiverBlock;
 import net.teekay.axess.block.networkmanager.NetworkManagerBlock;
 import net.teekay.axess.block.readers.KeycardReaderBlock;
 import net.teekay.axess.block.readers.MiniKeycardReaderLeftBlock;
@@ -33,6 +34,7 @@ public class AxessBlockRegistry {
     public static final RegistryObject<Block> NETWORK_MANAGER = registerBlock("network_manager", NetworkManagerBlock::new);
     public static final RegistryObject<Block> KEYCARD_EDITOR = registerBlock("keycard_editor", KeycardEditorBlock::new);
     public static final RegistryObject<Block> RECEIVER = registerBlock("receiver", ReceiverBlock::new);
+    public static final RegistryObject<Block> LOCKDOWN_RECEIVER = registerBlock("lockdown_receiver", LockdownReceiverBlock::new);
 
     private static RegistryObject<Block> registerBlock(String id, Supplier<Block> block) { return registerBlock(id, block, true); }
     private static RegistryObject<Block> registerBlock(String id, Supplier<Block> blockSupplier, boolean withItem) {

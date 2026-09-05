@@ -43,6 +43,12 @@ public class AxessBlockStateProvider extends BlockStateProvider {
         horizontalBlock(AxessBlockRegistry.KEYCARD_EDITOR.get(), keycardEditorModel);
         itemModels().getBuilder(keycardEditorID).parent(keycardEditorModel);
 
+        // LOCKDOWN RECEIVER
+        String lockdownReceiverID = "lockdown_receiver";
+        ModelFile lockdownReceiverModel = getBlockModel(lockdownReceiverID);
+        horizontalBlock(AxessBlockRegistry.LOCKDOWN_RECEIVER.get(), lockdownReceiverModel);
+        itemModels().getBuilder(lockdownReceiverID).parent(lockdownReceiverModel);
+
         // RECEIVER
         Block receiver = AxessBlockRegistry.RECEIVER.get();
 

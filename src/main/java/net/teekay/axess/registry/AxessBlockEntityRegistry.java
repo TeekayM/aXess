@@ -9,6 +9,7 @@ import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
 import net.teekay.axess.Axess;
 import net.teekay.axess.block.keycardeditor.KeycardEditorBlockEntity;
+import net.teekay.axess.block.lockdownreceiver.LockdownReceiverBlockEntity;
 import net.teekay.axess.block.readers.AbstractKeycardReaderBlock;
 import net.teekay.axess.block.readers.KeycardReaderBlockEntity;
 import net.teekay.axess.block.receiver.ReceiverBlockEntity;
@@ -28,6 +29,12 @@ public class AxessBlockEntityRegistry {
             "mini_keycard_reader_left", AxessBlockRegistry.MINI_KEYCARD_READER_LEFT);
     public static final RegistryObject<BlockEntityType<KeycardReaderBlockEntity>> MINI_KEYCARD_READER_RIGHT = registerKeycardReader(
             "mini_keycard_reader_right", AxessBlockRegistry.MINI_KEYCARD_READER_RIGHT);
+
+    public static final RegistryObject<BlockEntityType<LockdownReceiverBlockEntity>> LOCKDOWN_RECEIVER = DEFERRED_REGISTER.register("lockdown_receiver",
+            () -> BlockEntityType.Builder.of(
+                    LockdownReceiverBlockEntity::new,
+                    AxessBlockRegistry.LOCKDOWN_RECEIVER.get()
+            ).build(null));
 
     public static final RegistryObject<BlockEntityType<KeycardEditorBlockEntity>> KEYCARD_EDITOR = DEFERRED_REGISTER.register("keycard_editor",
             () -> BlockEntityType.Builder.of(

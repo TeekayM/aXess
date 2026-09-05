@@ -47,6 +47,7 @@ public class KeycardReaderBlockEntityRenderer implements BlockEntityRenderer<Key
     }
 
     public static final AxessIconRegistry.AxessIcon ALLOW_ICON = AxessIconRegistry.ACCEPT;
+    public static final AxessIconRegistry.AxessIcon LOCKED_ICON = AxessIconRegistry.LOCKED;
     public static final AxessIconRegistry.AxessIcon NONE_ICON = AxessIconRegistry.CONFIGURE;
 
     public static final float CYCLE_TIME = 20F;
@@ -102,6 +103,7 @@ public class KeycardReaderBlockEntityRenderer implements BlockEntityRenderer<Key
         Direction facing = state.getValue(AbstractKeycardReaderBlock.FACING);
         AttachFace face = state.getValue(AbstractKeycardReaderBlock.FACE);
         boolean powerState = state.getValue(AbstractKeycardReaderBlock.POWERED);
+        boolean lockedState = state.getValue(AbstractKeycardReaderBlock.LOCKED);
 
        /* pPoseStack.pushPose();
 
@@ -124,10 +126,12 @@ public class KeycardReaderBlockEntityRenderer implements BlockEntityRenderer<Key
         Color color = AxessColors.MAIN;
         ArrayList<AccessLevel> accessLevels = pBlockEntity.getAccessLevels();
         int levels = accessLevels.size();
-
         if (powerState && levels != 0) {
             icon = ALLOW_ICON;
             color = AxessColors.GREEN;
+        } else if (lockedState && levels != 0) {
+            icon = LOCKED_ICON;
+            color = AxessColors.RED;
         } else if (levels != 0) {
             if (pBlockEntity.isOverrideDisplay()) {
                 icon = pBlockEntity.getOverrideIcon();

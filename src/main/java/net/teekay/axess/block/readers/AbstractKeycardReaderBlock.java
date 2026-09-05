@@ -81,6 +81,7 @@ public abstract class AbstractKeycardReaderBlock extends FaceAttachedHorizontalD
     public final VoxelShape VOXEL_SHAPE_CEILING_Z_NEG = VoxelShapeUtilities.rotateShape(VOXEL_SHAPE_CEILING_X, Direction.NORTH, Direction.EAST);
 
     public static final BooleanProperty POWERED = BlockStateProperties.POWERED;
+    public static final BooleanProperty LOCKED = BlockStateProperties.LOCKED;
     public static final BooleanProperty WATERLOGGED = BlockStateProperties.WATERLOGGED;
 
 
@@ -90,7 +91,7 @@ public abstract class AbstractKeycardReaderBlock extends FaceAttachedHorizontalD
                     return bs.getValue(POWERED) ? 6 : 6;
                 }));
         this.registerDefaultState(
-                this.stateDefinition.any().setValue(WATERLOGGED, false)
+                this.stateDefinition.any().setValue(WATERLOGGED, false).setValue(LOCKED, false)
         );
     }
 
@@ -125,10 +126,12 @@ public abstract class AbstractKeycardReaderBlock extends FaceAttachedHorizontalD
     }
 
     public InteractionResult tryOverride(KeycardReaderBlockEntity reader, Level pLevel, BlockState pState, BlockPos pPos, AccessNetwork keycardNet, AccessLevel keycardLevel, InteractionResult failResult) {
-        for (Pair<AccessNetwork, AccessLevel> pair :
-                reader.getOverrideAccessLevels()) {
-            if (pair.getFirst().getUUID() == keycardNet.getUUID() && pair.getSecond().getUUID() == keycardLevel.getUUID()) {
-                return onSuccess(reader, pLevel, pState, pPos);
+        if (!pState.getValue(LOCKED)) {
+            for (Pair<AccessNetwork, AccessLevel> pair :
+                    reader.getOverrideAccessLevels()) {
+                if (pair.getFirst().getUUID() == keycardNet.getUUID() && pair.getSecond().getUUID() == keycardLevel.getUUID()) {
+                    return onSuccess(reader, pLevel, pState, pPos);
+                }
             }
         }
         return onFail(reader, pLevel, pState, pPos);
@@ -154,7 +157,7 @@ public abstract class AbstractKeycardReaderBlock extends FaceAttachedHorizontalD
                 AccessLevel keycardAL = keycardItem.getAccessLevel(item, pLevel);
                 ArrayList<AccessLevel> readerALs = reader.getAccessLevels();
 
-                if (keycardAL == null || readerALs == null || readerALs.size() == 0)
+                if (keycardAL == null || readerALs == null || readerALs.size() == 0 || pState.getValue(LOCKED))
                     return onFail(reader, pLevel, pState, pPos);
 
                 if (switch (reader.getCompareMode()) {
@@ -213,6 +216,7 @@ public abstract class AbstractKeycardReaderBlock extends FaceAttachedHorizontalD
         builder.add(FACING);
         builder.add(FACE);
         builder.add(POWERED);
+        builder.add(LOCKED);
         builder.add(WATERLOGGED);
     }
 

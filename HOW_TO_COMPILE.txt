@@ -1,0 +1,10 @@
+im writing this with blood... please..
+
+if you want to actually get this to run type
+gradle runData
+gradle runClient
+
+and to export to jar do
+gradle build
+
+please.. i beg you.. read my message.
