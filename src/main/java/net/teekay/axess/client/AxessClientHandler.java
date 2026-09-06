@@ -15,6 +15,7 @@ import net.teekay.axess.Axess;
 import net.teekay.axess.access.AccessLevel;
 import net.teekay.axess.access.AccessNetwork;
 import net.teekay.axess.block.keycardeditor.KeycardEditorBlockEntityRenderer;
+import net.teekay.axess.block.lockdownreceiver.LockdownReceiverBlockEntityRenderer;
 import net.teekay.axess.block.readers.KeycardReaderBlockEntityRenderer;
 import net.teekay.axess.block.receiver.ReceiverBlockEntityRenderer;
 import net.teekay.axess.item.keycard.AbstractKeycardItem;
@@ -43,6 +44,7 @@ public class AxessClientHandler {
 
         event.registerBlockEntityRenderer(AxessBlockEntityRegistry.KEYCARD_EDITOR.get(), KeycardEditorBlockEntityRenderer::new);
         event.registerBlockEntityRenderer(AxessBlockEntityRegistry.RECEIVER.get(), ReceiverBlockEntityRenderer::new);
+        event.registerBlockEntityRenderer(AxessBlockEntityRegistry.LOCKDOWN_RECEIVER.get(), LockdownReceiverBlockEntityRenderer::new);
     }
 
     @SubscribeEvent

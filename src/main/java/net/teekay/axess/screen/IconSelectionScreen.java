@@ -2,6 +2,7 @@ package net.teekay.axess.screen;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.network.chat.Component;
@@ -68,10 +69,10 @@ public class IconSelectionScreen extends Screen {
 
         this.icons = AxessIconRegistry.getAllEntries();
 
-        for (int index = 0; index < AxessIconRegistry.getAllEntries().size(); index++)
+        for (int index = 0; index < icons.size(); index++)
         {
             int selfIndex = index;
-            iconButtons.add(new HumbleImageButton(
+            HumbleImageButton newButton = new HumbleImageButton(
                     windowX + (index % itemsPerRow) * (20 + 1), windowY,
                     20, 20,
                     0, 0,
@@ -81,7 +82,11 @@ public class IconSelectionScreen extends Screen {
                     btn -> {
                         select(selfIndex);
                     }
-            ));
+            );
+            if (icons.get(index).AUTHOR != null) {
+                newButton.setTooltip(Tooltip.create(Component.literal("By ").append(icons.get(index).AUTHOR)));
+            }
+            iconButtons.add(newButton);
         }
 
         for (HumbleImageButton btn :

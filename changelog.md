@@ -1,3 +1,13 @@
+# v0.4.0
+**Changes:**
+- Added new Lockdown Receiver (Authored by [radiantgurl](https://github.com/TeekayM/aXess/pull/5))
+- Added community icons
+
+**Fixes:**
+- Fixed keycard not rendering correctly in-hand using shaders (closes #11)
+
+NOTE: this is the last version for 1.20.1
+
 # v0.3.3
 **Changes:**
 - Added config option `max_reader_powered_ticks` (default 300): changes the maximum amount of ticks you can set for a PULSE reader.

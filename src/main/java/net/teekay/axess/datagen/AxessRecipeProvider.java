@@ -113,5 +113,14 @@ public class AxessRecipeProvider extends RecipeProvider implements IConditionBui
                 .unlockedBy(getHasName(Items.IRON_INGOT), has(Items.IRON_INGOT))
                 .save(pWriter);
 
+        ShapedRecipeBuilder.shaped(RecipeCategory.REDSTONE, AxessBlockRegistry.LOCKDOWN_RECEIVER.get())
+                .pattern(" Q ")
+                .pattern("QBQ")
+                .pattern(" Q ")
+                .define('B', AxessBlockRegistry.RECEIVER.get())
+                .define('Q', Items.IRON_BARS)
+                .unlockedBy(getHasName(Items.IRON_INGOT), has(Items.IRON_INGOT))
+                .save(pWriter);
+
     }
 }

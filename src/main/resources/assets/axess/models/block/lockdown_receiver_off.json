@@ -3,9 +3,9 @@
 	"credit": "Made with Blockbench",
 	"render_type": "cutout",
 	"textures": {
-		"0": "axess:block/lockdown_receiver_torch_on",
+		"0": "axess:block/lockdown_receiver_torch_off",
 		"1": "axess:block/lockdown_receiver_base",
-		"particle": "axess:block/lockdown_receiver_torch_on"
+		"particle": "axess:block/lockdown_receiver_torch_off"
 	},
 	"elements": [
 		{

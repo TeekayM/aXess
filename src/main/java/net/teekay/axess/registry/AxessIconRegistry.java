@@ -3,6 +3,7 @@ package net.teekay.axess.registry;
 import net.minecraft.resources.ResourceLocation;
 import net.teekay.axess.Axess;
 
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -11,10 +12,17 @@ public class AxessIconRegistry {
     public static class AxessIcon {
         public ResourceLocation TEXTURE;
         public String ID;
+        public String AUTHOR;
 
         public AxessIcon(String id, ResourceLocation tex) {
             TEXTURE = tex;
             ID = id;
+        }
+
+        public AxessIcon(String id, ResourceLocation tex, String author) {
+            TEXTURE = tex;
+            ID = id;
+            AUTHOR = author;
         }
     }
     
@@ -172,6 +180,18 @@ public class AxessIconRegistry {
     public static AxessIcon BLACK_HOLE = registerIcon("black_hole");
     public static AxessIcon NONE = registerIcon("none");
 
+
+    // ! COMMUNITY
+
+    // LUXASPARK
+    public static AxessIcon COMMUNITY_LUXASPARK_SMILEY = registerIcon("community_luxaspark_smiley", "Luxaspark");
+    public static AxessIcon COMMUNITY_LUXASPARK_DATA_DIVER_1 = registerIcon("community_luxaspark_data_diver_1", "Luxaspark");
+    public static AxessIcon COMMUNITY_LUXASPARK_DATA_DIVER_2 = registerIcon("community_luxaspark_data_diver_2", "Luxaspark");
+    public static AxessIcon COMMUNITY_LUXASPARK_DATA_DIVER_3 = registerIcon("community_luxaspark_data_diver_3", "Luxaspark");
+    public static AxessIcon COMMUNITY_LUXASPARK_DATA_DIVER_4 = registerIcon("community_luxaspark_data_diver_4", "Luxaspark");
+    public static AxessIcon COMMUNITY_LUXASPARK_DATA_DIVER_5 = registerIcon("community_luxaspark_data_diver_5", "Luxaspark");
+    public static AxessIcon COMMUNITY_LUXASPARK_DATA_DIVER_6 = registerIcon("community_luxaspark_data_diver_6", "Luxaspark");
+
     public static AxessIcon getIcon(String iconID) {
         AxessIcon icon = ENTRIES.get(iconID);
         if (icon != null) return icon;
@@ -182,13 +202,17 @@ public class AxessIconRegistry {
         return NONE;
     }
 
-    public static AxessIcon registerIcon(String iconID) {
+    public static AxessIcon registerIcon(String iconID, String author) {
         ResourceLocation iconTex = ResourceLocation.fromNamespaceAndPath(Axess.MODID, "textures/icon/" + iconID + ".png");
-        AxessIcon icon = new AxessIcon(iconID, iconTex);
+        AxessIcon icon = new AxessIcon(iconID, iconTex, author);
         ENTRIES.put(icon.ID, icon);
         ORDERED_ENTRIES.add(icon);
 
         return icon;
+    }
+
+    public static AxessIcon registerIcon(String iconID) {
+        return registerIcon(iconID, null);
     }
 
     public static AxessIcon registerMetaIcon(String iconID) {

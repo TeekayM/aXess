@@ -43,16 +43,13 @@ public class AxessBlockStateProvider extends BlockStateProvider {
         horizontalBlock(AxessBlockRegistry.KEYCARD_EDITOR.get(), keycardEditorModel);
         itemModels().getBuilder(keycardEditorID).parent(keycardEditorModel);
 
-        // LOCKDOWN RECEIVER
-        String lockdownReceiverID = "lockdown_receiver";
-        ModelFile lockdownReceiverModel = getBlockModel(lockdownReceiverID);
-        horizontalBlock(AxessBlockRegistry.LOCKDOWN_RECEIVER.get(), lockdownReceiverModel);
-        itemModels().getBuilder(lockdownReceiverID).parent(lockdownReceiverModel);
-
         // RECEIVER
         Block receiver = AxessBlockRegistry.RECEIVER.get();
-
         receiverBlock(receiver, "receiver");
+
+        // LOCKDOWN RECEIVER
+        Block lockdown_receiver = AxessBlockRegistry.LOCKDOWN_RECEIVER.get();
+        lockdownReceiverBlock(lockdown_receiver, "lockdown_receiver");
     }
 
     private ModelFile getBlockModel(String id) {
@@ -100,6 +97,22 @@ public class AxessBlockStateProvider extends BlockStateProvider {
                     .modelFile(model)
                     .rotationX(rotX)
                     .rotationY(rotY)
+                    .build();
+        });
+
+        itemModels().getBuilder(id).parent(on);
+    }
+
+    private void lockdownReceiverBlock(Block receiver, String id) {
+        ModelFile.ExistingModelFile on = models().getExistingFile(modLoc("block/"+id));
+        ModelFile.ExistingModelFile off = models().getExistingFile(modLoc("block/"+id+"_off"));
+        getVariantBuilder(receiver).forAllStates(blockState -> {
+            boolean powered = blockState.getValue(ReceiverBlock.POWERED);
+
+            ModelFile.ExistingModelFile model = powered ? on : off;
+
+            return ConfiguredModel.builder()
+                    .modelFile(model)
                     .build();
         });
 

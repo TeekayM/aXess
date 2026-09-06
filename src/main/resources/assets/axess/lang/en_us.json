@@ -26,6 +26,7 @@
   "tooltip.axess.block.keycard_editor": "Assign networks and access levels to keycards",
   "tooltip.axess.block.reader": "Used for access control. When powered, powers the block behind it. Right click with wrench to edit",
   "tooltip.axess.block.receiver": "Link with a reader. Activates when reader is on and powers the block under it",
+  "tooltip.axess.block.lockdown_receiver": "Link with a reader. When getting redstone signal, locks all connected readers.",
 
   "block.axess.keycard_reader": "Keycard Reader",
   "block.axess.mini_keycard_reader_left": "Mini Keycard Reader (Left)",
@@ -35,6 +36,8 @@
   "block.axess.keycard_editor": "Keycard Editor",
 
   "block.axess.receiver": "Receiver",
+
+  "block.axess.lockdown_receiver": "Lockdown Receiver",
 
   "tooltip.axess.keycard.access_network": "Network",
   "tooltip.axess.keycard.access_level": "Level",

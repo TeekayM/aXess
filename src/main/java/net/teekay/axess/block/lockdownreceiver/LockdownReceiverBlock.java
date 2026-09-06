@@ -37,7 +37,7 @@ import org.lwjgl.glfw.GLFW;
 import java.util.List;
 
 public class LockdownReceiverBlock extends BaseEntityBlock {
-    public static final VoxelShape VOXEL_SHAPE = Block.box(0,0,0,16,8,16);
+    public final VoxelShape VOXEL_SHAPE = Block.box(4, 0, 4, 12, 8, 12);
 
     public static final DirectionProperty FACING = BlockStateProperties.HORIZONTAL_FACING;
     public static final BooleanProperty POWERED = BlockStateProperties.POWERED;
