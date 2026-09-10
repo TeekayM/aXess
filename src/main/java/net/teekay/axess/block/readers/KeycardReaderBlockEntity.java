@@ -10,6 +10,7 @@ import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.FaceAttachedHorizontalDirectionalBlock;
@@ -38,6 +39,8 @@ import java.awt.*;
 import java.util.ArrayList;
 import java.util.UUID;
 import java.util.function.Consumer;
+import net.minecraft.core.HolderLookup;
+
 
 public class KeycardReaderBlockEntity extends BlockEntity implements MenuProvider, ILinkableBlockEntity {
 
@@ -348,7 +351,7 @@ public class KeycardReaderBlockEntity extends BlockEntity implements MenuProvide
     }
 
     @Override
-    protected void saveAdditional(CompoundTag pTag) {
+    protected void saveAdditional(CompoundTag pTag, HolderLookup.Provider registries) {
         CompoundTag modTag = new CompoundTag();
 
         if (networkID != null) {
@@ -398,11 +401,11 @@ public class KeycardReaderBlockEntity extends BlockEntity implements MenuProvide
 
         pTag.put(Axess.MODID, modTag);
 
-        super.saveAdditional(pTag);
+        super.saveAdditional(pTag, registries);
     }
 
     @Override
-    public void load(CompoundTag pTag) {
+    protected void loadAdditional(CompoundTag pTag, HolderLookup.Provider registries) {
         CompoundTag modTag = pTag.getCompound(Axess.MODID);
 
         if (modTag.contains(ACCESS_NETWORK_KEY))
@@ -450,7 +453,7 @@ public class KeycardReaderBlockEntity extends BlockEntity implements MenuProvide
         if (modTag.contains(OVERRIDE_COLOR_KEY))
             overrideColor = new Color(modTag.getInt(OVERRIDE_COLOR_KEY));
 
-        super.load(pTag);
+        super.loadAdditional(pTag, registries);
         setChanged();
     }
 
@@ -468,15 +471,15 @@ public class KeycardReaderBlockEntity extends BlockEntity implements MenuProvide
     }
 
     @Override
-    public CompoundTag getUpdateTag() {
+    public CompoundTag getUpdateTag(HolderLookup.Provider registries) {
         CompoundTag tag = new CompoundTag();
-        saveAdditional(tag);
+        saveAdditional(tag, registries);
         return tag;
     }
 
     @Override
-    public void handleUpdateTag(CompoundTag tag) {
-        load(tag);
+    public void handleUpdateTag(CompoundTag tag, HolderLookup.Provider lookupProvider) {
+        this.loadAdditional(tag, lookupProvider);
     }
 
     @Override

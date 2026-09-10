@@ -15,10 +15,9 @@ import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.HoverEvent;
 import net.minecraft.network.chat.TextColor;
-import net.minecraftforge.event.RegisterCommandsEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.ModList;
-import net.minecraftforge.fml.common.Mod;
+import net.neoforged.neoforge.event.RegisterCommandsEvent;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.ModList;
 import net.teekay.axess.Axess;
 import net.teekay.axess.access.AccessNetwork;
 import net.teekay.axess.access.AccessNetworkDataServer;
@@ -29,8 +28,9 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.UUID;
+import net.neoforged.fml.common.EventBusSubscriber;
 
-@Mod.EventBusSubscriber
+@EventBusSubscriber
 public class AxessCommands {
 
     private static Gson GSON = new GsonBuilder()
@@ -185,7 +185,7 @@ public class AxessCommands {
 
                         .then(Commands.literal("dump")
                                 .executes(context -> {
-                                    Path path = context.getSource().getServer().getServerDirectory().toPath();
+                                    Path path = context.getSource().getServer().getServerDirectory().toAbsolutePath();
 
                                     try {
                                         Path dir = Files.createDirectories(path.resolve("axess_dump"));

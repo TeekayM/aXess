@@ -1,7 +1,7 @@
 {
   "pack": {
     "description": "aXess resources",
-    "pack_format": 15,
+    "pack_format": 48, "supported_formats": {"min_inclusive": 34, "max_inclusive": 48},
     "forge:server_data_pack_format": 12
   }
 }

@@ -193,13 +193,15 @@ public class NetworkEditorScreen extends Screen {
 
     @Override
     public void render(GuiGraphics pGuiGraphics, int pMouseX, int pMouseY, float pPartialTick) {
-        renderBackground(pGuiGraphics);
+        this.renderBackground(pGuiGraphics, pMouseX, pMouseY, pPartialTick);
 
         pGuiGraphics.blit(TEXTURE, this.leftPos, this.topPos, 0, 0, this.imageWidth, this.imageHeight);
 
-        this.accessLevelListEditor.render(pGuiGraphics, pMouseX, pMouseY, pPartialTick);
+        for(Renderable renderable : this.renderables) {
+            renderable.render(pGuiGraphics, pMouseX, pMouseY, pPartialTick);
+        }
 
-        super.render(pGuiGraphics, pMouseX, pMouseY, pPartialTick);
+        this.accessLevelListEditor.render(pGuiGraphics, pMouseX, pMouseY, pPartialTick);
 
         //int networks = this.accessLevelList.getSize();
         //pGuiGraphics.drawString(this.font, Component.literal(String.valueOf(networks)).append(" ").append(networks == 1 ? NETWORK_LABEL : NETWORKS_LABEL),
@@ -224,9 +226,9 @@ public class NetworkEditorScreen extends Screen {
     }
 
     @Override
-    public boolean mouseScrolled(double pMouseX, double pMouseY, double pDelta) {
-        this.accessLevelListEditor.scroll((int) (pDelta) * -7);
-        return super.mouseScrolled(pMouseX, pMouseY, pDelta);
+    public boolean mouseScrolled(double pMouseX, double pMouseY, double scrollX, double scrollY) {
+        this.accessLevelListEditor.scroll((int) (scrollY) * -7);
+        return super.mouseScrolled(pMouseX, pMouseY, 0, scrollY);
     }
 
     @Override

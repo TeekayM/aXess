@@ -6,7 +6,6 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraftforge.network.NetworkEvent;
 import net.teekay.axess.access.*;
 import net.teekay.axess.block.readers.KeycardReaderBlockEntity;
 import net.teekay.axess.network.IAxessPacket;
@@ -16,9 +15,26 @@ import net.teekay.axess.screen.KeycardReaderMenu;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.UUID;
-import java.util.function.Supplier;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.core.HolderLookup;
 
-public class CtSModifyKeycardReaderPacket implements IAxessPacket {
+
+
+public class CtSModifyKeycardReaderPacket implements IAxessPacket, CustomPacketPayload {
+    public static final CustomPacketPayload.Type<CtSModifyKeycardReaderPacket> TYPE =
+            new CustomPacketPayload.Type<>(ResourceLocation.fromNamespaceAndPath(net.teekay.axess.Axess.MODID, "ct_smodify_keycard_reader"));
+
+    public static final StreamCodec<FriendlyByteBuf, CtSModifyKeycardReaderPacket> STREAM_CODEC =
+            StreamCodec.of((buf, packet) -> packet.encode(buf), CtSModifyKeycardReaderPacket::new);
+
+    @Override
+    public CustomPacketPayload.Type<? extends CustomPacketPayload> type() {
+        return TYPE;
+    }
+
     public BlockPos blockEntityPos;
     public UUID networkUUID;
     public ArrayList<UUID> accessLevelsUUIDs;
@@ -127,17 +143,14 @@ public class CtSModifyKeycardReaderPacket implements IAxessPacket {
     }
 
     @Override
-    public void handle(Supplier<NetworkEvent.Context> contextSupplier) {
-        NetworkEvent.Context context = contextSupplier.get();
-
-        if (context.getDirection().getReceptionSide().isClient()) {
-            context.setPacketHandled(false);
+    public void handle(IPayloadContext context) {
+        if (context.flow().getReceptionSide().isClient()) {
             return;
         }
 
         context.enqueueWork(() -> {
             try {
-                ServerPlayer player = context.getSender();
+                ServerPlayer player = (ServerPlayer) context.player();
                 if (player == null) return;
 
                 KeycardReaderBlockEntity reader;

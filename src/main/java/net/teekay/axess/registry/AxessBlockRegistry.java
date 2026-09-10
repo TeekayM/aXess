@@ -3,10 +3,9 @@ package net.teekay.axess.registry;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
-import net.minecraftforge.eventbus.api.IEventBus;
-import net.minecraftforge.registries.DeferredRegister;
-import net.minecraftforge.registries.ForgeRegistries;
-import net.minecraftforge.registries.RegistryObject;
+import net.neoforged.bus.api.IEventBus;
+import net.neoforged.neoforge.registries.DeferredRegister;
+import net.minecraft.core.registries.Registries;
 import net.teekay.axess.Axess;
 import net.teekay.axess.block.keycardeditor.KeycardEditorBlock;
 import net.teekay.axess.block.lockdownreceiver.LockdownReceiverBlock;
@@ -18,27 +17,28 @@ import net.teekay.axess.block.receiver.ReceiverBlock;
 
 import java.util.*;
 import java.util.function.Supplier;
+import net.neoforged.neoforge.registries.DeferredHolder;
 
 
 public class AxessBlockRegistry {
 
-    public static final DeferredRegister<Block> DEFERRED_REGISTER = DeferredRegister.create(ForgeRegistries.BLOCKS, Axess.MODID);
+    public static final DeferredRegister<Block> DEFERRED_REGISTER = DeferredRegister.create(Registries.BLOCK, Axess.MODID);
 
 
 
     // REGISTRY
-    public static final RegistryObject<Block> KEYCARD_READER = registerBlock("keycard_reader", KeycardReaderBlock::new);
-    public static final RegistryObject<Block> MINI_KEYCARD_READER_LEFT = registerBlock("mini_keycard_reader_left", MiniKeycardReaderLeftBlock::new);
-    public static final RegistryObject<Block> MINI_KEYCARD_READER_RIGHT = registerBlock("mini_keycard_reader_right", MiniKeycardReaderRightBlock::new);
+    public static final DeferredHolder<Block, Block> KEYCARD_READER = registerBlock("keycard_reader", KeycardReaderBlock::new);
+    public static final DeferredHolder<Block, Block> MINI_KEYCARD_READER_LEFT = registerBlock("mini_keycard_reader_left", MiniKeycardReaderLeftBlock::new);
+    public static final DeferredHolder<Block, Block> MINI_KEYCARD_READER_RIGHT = registerBlock("mini_keycard_reader_right", MiniKeycardReaderRightBlock::new);
 
-    public static final RegistryObject<Block> NETWORK_MANAGER = registerBlock("network_manager", NetworkManagerBlock::new);
-    public static final RegistryObject<Block> KEYCARD_EDITOR = registerBlock("keycard_editor", KeycardEditorBlock::new);
-    public static final RegistryObject<Block> RECEIVER = registerBlock("receiver", ReceiverBlock::new);
-    public static final RegistryObject<Block> LOCKDOWN_RECEIVER = registerBlock("lockdown_receiver", LockdownReceiverBlock::new);
+    public static final DeferredHolder<Block, Block> NETWORK_MANAGER = registerBlock("network_manager", NetworkManagerBlock::new);
+    public static final DeferredHolder<Block, Block> KEYCARD_EDITOR = registerBlock("keycard_editor", KeycardEditorBlock::new);
+    public static final DeferredHolder<Block, Block> RECEIVER = registerBlock("receiver", ReceiverBlock::new);
+    public static final DeferredHolder<Block, Block> LOCKDOWN_RECEIVER = registerBlock("lockdown_receiver", LockdownReceiverBlock::new);
 
-    private static RegistryObject<Block> registerBlock(String id, Supplier<Block> block) { return registerBlock(id, block, true); }
-    private static RegistryObject<Block> registerBlock(String id, Supplier<Block> blockSupplier, boolean withItem) {
-        RegistryObject<Block> block = DEFERRED_REGISTER.register(id, blockSupplier);
+    private static DeferredHolder<Block, Block> registerBlock(String id, Supplier<Block> block) { return registerBlock(id, block, true); }
+    private static DeferredHolder<Block, Block> registerBlock(String id, Supplier<Block> blockSupplier, boolean withItem) {
+        DeferredHolder<Block, Block> block = DEFERRED_REGISTER.register(id, blockSupplier);
 
         if (withItem) {
             AxessItemRegistry.DEFERRED_REGISTER.register(id, () -> new BlockItem(block.get(), new Item.Properties()));
@@ -51,7 +51,7 @@ public class AxessBlockRegistry {
         DEFERRED_REGISTER.register(eventBus);
     }
 
-    public static Collection<RegistryObject<Block>> getEntries() {
+    public static Collection<DeferredHolder<Block,? extends Block>> getEntries() {
         return DEFERRED_REGISTER.getEntries();
     }
 

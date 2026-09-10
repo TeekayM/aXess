@@ -30,14 +30,12 @@ public class RenderingUtilities {
         float gr = color.getGreen() / 255f;
         float bl = color.getBlue() / 255f;
 
-        consumer.vertex(matrix, (float) offset1.x + a.getX(), (float) offset1.y + a.getY(), (float) offset1.z + a.getZ())
-                .color(re, gr, bl, 1F)
-                //.normal(matrixNrml,0F, 1F, 0F)
-                .endVertex();
-        consumer.vertex(matrix, (float) offset2.x +  b.getX(), (float) offset2.y + b.getY(), (float) offset2.z + b.getZ())
-                .color(re, gr, bl, 1F)
-                //.normal(matrixNrml,0F, 1F, 0F)
-                .endVertex();
+        consumer.addVertex(matrix, (float) offset1.x + a.getX(), (float) offset1.y + a.getY(), (float) offset1.z + a.getZ()).setColor(re, gr, bl, 1F)
+                //.setNormal(matrixNrml, 0F, 1F, 0F)
+                ;
+        consumer.addVertex(matrix, (float) offset2.x +  b.getX(), (float) offset2.y + b.getY(), (float) offset2.z + b.getZ()).setColor(re, gr, bl, 1F)
+                //.setNormal(matrixNrml, 0F, 1F, 0F)
+                ;
     }
 
     public static void renderBlockOutline(PoseStack poseStack, MultiBufferSource buffer, BlockPos pos, float offset) {

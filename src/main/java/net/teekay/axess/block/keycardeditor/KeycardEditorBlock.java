@@ -1,6 +1,7 @@
 package net.teekay.axess.block.keycardeditor;
 
 import com.mojang.blaze3d.platform.InputConstants;
+import com.mojang.serialization.MapCodec;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
@@ -8,6 +9,8 @@ import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
+import net.minecraft.world.ItemInteractionResult;
+import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -25,23 +28,35 @@ import net.minecraft.world.level.block.state.properties.DirectionProperty;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.fml.DistExecutor;
-import net.minecraftforge.network.NetworkHooks;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 import net.teekay.axess.Axess;
 import net.teekay.axess.client.AxessClientMenus;
 import org.lwjgl.glfw.GLFW;
 
 import javax.annotation.Nullable;
 import java.util.List;
+import net.minecraft.world.item.Item;
+
 
 public class KeycardEditorBlock extends BaseEntityBlock {
+    public static final MapCodec<KeycardEditorBlock> CODEC = simpleCodec(KeycardEditorBlock::new);
+
+    @Override
+    protected MapCodec<? extends BaseEntityBlock> codec() {
+        return CODEC;
+    }
+
+
+    public KeycardEditorBlock(BlockBehaviour.Properties properties) {
+        super(properties);
+    }
+
 
     public static final VoxelShape VOXEL_SHAPE = Block.box(0,0,0,16,8,16);
 
     public KeycardEditorBlock() {
-        super(BlockBehaviour.Properties.copy(Blocks.IRON_BLOCK)
+        super(BlockBehaviour.Properties.ofFullCopy(Blocks.IRON_BLOCK)
                 .strength(4f, 6)
                 .noOcclusion()
                 .requiresCorrectToolForDrops());
@@ -64,19 +79,19 @@ public class KeycardEditorBlock extends BaseEntityBlock {
 
 
     @Override
-    public InteractionResult use(BlockState pState, Level pLevel, BlockPos pPos, Player pPlayer, InteractionHand pHand, BlockHitResult pHit) {
-        if (pHand != InteractionHand.MAIN_HAND) return InteractionResult.PASS;
+    protected ItemInteractionResult useItemOn(ItemStack itemstack, BlockState pState, Level pLevel, BlockPos pPos, Player pPlayer, InteractionHand pHand, BlockHitResult pHit) {
+        if (pHand != InteractionHand.MAIN_HAND) return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
 
         if (!pLevel.isClientSide()) {
             BlockEntity entity = pLevel.getBlockEntity(pPos);
             if (entity instanceof KeycardEditorBlockEntity) {
-                NetworkHooks.openScreen((ServerPlayer) pPlayer, (KeycardEditorBlockEntity) entity, pPos);
+                ((ServerPlayer) pPlayer).openMenu((KeycardEditorBlockEntity) entity, buf -> buf.writeBlockPos(pPos));
             } else {
                 throw new IllegalStateException("Missing container provider");
             }
         }
 
-        return InteractionResult.sidedSuccess(pLevel.isClientSide());
+        return net.minecraft.world.ItemInteractionResult.sidedSuccess(pLevel.isClientSide());
     }
 
 
@@ -135,7 +150,7 @@ public class KeycardEditorBlock extends BaseEntityBlock {
 
     @OnlyIn(Dist.CLIENT)
     @Override
-    public void appendHoverText(ItemStack pStack, @org.jetbrains.annotations.Nullable BlockGetter pLevel, List<Component> pTooltipComponents, TooltipFlag pFlag) {
+    public void appendHoverText(ItemStack pStack, Item.TooltipContext pLevel, List<Component> pTooltipComponents, TooltipFlag pFlag) {
         if (pLevel == null) {super.appendHoverText(pStack, pLevel, pTooltipComponents, pFlag); return;}
 
         // Tooltip

@@ -57,8 +57,10 @@ public class ColorSelectorButton extends HumbleImageButton {
     }
 
     @Override
-    public void render(GuiGraphics g, int mouseX, int mouseY, float partialTick) {
-        super.render(g, mouseX, mouseY, partialTick);
+    public void renderWidget(GuiGraphics g, int mouseX, int mouseY, float partialTick) {
+        super.renderWidget(g, mouseX, mouseY, partialTick);
+        if (!active) return;
+
         g.fill(
                 getX() + 2,
                 getY() + 2,
@@ -66,5 +68,6 @@ public class ColorSelectorButton extends HumbleImageButton {
                 getY() + getHeight() - 2,
                 sColor.getRGB()
         );
+
     }
 }

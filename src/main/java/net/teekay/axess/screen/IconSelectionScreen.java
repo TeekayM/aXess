@@ -2,6 +2,7 @@ package net.teekay.axess.screen;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.components.Renderable;
 import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.multiplayer.ClientLevel;
@@ -105,8 +106,13 @@ public class IconSelectionScreen extends Screen {
 
     @Override
     public void render(GuiGraphics pGuiGraphics, int pMouseX, int pMouseY, float pPartialTick) {
-        this.renderBackground(pGuiGraphics);
+        this.renderBackground(pGuiGraphics, pMouseX, pMouseY, pPartialTick);
+
         pGuiGraphics.blit(TEXTURE, this.leftPos, this.topPos, 0, 0, this.imageWidth, this.imageHeight);
+
+        for(Renderable renderable : this.renderables) {
+            renderable.render(pGuiGraphics, pMouseX, pMouseY, pPartialTick);
+        }
 
         pGuiGraphics.enableScissor(this.windowX, this.windowY, this.windowX + this.windowWidth + this.scrollerWidth + 10, this.windowY + this.windowHeight);
 
@@ -124,16 +130,14 @@ public class IconSelectionScreen extends Screen {
 
         pGuiGraphics.disableScissor();
 
-        super.render(pGuiGraphics, pMouseX, pMouseY, pPartialTick);
-
         int textLen = font.width(TITLE);
         pGuiGraphics.drawString(this.font, TITLE, this.leftPos + (this.imageWidth - textLen) / 2, this.topPos+8, AxessColors.MAIN.getRGB(), false);
     }
 
     @Override
-    public boolean mouseScrolled(double pMouseX, double pMouseY, double pDelta) {
-        scroll((int) (pDelta) * -7);
-        return super.mouseScrolled(pMouseX, pMouseY, pDelta);
+    public boolean mouseScrolled(double pMouseX, double pMouseY, double scrollX, double scrollY) {
+        scroll((int) (scrollY) * -7);
+        return super.mouseScrolled(pMouseX, pMouseY, 0, scrollY);
     }
 
     public void scroll(int delta) {

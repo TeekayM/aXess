@@ -109,12 +109,11 @@ public class KeycardEditorScreen extends AbstractContainerScreen<KeycardEditorMe
 
     @Override
     public void render(GuiGraphics pGuiGraphics, int pMouseX, int pMouseY, float pPartialTick) {
-        renderBackground(pGuiGraphics);
+        super.render(pGuiGraphics, pMouseX, pMouseY, pPartialTick);
 
         scrollPosLevels   = MathUtilities.clampInt(scrollPosLevels,   0, scrollMaxLevels  );
         scrollPosNetworks = MathUtilities.clampInt(scrollPosNetworks, 0, scrollMaxNetworks);
 
-        super.render(pGuiGraphics, pMouseX, pMouseY, pPartialTick);
 
         pGuiGraphics.drawString(this.font, TITLE_LABEL, this.leftPos+8, this.topPos+8, AxessColors.MAIN.getRGB(), false);
 
@@ -122,7 +121,7 @@ public class KeycardEditorScreen extends AbstractContainerScreen<KeycardEditorMe
         pGuiGraphics.enableScissor(leftPos + NETWORKS_X, topPos + NETWORKS_Y, leftPos + NETWORKS_X + NETWORKS_WIDTH, topPos + NETWORKS_Y + NETWORKS_HEIGHT);
         for (SelectableNetworkEntry entry:
              networkEntries) {
-            entry.render(pGuiGraphics,pMouseX,pMouseY,pPartialTick);
+            entry.renderWidget(pGuiGraphics,pMouseX,pMouseY,pPartialTick);
         }
         pGuiGraphics.disableScissor();
 
@@ -139,7 +138,7 @@ public class KeycardEditorScreen extends AbstractContainerScreen<KeycardEditorMe
         pGuiGraphics.enableScissor(leftPos + LEVELS_X, topPos + LEVELS_Y, leftPos + LEVELS_X + LEVELS_WIDTH, topPos + LEVELS_Y + LEVELS_HEIGHT);
         for (SelectableLevelEntry entry:
                 levelEntries) {
-            entry.render(pGuiGraphics,pMouseX,pMouseY,pPartialTick);
+            entry.renderWidget(pGuiGraphics,pMouseX,pMouseY,pPartialTick);
         }
         pGuiGraphics.disableScissor();
 
@@ -285,12 +284,12 @@ public class KeycardEditorScreen extends AbstractContainerScreen<KeycardEditorMe
     }
 
     @Override
-    public boolean mouseScrolled(double pMouseX, double pMouseY, double pDelta) {
+    public boolean mouseScrolled(double pMouseX, double pMouseY, double scrollX, double scrollY) {
         if ((int)pMouseX <= leftPos + NETWORKS_X + NETWORKS_WIDTH + 4)
-            scrollPosNetworks = Math.max(Math.min(scrollPosNetworks + (int)(pDelta * -7), scrollMaxNetworks), 0);
+            scrollPosNetworks = Math.max(Math.min(scrollPosNetworks + (int)(scrollY * -7), scrollMaxNetworks), 0);
         else
-            scrollPosLevels = Math.max(Math.min(scrollPosLevels + (int)(pDelta * -7), scrollMaxLevels), 0);
-        return super.mouseScrolled(pMouseX, pMouseY, pDelta);
+            scrollPosLevels = Math.max(Math.min(scrollPosLevels + (int)(scrollY * -7), scrollMaxLevels), 0);
+        return super.mouseScrolled(pMouseX, pMouseY, 0, scrollY);
     }
 
     // CONSTANTS
@@ -312,6 +311,7 @@ public class KeycardEditorScreen extends AbstractContainerScreen<KeycardEditorMe
         private AccessNetwork network;
         private int index;
 
+        @SuppressWarnings("this-escape")
         public SelectableNetworkEntry(AccessNetwork network, int index) {
                 super(leftPos + NETWORKS_X, topPos + NETWORKS_Y, NETWORKS_WIDTH, ENTRY_HEIGHT, Component.literal(network.getName()), btn -> {
                     selectNetwork(network);
@@ -325,9 +325,9 @@ public class KeycardEditorScreen extends AbstractContainerScreen<KeycardEditorMe
         }
 
         @Override
-        public void render(GuiGraphics pGuiGraphics, int pMouseX, int pMouseY, float pPartialTick) {
+        public void renderWidget(GuiGraphics pGuiGraphics, int pMouseX, int pMouseY, float pPartialTick) {
             this.setY(topPos + NETWORKS_Y + index * (ENTRY_HEIGHT + ENTRY_PADDING) - scrollPosNetworks);
-            super.render(pGuiGraphics, pMouseX, pMouseY, pPartialTick);
+            super.renderWidget(pGuiGraphics, pMouseX, pMouseY, pPartialTick);
         }
 
         @Override
@@ -341,6 +341,7 @@ public class KeycardEditorScreen extends AbstractContainerScreen<KeycardEditorMe
         private AccessLevel level;
         private int index;
 
+        @SuppressWarnings("this-escape")
         public SelectableLevelEntry(AccessLevel level, int index) {
             super(leftPos + LEVELS_X, topPos + LEVELS_Y, LEVELS_WIDTH, ENTRY_HEIGHT, Component.literal(level.getName()),
                     btn -> {selectLevel(level);}
@@ -354,12 +355,10 @@ public class KeycardEditorScreen extends AbstractContainerScreen<KeycardEditorMe
         }
 
         @Override
-        public void render(GuiGraphics pGuiGraphics, int pMouseX, int pMouseY, float pPartialTick) {
+        public void renderWidget(GuiGraphics pGuiGraphics, int pMouseX, int pMouseY, float pPartialTick) {
             int y = topPos + LEVELS_Y + index * (ENTRY_HEIGHT + ENTRY_PADDING) - scrollPosLevels;
             this.setY(y);
-
-            super.render(pGuiGraphics, pMouseX, pMouseY, pPartialTick);
-
+            super.renderWidget(pGuiGraphics, pMouseX, pMouseY, pPartialTick);
             pGuiGraphics.setColor(level.getColor().getRed()/255f, level.getColor().getGreen()/255f, level.getColor().getBlue()/255f, 1f);
             pGuiGraphics.blit(level.getIcon().TEXTURE, this.getX() + 2, y, 0, 0, 18, 18, 18, 18);
             pGuiGraphics.setColor(1f,1f,1f,1f);

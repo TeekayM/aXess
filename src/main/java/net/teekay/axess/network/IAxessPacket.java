@@ -1,12 +1,13 @@
 package net.teekay.axess.network;
 
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraftforge.network.NetworkEvent;
-
 import java.util.function.BiConsumer;
 import java.util.function.Supplier;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
+import net.minecraft.core.HolderLookup;
+
 
 public interface IAxessPacket {
     void encode(FriendlyByteBuf buffer);
-    void handle(Supplier<NetworkEvent.Context> contextSupplier);
+    void handle(IPayloadContext contextSupplier);
 }

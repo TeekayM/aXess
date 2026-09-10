@@ -8,6 +8,8 @@ public enum AccessBlockPowerState implements StringRepresentable {
     DENY("deny"),
     DISABLED("disabled");
 
+	public static final StringRepresentable.EnumCodec<AccessBlockPowerState> CODEC = StringRepresentable.fromEnum(AccessBlockPowerState::values);
+
     private final String id;
 
     @Override

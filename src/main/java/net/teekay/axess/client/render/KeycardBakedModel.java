@@ -12,12 +12,17 @@ import net.minecraft.client.resources.model.Material;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.resources.model.ModelManager;
 import net.minecraft.client.renderer.RenderType;
+import net.minecraft.core.Direction;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.item.ItemStack;
 
 import javax.annotation.Nullable;
 import java.util.List;
+
+import net.minecraft.world.level.block.state.BlockState;
+import net.neoforged.neoforge.client.model.data.ModelData;
+
 
 public class KeycardBakedModel implements BakedModel {
 
@@ -28,10 +33,10 @@ public class KeycardBakedModel implements BakedModel {
     }
 
     @Override
-    public List<BakedQuad> getQuads(@Nullable net.minecraft.world.level.block.state.BlockState state,
-                                    @Nullable net.minecraft.core.Direction side,
+    public List<BakedQuad> getQuads(@Nullable BlockState state,
+                                    @Nullable Direction side,
                                     RandomSource rand) {
-        return original.getQuads(state, side, rand);
+        return original.getQuads(state, side, rand, ModelData.EMPTY, null);
     }
 
     @Override
@@ -54,11 +59,13 @@ public class KeycardBakedModel implements BakedModel {
         return true;
     }
 
+    @Deprecated
     @Override
     public TextureAtlasSprite getParticleIcon() {
         return original.getParticleIcon();
     }
 
+    @Deprecated
     @Override
     public ItemTransforms getTransforms() {
         return original.getTransforms();

@@ -2,10 +2,10 @@ package net.teekay.axess.events;
 
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
-import net.minecraftforge.event.entity.player.PlayerEvent;
-import net.minecraftforge.event.level.LevelEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.neoforged.neoforge.event.entity.player.PlayerEvent;
+import net.neoforged.neoforge.event.level.LevelEvent;
+import net.neoforged.bus.api.SubscribeEvent;
 import net.teekay.axess.Axess;
 import net.teekay.axess.access.AccessNetworkDataServer;
 import net.teekay.axess.network.AxessPacketHandler;
@@ -15,8 +15,9 @@ import net.teekay.axess.network.packets.client.StCSyncPlayerNameCache;
 import net.teekay.axess.utilities.name_cache.ServerPlayerNameCache;
 
 import java.util.Objects;
+import net.neoforged.fml.common.EventBusSubscriber;
 
-@Mod.EventBusSubscriber(modid = Axess.MODID, bus = Mod.EventBusSubscriber.Bus.FORGE)
+@EventBusSubscriber(modid = Axess.MODID)
 public class AxessServerEvents {
 
     @SubscribeEvent

@@ -27,23 +27,38 @@ import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 import net.teekay.axess.Axess;
 import net.teekay.axess.registry.AxessBlockEntityRegistry;
 import org.jetbrains.annotations.Nullable;
 import org.lwjgl.glfw.GLFW;
 
 import java.util.List;
+import net.minecraft.world.item.Item;
+
 
 public class LockdownReceiverBlock extends BaseEntityBlock {
+    public static final com.mojang.serialization.MapCodec<LockdownReceiverBlock> CODEC = simpleCodec(LockdownReceiverBlock::new);
+
+    @Override
+    protected com.mojang.serialization.MapCodec<? extends BaseEntityBlock> codec() {
+        return CODEC;
+    }
+
+
+    public LockdownReceiverBlock(BlockBehaviour.Properties properties) {
+        super(properties);
+    }
+
     public final VoxelShape VOXEL_SHAPE = Block.box(4, 0, 4, 12, 8, 12);
 
     public static final DirectionProperty FACING = BlockStateProperties.HORIZONTAL_FACING;
     public static final BooleanProperty POWERED = BlockStateProperties.POWERED;
 
+    @SuppressWarnings("this-escape")
     public LockdownReceiverBlock() {
-        super(BlockBehaviour.Properties.copy(Blocks.IRON_BLOCK)
+        super(BlockBehaviour.Properties.ofFullCopy(Blocks.IRON_BLOCK)
                 .strength(4f, 6)
                 .isRedstoneConductor((state, level, pos) -> false)
                 .lightLevel((bs) -> bs.getValue(POWERED) ? 7 : 0)
@@ -156,7 +171,7 @@ public class LockdownReceiverBlock extends BaseEntityBlock {
 
     @OnlyIn(Dist.CLIENT)
     @Override
-    public void appendHoverText(ItemStack pStack, @Nullable BlockGetter pLevel, List<Component> pTooltipComponents, TooltipFlag pFlag) {
+    public void appendHoverText(ItemStack pStack, Item.TooltipContext pLevel, List<Component> pTooltipComponents, TooltipFlag pFlag) {
         if (pLevel == null) {super.appendHoverText(pStack, pLevel, pTooltipComponents, pFlag); return;}
 
         // Tooltip

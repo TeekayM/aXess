@@ -2,27 +2,20 @@ package net.teekay.axess.screen.component;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.components.AbstractButton;
 import net.minecraft.client.gui.components.Checkbox;
+import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.teekay.axess.Axess;
 
-import java.util.function.Consumer;
+import java.time.Duration;
 
-public class TexturedSmallCheckbox extends Checkbox {
+public class TexturedSmallCheckbox extends AbstractButton {
     public static final ResourceLocation TEXTURE = ResourceLocation.fromNamespaceAndPath(Axess.MODID, "textures/gui/checkbox_small.png");
 
     private boolean selected;
-
-    @Override
-    public void onPress() {
-        this.selected = !this.selected;
-        callback.accept(this.selected);
-    }
-    @Override
-    public boolean selected() {
-        return this.selected;
-    }
+    private final Checkbox.OnValueChange callback;
 
     private boolean mouseInBoundingBox = false;
     private int boundMinX = -1;
@@ -31,17 +24,29 @@ public class TexturedSmallCheckbox extends Checkbox {
     private int boundMaxY = -1;
     private boolean hasBounds = false;
 
+    public TexturedSmallCheckbox(int pX, int pY, int pWidth, Component pMessage, boolean pSelected, Checkbox.OnValueChange callback) {
+        super(pX, pY, pWidth, 16, pMessage);
+        this.selected = pSelected;
+        this.callback = callback;
+    }
+
     public void setBounds(int minX, int minY, int maxX, int maxY) {
         boundMinX = minX;
         boundMaxX = maxX;
-
         boundMinY = minY;
         boundMaxY = maxY;
-
         hasBounds = true;
     }
 
-    private Consumer<Boolean> callback;
+    public boolean selected() {
+        return this.selected;
+    }
+
+    @Override
+    public void onPress() {
+        this.selected = !this.selected;
+        callback.onValueChange(null, this.selected);
+    }
 
     @Override
     public boolean isHovered() {
@@ -55,31 +60,9 @@ public class TexturedSmallCheckbox extends Checkbox {
     }
 
     @Override
-    public void render(GuiGraphics pGuiGraphics, int pMouseX, int pMouseY, float pPartialTick) {
-        this.mouseInBoundingBox = hasBounds ? (pMouseX <= boundMaxX && pMouseX >= boundMinX && pMouseY <= boundMaxY && pMouseY >= boundMinY) : true;
-        this.setTooltipDelay(mouseInBoundingBox ? 0 : 10000000);
-        super.render(pGuiGraphics, pMouseX, pMouseY, pPartialTick);
-    }
-
-    @Override
-    public boolean isFocused() {
-        return false;
-    }
-
-    public TexturedSmallCheckbox(int pX, int pY, int pWidth, int pHeight, Component pMessage, boolean pSelected, Consumer<Boolean> callback) {
-        super(pX, pY, pWidth, pHeight, pMessage, pSelected);
-        this.selected = pSelected;
-        this.callback = callback;
-    }
-
-    public TexturedSmallCheckbox(int pX, int pY, int pWidth, int pHeight, Component pMessage, boolean pSelected, boolean pShowLabel, Consumer<Boolean> callback) {
-        super(pX, pY, pWidth, pHeight, pMessage, pSelected, pShowLabel);
-        this.selected = pSelected;
-        this.callback = callback;
-    }
-
-    @Override
     public void renderWidget(GuiGraphics pGuiGraphics, int pMouseX, int pMouseY, float pPartialTick) {
+        this.mouseInBoundingBox = hasBounds ? (pMouseX <= boundMaxX && pMouseX >= boundMinX && pMouseY <= boundMaxY && pMouseY >= boundMinY) : true;
+        this.setTooltipDelay(Duration.ofDays(mouseInBoundingBox ? 0 : 999));
         RenderSystem.enableDepthTest();
         pGuiGraphics.setColor(1.0F, 1.0F, 1.0F, this.alpha);
         RenderSystem.enableBlend();
@@ -93,5 +76,15 @@ public class TexturedSmallCheckbox extends Checkbox {
 
         pGuiGraphics.blit(TEXTURE, this.getX(), this.getY(), xOffset, yOffset, 16, 16, 64, 64);
         pGuiGraphics.setColor(1.0F, 1.0F, 1.0F, 1.0F);
+    }
+
+    @Override
+    public boolean isFocused() {
+        return false;
+    }
+
+    @Override
+    public void updateWidgetNarration(NarrationElementOutput narrationElementOutput) {
+        this.defaultButtonNarrationText(narrationElementOutput);
     }
 }

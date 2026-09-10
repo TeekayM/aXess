@@ -30,8 +30,8 @@ import net.minecraft.world.phys.shapes.BooleanOp;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 import net.teekay.axess.Axess;
 import net.teekay.axess.registry.AxessBlockEntityRegistry;
 import net.teekay.axess.utilities.VoxelShapeUtilities;
@@ -39,16 +39,32 @@ import org.jetbrains.annotations.Nullable;
 import org.lwjgl.glfw.GLFW;
 
 import java.util.List;
+import net.minecraft.world.item.Item;
+
 
 public class ReceiverBlock extends DirectionalBlock implements EntityBlock, SimpleWaterloggedBlock {
+    public static final com.mojang.serialization.MapCodec<ReceiverBlock> CODEC = simpleCodec(ReceiverBlock::new);
+
+    @Override
+    protected com.mojang.serialization.MapCodec<? extends DirectionalBlock> codec() {
+        return CODEC;
+    }
+
+
+    public ReceiverBlock(BlockBehaviour.Properties properties) {
+        super(properties);
+    }
+
     public final VoxelShape VOXEL_SHAPE = Block.box(4, 0, 4, 12, 8, 12);
 
     public VoxelShape getVoxelShape() {
         return VOXEL_SHAPE;
     }
 
+    @SuppressWarnings("this-escape")
     public final VoxelShape VOXEL_SHAPE_NORTH =  VoxelShapeUtilities.rotateShape(getVoxelShape(), Direction.UP, Direction.DOWN);
 
+    @SuppressWarnings("this-escape")
     public final VoxelShape VOXEL_SHAPE_SOUTH = VoxelShapeUtilities.rotateShape(getVoxelShape(), Direction.UP, Direction.SOUTH);
     public final VoxelShape VOXEL_SHAPE_WEST =  VoxelShapeUtilities.rotateShape(VOXEL_SHAPE_NORTH, Direction.SOUTH, Direction.EAST);
     public final VoxelShape VOXEL_SHAPE_EAST = VoxelShapeUtilities.rotateShape(VOXEL_SHAPE_NORTH, Direction.SOUTH, Direction.WEST);
@@ -58,9 +74,10 @@ public class ReceiverBlock extends DirectionalBlock implements EntityBlock, Simp
     public static final BooleanProperty POWERED = BlockStateProperties.POWERED;
     public static final BooleanProperty WATERLOGGED = BlockStateProperties.WATERLOGGED;
 
+    @SuppressWarnings("this-escape")
     public ReceiverBlock() {
         super(
-                BlockBehaviour.Properties.copy(Blocks.IRON_BLOCK)
+                BlockBehaviour.Properties.ofFullCopy(Blocks.IRON_BLOCK)
                         .noOcclusion()
                         .strength(4f, 6f)
                         .requiresCorrectToolForDrops()
@@ -201,7 +218,7 @@ public class ReceiverBlock extends DirectionalBlock implements EntityBlock, Simp
 
     @OnlyIn(Dist.CLIENT)
     @Override
-    public void appendHoverText(ItemStack pStack, @org.jetbrains.annotations.Nullable BlockGetter pLevel, List<Component> pTooltipComponents, TooltipFlag pFlag) {
+    public void appendHoverText(ItemStack pStack, Item.TooltipContext pLevel, List<Component> pTooltipComponents, TooltipFlag pFlag) {
         if (pLevel == null) {super.appendHoverText(pStack, pLevel, pTooltipComponents, pFlag); return;}
 
         // Tooltip

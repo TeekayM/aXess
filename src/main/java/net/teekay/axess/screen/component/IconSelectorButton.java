@@ -59,9 +59,11 @@ public class IconSelectorButton extends HumbleImageButton {
     }
 
     @Override
-    public void render(GuiGraphics g, int mouseX, int mouseY, float partialTick) {
-        super.render(g, mouseX, mouseY, partialTick);
+    public void renderWidget(GuiGraphics g, int mouseX, int mouseY, float partialTick) {
+        super.renderWidget(g, mouseX, mouseY, partialTick);
+        if (!active) return;
         g.blit(icon.TEXTURE, getX() + 1, getY() + 1, 0, 0,
                 getWidth() - 2, getHeight() - 2, getWidth() - 2, getHeight() - 2);
+
     }
 }

@@ -40,6 +40,7 @@ public class AccessLevelEntryEditor extends AbstractWidget {
 
     public AccessLevelListEditor list;
 
+    @SuppressWarnings("this-escape")
     public AccessLevelEntryEditor(AccessLevelListEditor list, AccessLevel level)
     {
         super(list.leftPos, list.topPos, list.width, list.elemHeight, Component.empty());

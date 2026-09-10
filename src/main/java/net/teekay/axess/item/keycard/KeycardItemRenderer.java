@@ -14,14 +14,16 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 import net.teekay.axess.Axess;
 import net.teekay.axess.client.render.AxessRendererHandler;
 import org.joml.Matrix3f;
 import org.joml.Matrix4f;
 
 import java.awt.Color;
+import net.neoforged.neoforge.client.model.data.ModelData;
+
 
 @OnlyIn(Dist.CLIENT)
 public class KeycardItemRenderer extends BlockEntityWithoutLevelRenderer {
@@ -59,7 +61,7 @@ public class KeycardItemRenderer extends BlockEntityWithoutLevelRenderer {
         Matrix3f glowNormalMat = ps.last().normal();
         float glowBias = 0.001f;
 
-        for (var quad : model.getQuads(null, null, rS)) {
+        for (var quad : model.getQuads(null, null, rS, ModelData.EMPTY, null)) {
             if (quad.getTintIndex() != 1) continue;
 
             int[] data = quad.getVertices();
@@ -76,13 +78,12 @@ public class KeycardItemRenderer extends BlockEntityWithoutLevelRenderer {
                 float u = Float.intBitsToFloat(data[offset + 4]);
                 float v = Float.intBitsToFloat(data[offset + 5]);
 
-                glow.vertex(glowMat, x, y, z)
-                        .color(r, g, b, 1.0f)
-                        .uv(u, v)
-                        .overlayCoords(OverlayTexture.NO_OVERLAY)
-                        .uv2(LightTexture.FULL_BRIGHT)
-                        .normal(glowNormalMat, nx, ny, nz)
-                        .endVertex();
+                glow.addVertex(glowMat, x, y, z).setColor(r, g, b, 1.0f)
+                        .setUv(u, v)
+                        .setOverlay(OverlayTexture.NO_OVERLAY)
+                        .setLight(LightTexture.FULL_BRIGHT)
+                        .setNormal(nx, ny, nz)
+                        ;
             }
         }
 
@@ -96,7 +97,7 @@ public class KeycardItemRenderer extends BlockEntityWithoutLevelRenderer {
             float[] uvsU = new float[]{0.0f, 0.0f, 1.0f, 1.0f};
             float[] uvsV = new float[]{0.0f, 1.0f, 1.0f, 0.0f};
 
-            for (var quad : model.getQuads(null, null, rS)) {
+            for (var quad : model.getQuads(null, null, rS, ModelData.EMPTY, null)) {
                 if (quad.getTintIndex() != 2) continue;
 
                 int[] data = quad.getVertices();
@@ -116,13 +117,12 @@ public class KeycardItemRenderer extends BlockEntityWithoutLevelRenderer {
                     float u = uvsU[i];
                     float v = uvsV[i];
 
-                    display.vertex(mat, x, y, z)
-                            .color(r, g, b, 1.0f)
-                            .uv(u, v)
-                            .overlayCoords(OverlayTexture.NO_OVERLAY)
-                            .uv2(LightTexture.FULL_BRIGHT)
-                            .normal(normalMat, normalX, normalY, normalZ)
-                            .endVertex();
+                    display.addVertex(mat, x, y, z).setColor(r, g, b, 1.0f)
+                            .setUv(u, v)
+                            .setOverlay(OverlayTexture.NO_OVERLAY)
+                            .setLight(LightTexture.FULL_BRIGHT)
+                            .setNormal(normalX, normalY, normalZ)
+                            ;
                 }
             }
         }

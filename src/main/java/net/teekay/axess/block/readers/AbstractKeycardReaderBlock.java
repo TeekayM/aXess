@@ -12,6 +12,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionHand;
+import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
@@ -37,9 +38,8 @@ import net.minecraft.world.phys.shapes.BooleanOp;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.network.NetworkHooks;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 import net.teekay.axess.Axess;
 import net.teekay.axess.access.AccessActivationMode;
 import net.teekay.axess.access.AccessLevel;
@@ -64,16 +64,21 @@ public abstract class AbstractKeycardReaderBlock extends FaceAttachedHorizontalD
         return Shapes.join(VOXEL_SHAPE_1, VOXEL_SHAPE_2, BooleanOp.OR);
     }
 
+    @SuppressWarnings("this-escape")
     public final VoxelShape VOXEL_SHAPE_SOUTH = VoxelShapeUtilities.rotateShape(getVoxelShape(), Direction.NORTH, Direction.SOUTH);
+    @SuppressWarnings("this-escape")
     public final VoxelShape VOXEL_SHAPE_WEST = VoxelShapeUtilities.rotateShape(getVoxelShape(), Direction.NORTH, Direction.WEST);
+    @SuppressWarnings("this-escape")
     public final VoxelShape VOXEL_SHAPE_EAST = VoxelShapeUtilities.rotateShape(getVoxelShape(), Direction.NORTH, Direction.EAST);
 
+    @SuppressWarnings("this-escape")
     public final VoxelShape VOXEL_SHAPE_FLOOR_X = VoxelShapeUtilities.rotateShape(getVoxelShape(), Direction.NORTH, Direction.UP);
     public final VoxelShape VOXEL_SHAPE_FLOOR_Z = VoxelShapeUtilities.rotateShape(VOXEL_SHAPE_FLOOR_X, Direction.NORTH, Direction.WEST);
 
     public final VoxelShape VOXEL_SHAPE_FLOOR_X_NEG = VoxelShapeUtilities.rotateShape(VOXEL_SHAPE_FLOOR_X, Direction.NORTH, Direction.SOUTH);
     public final VoxelShape VOXEL_SHAPE_FLOOR_Z_NEG = VoxelShapeUtilities.rotateShape(VOXEL_SHAPE_FLOOR_X, Direction.NORTH, Direction.EAST);
 
+    @SuppressWarnings("this-escape")
     public final VoxelShape VOXEL_SHAPE_CEILING_X = VoxelShapeUtilities.rotateShape(getVoxelShape(), Direction.NORTH, Direction.DOWN);
     public final VoxelShape VOXEL_SHAPE_CEILING_Z = VoxelShapeUtilities.rotateShape(VOXEL_SHAPE_CEILING_X, Direction.NORTH, Direction.WEST);
 
@@ -85,6 +90,7 @@ public abstract class AbstractKeycardReaderBlock extends FaceAttachedHorizontalD
     public static final BooleanProperty WATERLOGGED = BlockStateProperties.WATERLOGGED;
 
 
+    @SuppressWarnings("this-escape")
     public AbstractKeycardReaderBlock(BlockBehaviour.Properties properties) {
         super(properties
                 .lightLevel((bs) -> {
@@ -138,41 +144,67 @@ public abstract class AbstractKeycardReaderBlock extends FaceAttachedHorizontalD
     }
 
     @Override
-    public InteractionResult use(BlockState pState, Level pLevel, BlockPos pPos, Player pPlayer, InteractionHand pHand, BlockHitResult pHit) {
-        if (pHand != InteractionHand.MAIN_HAND) return InteractionResult.PASS;
+    protected net.minecraft.world.ItemInteractionResult useItemOn(net.minecraft.world.item.ItemStack itemstack, BlockState pState, Level pLevel, BlockPos pPos, Player pPlayer, InteractionHand pHand, BlockHitResult pHit) {
+        if (pHand != InteractionHand.MAIN_HAND) return net.minecraft.world.ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
 
         if (!pLevel.isClientSide() && pLevel.getBlockEntity(pPos) instanceof KeycardReaderBlockEntity reader) {
-            ItemStack item = pPlayer.getItemInHand(pHand);
+            net.minecraft.world.item.ItemStack item = itemstack;
             if (item.getItem() instanceof AccessWrenchItem && (reader.getAccessNetwork() != null ? reader.getAccessNetwork().hasPermission(pPlayer, AccessPermission.READER_EDIT) : true)) {
-                NetworkHooks.openScreen((ServerPlayer) pPlayer, reader, pPos);
-                return InteractionResult.SUCCESS;
+                ((ServerPlayer) pPlayer).openMenu(reader, buf -> buf.writeBlockPos(pPos));
+                return net.minecraft.world.ItemInteractionResult.SUCCESS;
             } else if (item.getItem() instanceof AbstractKeycardItem keycardItem) {
                 AccessNetwork keycardNet = keycardItem.getAccessNetwork(item, pLevel);
                 AccessNetwork readerNet = reader.getAccessNetwork();
 
-                if (keycardNet == null || readerNet == null) return InteractionResult.PASS;
+                if (keycardNet == null || readerNet == null) return net.minecraft.world.ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
                 if (keycardNet != readerNet)
-                    return tryOverride(reader, pLevel, pState, pPos, keycardNet, keycardItem.getAccessLevel(item, pLevel), InteractionResult.PASS);
-
+                    return switch (tryOverride(reader, pLevel, pState, pPos, keycardNet, keycardItem.getAccessLevel(item, pLevel), InteractionResult.PASS)) {
+                        case SUCCESS -> net.minecraft.world.ItemInteractionResult.SUCCESS;
+                        case SUCCESS_NO_ITEM_USED -> net.minecraft.world.ItemInteractionResult.SUCCESS;
+                        case CONSUME -> net.minecraft.world.ItemInteractionResult.CONSUME;
+                        case CONSUME_PARTIAL -> net.minecraft.world.ItemInteractionResult.CONSUME_PARTIAL;
+                        case FAIL -> net.minecraft.world.ItemInteractionResult.FAIL;
+                        default -> net.minecraft.world.ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+                    };
                 AccessLevel keycardAL = keycardItem.getAccessLevel(item, pLevel);
                 ArrayList<AccessLevel> readerALs = reader.getAccessLevels();
 
                 if (keycardAL == null || readerALs == null || readerALs.size() == 0 || pState.getValue(LOCKED))
-                    return onFail(reader, pLevel, pState, pPos);
-
+                    return switch (onFail(reader, pLevel, pState, pPos)) {
+                        case SUCCESS -> net.minecraft.world.ItemInteractionResult.SUCCESS;
+                        case SUCCESS_NO_ITEM_USED -> net.minecraft.world.ItemInteractionResult.SUCCESS;
+                        case CONSUME -> net.minecraft.world.ItemInteractionResult.CONSUME;
+                        case CONSUME_PARTIAL -> net.minecraft.world.ItemInteractionResult.CONSUME_PARTIAL;
+                        case FAIL -> net.minecraft.world.ItemInteractionResult.FAIL;
+                        default -> net.minecraft.world.ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+                    };
                 if (switch (reader.getCompareMode()) {
                     case SPECIFIC -> readerALs.contains(keycardAL);
                     case BIGGER_THAN_OR_EQUAL -> keycardAL.getPriority() >= readerALs.get(0).getPriority();
                     case LESSER_THAN_OR_EQUAL -> keycardAL.getPriority() <= readerALs.get(0).getPriority();
                 }) {
-                    return onSuccess(reader, pLevel, pState, pPos);
+                    return switch (onSuccess(reader, pLevel, pState, pPos)) {
+                        case SUCCESS -> net.minecraft.world.ItemInteractionResult.SUCCESS;
+                        case SUCCESS_NO_ITEM_USED -> net.minecraft.world.ItemInteractionResult.SUCCESS;
+                        case CONSUME -> net.minecraft.world.ItemInteractionResult.CONSUME;
+                        case CONSUME_PARTIAL -> net.minecraft.world.ItemInteractionResult.CONSUME_PARTIAL;
+                        case FAIL -> net.minecraft.world.ItemInteractionResult.FAIL;
+                        default -> net.minecraft.world.ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+                    };
                 } else {
-                    return tryOverride(reader, pLevel, pState, pPos, keycardNet, keycardAL, InteractionResult.PASS);
+                    return switch (tryOverride(reader, pLevel, pState, pPos, keycardNet, keycardAL, InteractionResult.PASS)) {
+                        case SUCCESS -> net.minecraft.world.ItemInteractionResult.SUCCESS;
+                        case SUCCESS_NO_ITEM_USED -> net.minecraft.world.ItemInteractionResult.SUCCESS;
+                        case CONSUME -> net.minecraft.world.ItemInteractionResult.CONSUME;
+                        case CONSUME_PARTIAL -> net.minecraft.world.ItemInteractionResult.CONSUME_PARTIAL;
+                        case FAIL -> net.minecraft.world.ItemInteractionResult.FAIL;
+                        default -> net.minecraft.world.ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+                    };
                 }
             }
         }
 
-        return super.use(pState, pLevel, pPos, pPlayer, pHand, pHit);
+        return super.useItemOn(itemstack, pState, pLevel, pPos, pPlayer, pHand, pHit);
     }
 
     public InteractionResult onFail(KeycardReaderBlockEntity reader, Level pLevel, BlockState pState, BlockPos pPos) {
@@ -314,7 +346,7 @@ public abstract class AbstractKeycardReaderBlock extends FaceAttachedHorizontalD
 
     @OnlyIn(Dist.CLIENT)
     @Override
-    public void appendHoverText(ItemStack pStack, @org.jetbrains.annotations.Nullable BlockGetter pLevel, List<Component> pTooltipComponents, TooltipFlag pFlag) {
+    public void appendHoverText(ItemStack pStack, Item.TooltipContext pLevel, List<Component> pTooltipComponents, TooltipFlag pFlag) {
         if (pLevel == null) {super.appendHoverText(pStack, pLevel, pTooltipComponents, pFlag); return;}
 
         // Tooltip

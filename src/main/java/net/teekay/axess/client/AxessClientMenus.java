@@ -17,6 +17,7 @@ import java.util.UUID;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
+
 public class AxessClientMenus {
     public static boolean openNetworkManagerScreen() {
         Minecraft.getInstance().setScreen(new NetworkManagerScreen());

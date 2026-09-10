@@ -34,6 +34,10 @@ import org.joml.Vector3f;
 
 import java.awt.*;
 import java.util.ArrayList;
+import net.neoforged.neoforge.client.model.data.ModelData;
+import com.mojang.blaze3d.vertex.PoseStack;
+
+
 
 public class KeycardReaderBlockEntityRenderer implements BlockEntityRenderer<KeycardReaderBlockEntity> {
     private final BlockEntityRendererProvider.Context context;
@@ -80,13 +84,12 @@ public class KeycardReaderBlockEntityRenderer implements BlockEntityRenderer<Key
             float u = (i == 0 || i == 1) ? 1f : 0f;
             float v = (i == 0 || i == 3) ? 1f : 0f;
 
-            consumer.vertex(mat, x, y, z)
-                    .color(color.getRed() / 255f, color.getGreen() / 255f, color.getBlue() / 255f, 1f)
-                    .uv(u, v)
-                    .overlayCoords(OverlayTexture.WHITE_OVERLAY_V)
-                    .uv2(LightTexture.FULL_BRIGHT)
-                    .normal(normalMat, nx, ny, nz)
-                    .endVertex();
+            consumer.addVertex(mat, x, y, z).setColor(color.getRed() / 255f, color.getGreen() / 255f, color.getBlue() / 255f, 1f)
+                    .setUv(u, v)
+                    .setOverlay(OverlayTexture.WHITE_OVERLAY_V)
+                    .setLight(LightTexture.FULL_BRIGHT)
+                    .setNormal(nx, ny, nz)
+                    ;
         }
     }
 
@@ -148,18 +151,18 @@ public class KeycardReaderBlockEntityRenderer implements BlockEntityRenderer<Key
 
 
 
-        //consumer.vertex(matrix, 0.5f, 0f, 0f).color(r, g, b, 255).uv(0, 1).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(LightTexture.pack(15, 15)).normal(0, 1, 0).endVertex();
-        //consumer.vertex(matrix, -0.5f, 0f, 0f).color(r, g, b, 255).uv(1, 1).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(LightTexture.pack(15, 15)).normal(0, 1, 0).endVertex();
-        //consumer.vertex(matrix, -0.5f, 1f, 0f).color(r, g, b, 255).uv(1, 0).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(LightTexture.pack(15, 15)).normal(0, 1, 0).endVertex();
-        //consumer.vertex(matrix, 0.5f, 1f, 0f).color(r, g, b, 255).uv(0, 0).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(LightTexture.pack(15, 15)).normal(0, 1, 0).endVertex();
+        //consumer.vertex(matrix, 0.5f, 0f, 0f).setColor(r, g, b, 255).uv(0, 1).overlayCoords(OverlayTexture.NO_OVERLAY).setLight(LightTexture.pack(15, 15)).setNormal(0, 1, 0).endVertex();
+        //consumer.vertex(matrix, -0.5f, 0f, 0f).setColor(r, g, b, 255).uv(1, 1).overlayCoords(OverlayTexture.NO_OVERLAY).setLight(LightTexture.pack(15, 15)).setNormal(0, 1, 0).endVertex();
+        //consumer.vertex(matrix, -0.5f, 1f, 0f).setColor(r, g, b, 255).uv(1, 0).overlayCoords(OverlayTexture.NO_OVERLAY).setLight(LightTexture.pack(15, 15)).setNormal(0, 1, 0).endVertex();
+        //consumer.vertex(matrix, 0.5f, 1f, 0f).setColor(r, g, b, 255).uv(0, 0).overlayCoords(OverlayTexture.NO_OVERLAY).setLight(LightTexture.pack(15, 15)).setNormal(0, 1, 0).endVertex();
 
         for (Direction dir : Direction.values()) {
-            for (BakedQuad quad : model.getQuads(state, dir, rS)) {
+            for (BakedQuad quad : model.getQuads(state, dir, rS, ModelData.EMPTY, null)) {
                 renderIconQuad(quad, pPoseStack, consumer, color);
             }
         }
 
-        for (BakedQuad quad : model.getQuads(state, null, rS)) {
+        for (BakedQuad quad : model.getQuads(state, null, rS, ModelData.EMPTY, null)) {
             renderIconQuad(quad, pPoseStack, consumer, color);
         }
 

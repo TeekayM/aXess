@@ -5,12 +5,12 @@ import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraftforge.client.gui.widget.ForgeSlider;
+import net.neoforged.neoforge.client.gui.widget.ExtendedSlider;
 import net.teekay.axess.Axess;
 import net.teekay.axess.utilities.AxessColors;
 import net.teekay.axess.utilities.MathUtilities;
 
-public class TexturedSlider extends ForgeSlider {
+public class TexturedSlider extends ExtendedSlider {
     public static final ResourceLocation SLIDER_TEXTURE = ResourceLocation.fromNamespaceAndPath(Axess.MODID, "textures/gui/sliders.png");
 
     public TexturedSlider(int x, int y, int width, int height, Component prefix, Component suffix, double minValue, double maxValue, double currentValue, double stepSize, int precision, boolean drawString) {

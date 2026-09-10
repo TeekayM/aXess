@@ -5,6 +5,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
@@ -21,6 +22,8 @@ import net.teekay.axess.utilities.AxessColors;
 
 import java.awt.*;
 import java.util.ArrayList;
+import net.minecraft.core.HolderLookup;
+
 
 public class LockdownReceiverBlockEntity extends BlockEntity implements ILinkableBlockEntity {
 
@@ -108,7 +111,7 @@ public class LockdownReceiverBlockEntity extends BlockEntity implements ILinkabl
     }
 
     @Override
-    protected void saveAdditional(CompoundTag pTag) {
+    protected void saveAdditional(CompoundTag pTag, HolderLookup.Provider registries) {
         CompoundTag modTag = new CompoundTag();
 
         ListTag links = new ListTag();
@@ -121,11 +124,11 @@ public class LockdownReceiverBlockEntity extends BlockEntity implements ILinkabl
 
         pTag.put(Axess.MODID, modTag);
 
-        super.saveAdditional(pTag);
+        super.saveAdditional(pTag, registries);
     }
 
     @Override
-    public void load(CompoundTag pTag) {
+    protected void loadAdditional(CompoundTag pTag, HolderLookup.Provider registries) {
         CompoundTag modTag = pTag.getCompound(Axess.MODID);
 
         if (modTag.contains("BlockLinks")) {
@@ -136,20 +139,20 @@ public class LockdownReceiverBlockEntity extends BlockEntity implements ILinkabl
             }
         }
 
-        super.load(pTag);
+        super.loadAdditional(pTag, registries);
         setChanged();
     }
 
     @Override
-    public CompoundTag getUpdateTag() {
+    public CompoundTag getUpdateTag(HolderLookup.Provider registries) {
         CompoundTag tag = new CompoundTag();
-        saveAdditional(tag);
+        saveAdditional(tag, registries);
         return tag;
     }
 
     @Override
-    public void handleUpdateTag(CompoundTag tag) {
-        load(tag);
+    public void handleUpdateTag(CompoundTag tag, HolderLookup.Provider lookupProvider) {
+        this.loadAdditional(tag, lookupProvider);
     }
 
     @Override

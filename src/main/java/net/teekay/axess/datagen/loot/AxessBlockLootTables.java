@@ -3,15 +3,18 @@ package net.teekay.axess.datagen.loot;
 import net.minecraft.data.loot.BlockLootSubProvider;
 import net.minecraft.world.flag.FeatureFlags;
 import net.minecraft.world.level.block.Block;
-import net.minecraftforge.registries.RegistryObject;
 import net.teekay.axess.registry.AxessBlockRegistry;
 
 import java.util.Set;
+import net.minecraft.core.HolderLookup;
+import net.neoforged.neoforge.registries.DeferredHolder;
+
+
 
 public class AxessBlockLootTables extends BlockLootSubProvider {
-    public AxessBlockLootTables() {
-        super(Set.of(), FeatureFlags.REGISTRY.allFlags());
-    }
+    public AxessBlockLootTables(HolderLookup.Provider registries) {
+		super(Set.of(), FeatureFlags.REGISTRY.allFlags(), registries);
+	}
 
     @Override
     protected void generate() {
@@ -25,8 +28,8 @@ public class AxessBlockLootTables extends BlockLootSubProvider {
         this.dropSelf(AxessBlockRegistry.LOCKDOWN_RECEIVER.get());
     }
 
-    @Override
-    protected Iterable<Block> getKnownBlocks() {
-        return AxessBlockRegistry.DEFERRED_REGISTER.getEntries().stream().map(RegistryObject::get)::iterator;
-    }
+//    @Override
+//    protected Iterable<Block> getKnownBlocks() {
+//        return AxessBlockRegistry.DEFERRED_REGISTER.getEntries().stream().map(DeferredHolder::get)::iterator;
+//    }
 }

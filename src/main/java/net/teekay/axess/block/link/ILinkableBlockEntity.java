@@ -1,6 +1,7 @@
 package net.teekay.axess.block.link;
 
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.teekay.axess.block.link.payload.AbstractLinkPayload;

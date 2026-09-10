@@ -26,6 +26,7 @@ import net.teekay.axess.utilities.MathUtilities;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class KeycardReaderScreen extends AbstractContainerScreen<KeycardReaderMenu> {
     public static final ResourceLocation TEXTURE = ResourceLocation.fromNamespaceAndPath(Axess.MODID, "textures/gui/keycard_reader.png");
@@ -171,7 +172,7 @@ public class KeycardReaderScreen extends AbstractContainerScreen<KeycardReaderMe
         this.pulseDurationTicksSlider.visible = selectedActivationMode == AccessActivationMode.PULSE;
 
         //this.syncIcon = addRenderableWidget(new TexturedButton(this.leftPos + 140, this.topPos + 170, 11, 11, Component.empty(), btn -> {}));
-        this.syncIcon = addRenderableWidget(new ImageButton(
+        this.syncIcon = addRenderableWidget(new LegacyImageButton(
                 this.leftPos + 140, this.topPos + 167,
                 11, 11,
                 0, 233,
@@ -183,8 +184,8 @@ public class KeycardReaderScreen extends AbstractContainerScreen<KeycardReaderMe
         this.syncIcon.active = false;
 
         this.selectedOverrideDisplay = this.menu.blockEntity.isOverrideDisplay();
-        this.overrideDisplayCheckbox = addRenderableWidget(new TexturedCheckbox(this.leftPos + 67, this.topPos + 197, 20, 20, Component.empty(), this.selectedOverrideDisplay,
-                (enabled) -> {
+        this.overrideDisplayCheckbox = addRenderableWidget(new TexturedCheckbox(this.leftPos + 67, this.topPos + 197, 20, Component.empty(), this.selectedOverrideDisplay,
+                (checkbox, enabled) -> {
                     this.selectedOverrideDisplay = enabled;
                     this.iconSelectorButton.active = enabled;
                     this.colorSelectorButton.active = enabled;
@@ -239,8 +240,6 @@ public class KeycardReaderScreen extends AbstractContainerScreen<KeycardReaderMe
     @Override
     public void render(GuiGraphics pGuiGraphics, int pMouseX, int pMouseY, float pPartialTick) {
         this.selectedPulseDurationTicks = pulseDurationTicksSlider.getValueInt();
-
-        renderBackground(pGuiGraphics);
 
         scrollPosLevels   = MathUtilities.clampInt(scrollPosLevels,   0, scrollMaxLevels  );
         scrollPosNetworks = MathUtilities.clampInt(scrollPosNetworks, 0, scrollMaxNetworks);
@@ -309,28 +308,7 @@ public class KeycardReaderScreen extends AbstractContainerScreen<KeycardReaderMe
                 if (cnt == selectedLevels.size()) levelsDiff = false;
             }
 
-            boolean overrideLevelsDiff = true;
-            ArrayList<Pair<AccessNetwork, AccessLevel>> beforePairs = entity.getOverrideAccessLevels();
-            if (beforePairs.size() == selectedOverrideLevels.size()) {
-                int cnt = 0;
-                for (Pair<AccessNetwork, AccessLevel> pair :
-                        selectedOverrideLevels) {
-                    boolean found = false;
-
-                    for (Pair<AccessNetwork, AccessLevel> otherPair :
-                            beforePairs) {
-                        if (pair.getFirst().getUUID() == otherPair.getFirst().getUUID() && pair.getSecond().getUUID() == otherPair.getSecond().getUUID()) {
-                            found = true;
-                            break;
-                        }
-                    }
-
-                    cnt++;
-                }
-
-
-                if (cnt == selectedOverrideLevels.size()) overrideLevelsDiff = false;
-            }
+            boolean overrideLevelsDiff = isOverrideLevelsDiff(entity);
 
             if (
                 entity.getAccessNetwork() != selectedNetwork ||
@@ -340,7 +318,7 @@ public class KeycardReaderScreen extends AbstractContainerScreen<KeycardReaderMe
                 selectedActivationMode != menu.blockEntity.getActivationMode() ||
                 selectedPulseDurationTicks != menu.blockEntity.getPulseDurationTicks() ||
                 selectedOverrideDisplay != menu.blockEntity.isOverrideDisplay() ||
-                selectedOverrideIcon.ID != menu.blockEntity.getOverrideIcon().ID ||
+                !Objects.equals(selectedOverrideIcon.ID, menu.blockEntity.getOverrideIcon().ID) ||
                 selectedOverrideColor.getRGB() != menu.blockEntity.getOverrideColor().getRGB()
             ) {
                 textComp = APPLY_CHANGES_LABEL;
@@ -355,6 +333,32 @@ public class KeycardReaderScreen extends AbstractContainerScreen<KeycardReaderMe
         pGuiGraphics.drawString(this.font, textComp, this.leftPos+tx-Minecraft.getInstance().font.width(textComp), this.topPos+ty, color, false);
 
         renderTooltip(pGuiGraphics, pMouseX, pMouseY);
+    }
+
+    private boolean isOverrideLevelsDiff(KeycardReaderBlockEntity entity) {
+        boolean overrideLevelsDiff = true;
+        ArrayList<Pair<AccessNetwork, AccessLevel>> beforePairs = entity.getOverrideAccessLevels();
+        if (beforePairs.size() == selectedOverrideLevels.size()) {
+            int cnt = 0;
+            for (Pair<AccessNetwork, AccessLevel> pair :
+                    selectedOverrideLevels) {
+                boolean found = false;
+
+                for (Pair<AccessNetwork, AccessLevel> otherPair :
+                        beforePairs) {
+                    if (pair.getFirst().getUUID() == otherPair.getFirst().getUUID() && pair.getSecond().getUUID() == otherPair.getSecond().getUUID()) {
+                        found = true;
+                        break;
+                    }
+                }
+
+                cnt++;
+            }
+
+
+            if (cnt == selectedOverrideLevels.size()) overrideLevelsDiff = false;
+        }
+        return overrideLevelsDiff;
     }
 
     @Override
@@ -463,12 +467,13 @@ public class KeycardReaderScreen extends AbstractContainerScreen<KeycardReaderMe
     }
 
     @Override
-    public boolean mouseScrolled(double pMouseX, double pMouseY, double pDelta) {
+    public boolean mouseScrolled(double pMouseX, double pMouseY, double scrollX, double scrollY) {
         if ((int)pMouseX <= leftPos + NETWORKS_X + NETWORKS_WIDTH + 4)
-            scrollPosNetworks = Math.max(Math.min(scrollPosNetworks + (int)(pDelta * -7), scrollMaxNetworks), 0);
+            scrollPosNetworks = Math.max(Math.min(scrollPosNetworks + (int)(scrollY * -7), scrollMaxNetworks), 0);
         else
-            scrollPosLevels = Math.max(Math.min(scrollPosLevels + (int)(pDelta * -7), scrollMaxLevels), 0);
-        return super.mouseScrolled(pMouseX, pMouseY, pDelta);
+            scrollPosLevels = Math.max(Math.min(scrollPosLevels + (int)(scrollY * -7), scrollMaxLevels), 0);
+
+        return super.mouseScrolled(pMouseX, pMouseY, 0, scrollY);
     }
 
     // CONSTANTS
@@ -490,6 +495,7 @@ public class KeycardReaderScreen extends AbstractContainerScreen<KeycardReaderMe
         private AccessNetwork network;
         private int index;
 
+        @SuppressWarnings("this-escape")
         public SelectableNetworkEntry(AccessNetwork network, int index) {
                 super(leftPos + NETWORKS_X, topPos + NETWORKS_Y, NETWORKS_WIDTH, ENTRY_HEIGHT, Component.literal(network.getName()), btn -> {
                     selectNetwork(network);
@@ -503,9 +509,9 @@ public class KeycardReaderScreen extends AbstractContainerScreen<KeycardReaderMe
         }
 
         @Override
-        public void render(GuiGraphics pGuiGraphics, int pMouseX, int pMouseY, float pPartialTick) {
+        public void renderWidget(GuiGraphics pGuiGraphics, int pMouseX, int pMouseY, float pPartialTick) {
             this.setY(topPos + NETWORKS_Y + index * (ENTRY_HEIGHT + ENTRY_PADDING) - scrollPosNetworks);
-            super.render(pGuiGraphics, pMouseX, pMouseY, pPartialTick);
+            super.renderWidget(pGuiGraphics, pMouseX, pMouseY, pPartialTick);
         }
 
         @Override
@@ -531,6 +537,7 @@ public class KeycardReaderScreen extends AbstractContainerScreen<KeycardReaderMe
         private AccessLevel level;
         private int index;
 
+        @SuppressWarnings("this-escape")
         public SelectableLevelEntry(AccessLevel level, int index) {
             super(leftPos + LEVELS_X, topPos + LEVELS_Y, LEVELS_WIDTH, ENTRY_HEIGHT, Component.literal(level.getName()),
                     btn -> {toggleLevel(level);}
@@ -544,15 +551,15 @@ public class KeycardReaderScreen extends AbstractContainerScreen<KeycardReaderMe
         }
 
         @Override
-        public void render(GuiGraphics pGuiGraphics, int pMouseX, int pMouseY, float pPartialTick) {
+        public void renderWidget(GuiGraphics pGuiGraphics, int pMouseX, int pMouseY, float pPartialTick) {
+            super.renderWidget(pGuiGraphics, pMouseX, pMouseY, pPartialTick);
             int y = topPos + LEVELS_Y + index * (ENTRY_HEIGHT + ENTRY_PADDING) - scrollPosLevels;
             this.setY(y);
-
-            super.render(pGuiGraphics, pMouseX, pMouseY, pPartialTick);
 
             pGuiGraphics.setColor(level.getColor().getRed()/255f, level.getColor().getGreen()/255f, level.getColor().getBlue()/255f, 1f);
             pGuiGraphics.blit(level.getIcon().TEXTURE, this.getX() + 2, y, 0, 0, 18, 18, 18, 18);
             pGuiGraphics.setColor(1f,1f,1f,1f);
+
         }
 
         @Override

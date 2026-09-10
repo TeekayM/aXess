@@ -2,6 +2,7 @@ package net.teekay.axess.screen;
 
 import com.mojang.datafixers.util.Pair;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.components.Renderable;
 import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.multiplayer.ClientLevel;
@@ -120,13 +121,16 @@ public class NetworkPlayerPermissionScreen extends Screen {
 
     @Override
     public void render(GuiGraphics pGuiGraphics, int pMouseX, int pMouseY, float pPartialTick) {
-        renderBackground(pGuiGraphics);
+        this.renderBackground(pGuiGraphics, pMouseX, pMouseY, pPartialTick);
 
         pGuiGraphics.blit(TEXTURE, this.leftPos, this.topPos, 0, 0, this.imageWidth, this.imageHeight);
 
+        for(Renderable renderable : this.renderables) {
+            renderable.render(pGuiGraphics, pMouseX, pMouseY, pPartialTick);
+        }
+
         this.permissionList.render(pGuiGraphics, pMouseX, pMouseY, pPartialTick);
 
-        super.render(pGuiGraphics, pMouseX, pMouseY, pPartialTick);
 
 //        int networksCount = AccessNetworkDataClient.getNetworks().stream().filter((network -> network.isOwnedBy(getMinecraft().player))).toList().size();
 //        int maxNetworksCount = getMinecraft().player != null ? AxessConfig.getPlayerMaxNetworks(getMinecraft().player) : 0;
@@ -144,8 +148,8 @@ public class NetworkPlayerPermissionScreen extends Screen {
     }
 
     @Override
-    public boolean mouseScrolled(double pMouseX, double pMouseY, double pDelta) {
-        this.permissionList.scroll((int) (pDelta) * -7);
-        return super.mouseScrolled(pMouseX, pMouseY, pDelta);
+    public boolean mouseScrolled(double pMouseX, double pMouseY, double scrollX, double scrollY) {
+        this.permissionList.scroll((int) (scrollY) * -7);
+        return super.mouseScrolled(pMouseX, pMouseY, 0, scrollY);
     }
 }

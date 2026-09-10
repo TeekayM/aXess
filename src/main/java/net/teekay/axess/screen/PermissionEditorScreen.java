@@ -3,6 +3,7 @@ package net.teekay.axess.screen;
 import com.mojang.datafixers.util.Pair;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.components.Renderable;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.multiplayer.PlayerInfo;
@@ -130,8 +131,8 @@ public class PermissionEditorScreen extends Screen {
             curY += 11;
             for (Pair<Component, AccessPermission> permissionEntry : section.getSecond()) {
                 addRenderableWidget(new TexturedSmallCheckbox(
-                        curX, curY, 16, 16, Component.empty(), (permissions.contains(permissionEntry.getSecond())),
-                        (state) -> {
+                        curX, curY, 16, Component.empty(), (permissions.contains(permissionEntry.getSecond())),
+                        (checkbox, state) -> {
                             if (state) {
                                 permissions.add(permissionEntry.getSecond());
                             } else {
@@ -148,9 +149,13 @@ public class PermissionEditorScreen extends Screen {
 
     @Override
     public void render(GuiGraphics pGuiGraphics, int pMouseX, int pMouseY, float pPartialTick) {
-        renderBackground(pGuiGraphics);
+        this.renderBackground(pGuiGraphics, pMouseX, pMouseY, pPartialTick);
+
         pGuiGraphics.blit(TEXTURE, this.leftPos, this.topPos, 0, 0, this.imageWidth, this.imageHeight);
-        super.render(pGuiGraphics, pMouseX, pMouseY, pPartialTick);
+
+        for(Renderable renderable : this.renderables) {
+            renderable.render(pGuiGraphics, pMouseX, pMouseY, pPartialTick);
+        }
 
         int curX = listTopLeftX, curY = listTopLeftY;
 

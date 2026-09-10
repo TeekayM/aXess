@@ -4,21 +4,24 @@ import com.mojang.blaze3d.platform.InputConstants;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
+import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.item.component.CustomData;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 import net.teekay.axess.Axess;
 import net.teekay.axess.AxessConfig;
 import net.teekay.axess.block.link.ILinkableBlockEntity;
@@ -73,8 +76,8 @@ public class LinkerItem extends Item {
                 BlockPos clickedPos = pContext.getClickedPos();
                 BlockEntity clickedBE = level.getBlockEntity(clickedPos);
 
-                if (player.isShiftKeyDown() && itemStack.getOrCreateTag().contains("selPos")) {
-                    itemStack.getOrCreateTag().remove("selPos");
+                if (player.isShiftKeyDown() && (itemStack).getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY).copyTag().contains("selPos")) {
+                    CustomData.update(DataComponents.CUSTOM_DATA, itemStack, modPorterCustomDataTag -> modPorterCustomDataTag.remove("selPos"));
                     player.displayClientMessage(CANCEL, true);
                     playClearSound(pContext);
                     return InteractionResult.CONSUME;
@@ -94,8 +97,8 @@ public class LinkerItem extends Item {
                     if (!clickedBELinkable.canLink())
                         return InteractionResult.PASS;
 
-                    if (itemStack.getOrCreateTag().contains("selPos")) { // clicked second
-                        BlockPos firstPos = BlockPos.of(itemStack.getTag().getLong("selPos"));
+                    if ((itemStack).getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY).copyTag().contains("selPos")) { // clicked second
+                        BlockPos firstPos = BlockPos.of(itemStack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY).copyTag().getLong("selPos"));
 
                         if (clickedPos.equals(firstPos)) return InteractionResult.PASS;
 
@@ -118,19 +121,19 @@ public class LinkerItem extends Item {
                             LinkingSystem.linkBlocks(firstBELinkable, clickedBELinkable);
 
                             player.displayClientMessage(LINKED_OK, true);
-                            itemStack.getOrCreateTag().remove("selPos");
+                            CustomData.update(DataComponents.CUSTOM_DATA, itemStack,  modPorterCustomDataTag -> modPorterCustomDataTag.remove("selPos"));
 
                             playSuccessSound(pContext);
                             return InteractionResult.SUCCESS;
                         } else {
                             player.displayClientMessage(LINKABLE_NOT_PRESENT, true);
-                            itemStack.getOrCreateTag().remove("selPos");
+                            CustomData.update(DataComponents.CUSTOM_DATA, itemStack,  modPorterCustomDataTag -> modPorterCustomDataTag.remove("selPos"));
 
                             return InteractionResult.CONSUME;
                         }
                     } else { // clicked first
                         player.displayClientMessage(SELECTED_FIRST, true);
-                        itemStack.getOrCreateTag().putLong("selPos", clickedPos.asLong());
+                        CustomData.update(DataComponents.CUSTOM_DATA, itemStack,  modPorterCustomDataTag -> modPorterCustomDataTag.putLong("selPos", clickedPos.asLong()));
 
                         playSuccessSound(pContext);
                         return InteractionResult.SUCCESS;
@@ -145,7 +148,7 @@ public class LinkerItem extends Item {
 
     @Override
     public boolean isFoil(ItemStack pStack) {
-        return super.isFoil(pStack) || pStack.getOrCreateTag().contains("selPos");
+        return super.isFoil(pStack) || (pStack).getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY).copyTag().contains("selPos");
     }
 
     private static final String MORE_INFO_LABEL_KEY = "tooltip."+ Axess.MODID + ".more_info";
@@ -155,9 +158,8 @@ public class LinkerItem extends Item {
 
     @OnlyIn(Dist.CLIENT)
     @Override
-    public void appendHoverText(ItemStack pStack, @Nullable Level pLevel, List<Component> pTooltipComponents, TooltipFlag pIsAdvanced) {
-        if (pLevel == null) {super.appendHoverText(pStack, pLevel, pTooltipComponents, pIsAdvanced); return;}
-        if (!pLevel.isClientSide()) return;
+    public void appendHoverText(ItemStack pStack, Item.TooltipContext pTooltipContext, List<Component> pTooltipComponents, TooltipFlag pIsAdvanced) {
+        if (pTooltipContext == null) {super.appendHoverText(pStack, pTooltipContext, pTooltipComponents, pIsAdvanced); return;}
 
         // Tooltip
         if (Minecraft.getInstance().player != null)
@@ -171,6 +173,6 @@ public class LinkerItem extends Item {
                 );
             }
 
-        super.appendHoverText(pStack, pLevel, pTooltipComponents, pIsAdvanced);
+        super.appendHoverText(pStack, pTooltipContext, pTooltipComponents, pIsAdvanced);
     }
 }

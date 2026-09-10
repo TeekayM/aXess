@@ -3,46 +3,45 @@ package net.teekay.axess.registry;
 import net.minecraft.world.level.block.Block;
 
 import net.minecraft.world.level.block.entity.BlockEntityType;
-import net.minecraftforge.eventbus.api.IEventBus;
-import net.minecraftforge.registries.DeferredRegister;
-import net.minecraftforge.registries.ForgeRegistries;
-import net.minecraftforge.registries.RegistryObject;
+import net.neoforged.bus.api.IEventBus;
+import net.neoforged.neoforge.registries.DeferredRegister;
+import net.minecraft.core.registries.Registries;
 import net.teekay.axess.Axess;
 import net.teekay.axess.block.keycardeditor.KeycardEditorBlockEntity;
 import net.teekay.axess.block.lockdownreceiver.LockdownReceiverBlockEntity;
-import net.teekay.axess.block.readers.AbstractKeycardReaderBlock;
 import net.teekay.axess.block.readers.KeycardReaderBlockEntity;
 import net.teekay.axess.block.receiver.ReceiverBlockEntity;
 
 import java.util.Collection;
+import net.neoforged.neoforge.registries.DeferredHolder;
 
 public class AxessBlockEntityRegistry {
 
-    public static final DeferredRegister<BlockEntityType<?>> DEFERRED_REGISTER = DeferredRegister.create(ForgeRegistries.BLOCK_ENTITY_TYPES, Axess.MODID);
+    public static final DeferredRegister<BlockEntityType<?>> DEFERRED_REGISTER = DeferredRegister.create(Registries.BLOCK_ENTITY_TYPE, Axess.MODID);
 
 
 
     // REGISTRY
-    public static final RegistryObject<BlockEntityType<KeycardReaderBlockEntity>> KEYCARD_READER = registerKeycardReader(
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<KeycardReaderBlockEntity>> KEYCARD_READER = registerKeycardReader(
             "keycard_reader", AxessBlockRegistry.KEYCARD_READER);
-    public static final RegistryObject<BlockEntityType<KeycardReaderBlockEntity>> MINI_KEYCARD_READER_LEFT = registerKeycardReader(
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<KeycardReaderBlockEntity>> MINI_KEYCARD_READER_LEFT = registerKeycardReader(
             "mini_keycard_reader_left", AxessBlockRegistry.MINI_KEYCARD_READER_LEFT);
-    public static final RegistryObject<BlockEntityType<KeycardReaderBlockEntity>> MINI_KEYCARD_READER_RIGHT = registerKeycardReader(
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<KeycardReaderBlockEntity>> MINI_KEYCARD_READER_RIGHT = registerKeycardReader(
             "mini_keycard_reader_right", AxessBlockRegistry.MINI_KEYCARD_READER_RIGHT);
 
-    public static final RegistryObject<BlockEntityType<LockdownReceiverBlockEntity>> LOCKDOWN_RECEIVER = DEFERRED_REGISTER.register("lockdown_receiver",
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<LockdownReceiverBlockEntity>> LOCKDOWN_RECEIVER = DEFERRED_REGISTER.register("lockdown_receiver",
             () -> BlockEntityType.Builder.of(
                     LockdownReceiverBlockEntity::new,
                     AxessBlockRegistry.LOCKDOWN_RECEIVER.get()
             ).build(null));
 
-    public static final RegistryObject<BlockEntityType<KeycardEditorBlockEntity>> KEYCARD_EDITOR = DEFERRED_REGISTER.register("keycard_editor",
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<KeycardEditorBlockEntity>> KEYCARD_EDITOR = DEFERRED_REGISTER.register("keycard_editor",
             () -> BlockEntityType.Builder.of(
                     KeycardEditorBlockEntity::new,
                     AxessBlockRegistry.KEYCARD_EDITOR.get()
             ).build(null));
 
-    public static final RegistryObject<BlockEntityType<ReceiverBlockEntity>> RECEIVER = DEFERRED_REGISTER.register("receiver",
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<ReceiverBlockEntity>> RECEIVER = DEFERRED_REGISTER.register("receiver",
             () -> BlockEntityType.Builder.of(
                     ReceiverBlockEntity::new,
                     AxessBlockRegistry.RECEIVER.get()
@@ -50,7 +49,7 @@ public class AxessBlockEntityRegistry {
 
 
 
-    private static RegistryObject<BlockEntityType<KeycardReaderBlockEntity>> registerKeycardReader(String id, RegistryObject<Block> block) {
+    private static DeferredHolder<BlockEntityType<?>, BlockEntityType<KeycardReaderBlockEntity>> registerKeycardReader(String id, DeferredHolder<Block, Block> block) {
         return DEFERRED_REGISTER.register(id,
                 () -> BlockEntityType.Builder.of(
                         (pos, state) -> new KeycardReaderBlockEntity(
@@ -70,7 +69,7 @@ public class AxessBlockEntityRegistry {
         DEFERRED_REGISTER.register(eventBus);
     }
 
-    public static Collection<RegistryObject<BlockEntityType<?>>> getEntries() {
+    public static Collection<DeferredHolder<BlockEntityType<?>,? extends BlockEntityType<?>>> getEntries() {
         return DEFERRED_REGISTER.getEntries();
     }
 

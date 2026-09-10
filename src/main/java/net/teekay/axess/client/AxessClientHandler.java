@@ -1,16 +1,13 @@
 package net.teekay.axess.client;
 
-import net.minecraft.client.gui.screens.MenuScreens;
 import net.minecraft.client.renderer.ItemBlockRenderTypes;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.ItemLike;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.client.event.EntityRenderersEvent;
-import net.minecraftforge.client.event.RegisterColorHandlersEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.neoforge.client.event.EntityRenderersEvent;
+import net.neoforged.neoforge.client.event.RegisterColorHandlersEvent;
+import net.neoforged.bus.api.SubscribeEvent;
 import net.teekay.axess.Axess;
 import net.teekay.axess.access.AccessLevel;
 import net.teekay.axess.access.AccessNetwork;
@@ -26,17 +23,16 @@ import net.teekay.axess.registry.AxessItemRegistry;
 import net.teekay.axess.registry.AxessMenuRegistry;
 import net.teekay.axess.screen.KeycardEditorScreen;
 import net.teekay.axess.screen.KeycardReaderScreen;
+import net.neoforged.neoforge.client.event.RegisterMenuScreensEvent;
 
-@Mod.EventBusSubscriber(modid = Axess.MODID, bus = Mod.EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
 public class AxessClientHandler {
 
     @SubscribeEvent
-    public static void onClientSetup(FMLClientSetupEvent event) {
-        MenuScreens.register(AxessMenuRegistry.KEYCARD_EDITOR_MENU.get(), KeycardEditorScreen::new);
-        MenuScreens.register(AxessMenuRegistry.KEYCARD_READER_MENU.get(), KeycardReaderScreen::new);
+    public static void registerMenus(RegisterMenuScreensEvent event) {
+        event.register(AxessMenuRegistry.KEYCARD_EDITOR_MENU.get(), KeycardEditorScreen::new);
+        event.register(AxessMenuRegistry.KEYCARD_READER_MENU.get(), KeycardReaderScreen::new);
     }
 
-    @SubscribeEvent
     public static void registerRenderers(EntityRenderersEvent.RegisterRenderers event) {
         event.registerBlockEntityRenderer(AxessBlockEntityRegistry.KEYCARD_READER.get(), KeycardReaderBlockEntityRenderer::new);
         event.registerBlockEntityRenderer(AxessBlockEntityRegistry.MINI_KEYCARD_READER_LEFT.get(), KeycardReaderBlockEntityRenderer::new);
@@ -47,7 +43,6 @@ public class AxessClientHandler {
         event.registerBlockEntityRenderer(AxessBlockEntityRegistry.LOCKDOWN_RECEIVER.get(), LockdownReceiverBlockEntityRenderer::new);
     }
 
-    @SubscribeEvent
     public static void registerItemColors(RegisterColorHandlersEvent.Item event) {
         event.register(
                 (stack, tintIndex) -> {

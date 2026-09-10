@@ -1,14 +1,30 @@
 package net.teekay.axess.network.packets.client;
 
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraftforge.network.NetworkEvent;
 import net.teekay.axess.network.IAxessPacket;
 import net.teekay.axess.utilities.name_cache.ClientPlayerNameCache;
 
 import java.util.UUID;
-import java.util.function.Supplier;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.core.HolderLookup;
 
-public class StCPlayerCacheModifiedPacket implements IAxessPacket {
+
+
+public class StCPlayerCacheModifiedPacket implements IAxessPacket, CustomPacketPayload {
+    public static final CustomPacketPayload.Type<StCPlayerCacheModifiedPacket> TYPE =
+            new CustomPacketPayload.Type<>(ResourceLocation.fromNamespaceAndPath(net.teekay.axess.Axess.MODID, "st_cplayer_cache_modified"));
+
+    public static final StreamCodec<FriendlyByteBuf, StCPlayerCacheModifiedPacket> STREAM_CODEC =
+            StreamCodec.of((buf, packet) -> packet.encode(buf), StCPlayerCacheModifiedPacket::new);
+
+    @Override
+    public CustomPacketPayload.Type<? extends CustomPacketPayload> type() {
+        return TYPE;
+    }
+
     public UUID uuid;
     public String name;
 
@@ -29,12 +45,8 @@ public class StCPlayerCacheModifiedPacket implements IAxessPacket {
     }
 
     @Override
-    public void handle(Supplier<NetworkEvent.Context> contextSupplier) {
-        NetworkEvent.Context context = contextSupplier.get();
-
-
-        if (context.getDirection().getReceptionSide().isServer()) {
-            context.setPacketHandled(false);
+    public void handle(IPayloadContext context) {
+        if (context.flow().getReceptionSide().isServer()) {
             return;
         }
 

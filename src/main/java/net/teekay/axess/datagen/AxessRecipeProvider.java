@@ -1,26 +1,30 @@
 package net.teekay.axess.datagen;
 
 import net.minecraft.data.PackOutput;
-import net.minecraft.data.recipes.FinishedRecipe;
+import net.minecraft.data.recipes.RecipeOutput;
 import net.minecraft.data.recipes.RecipeCategory;
 import net.minecraft.data.recipes.RecipeProvider;
 import net.minecraft.data.recipes.ShapedRecipeBuilder;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.Blocks;
-import net.minecraftforge.common.crafting.conditions.IConditionBuilder;
+import net.neoforged.neoforge.common.conditions.IConditionBuilder;
 import net.teekay.axess.registry.AxessBlockRegistry;
 import net.teekay.axess.registry.AxessItemRegistry;
 
 import java.util.function.Consumer;
+import net.minecraft.core.HolderLookup;
+import java.util.concurrent.CompletableFuture;
+
+
 
 public class AxessRecipeProvider extends RecipeProvider implements IConditionBuilder {
-    public AxessRecipeProvider(PackOutput pOutput) {
-        super(pOutput);
-    }
+    public AxessRecipeProvider(PackOutput pOutput, CompletableFuture<HolderLookup.Provider> lookupProvider) {
+		super(pOutput, lookupProvider);
+	}
 
     @Override
-    protected void buildRecipes(Consumer<FinishedRecipe> pWriter) {
+    protected void buildRecipes(RecipeOutput pWriter) {
 
         ShapedRecipeBuilder.shaped(RecipeCategory.REDSTONE, AxessItemRegistry.ACCESS_WRENCH.get())
                 .pattern(" A ")

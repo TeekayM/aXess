@@ -1,6 +1,7 @@
 package net.teekay.axess.screen;
 
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.components.Renderable;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.network.chat.Component;
@@ -82,13 +83,15 @@ public class AccessLevelSelectionScreen extends Screen {
 
     @Override
     public void render(GuiGraphics pGuiGraphics, int pMouseX, int pMouseY, float pPartialTick) {
-        renderBackground(pGuiGraphics);
+        this.renderBackground(pGuiGraphics, pMouseX, pMouseY, pPartialTick);
 
         pGuiGraphics.blit(TEXTURE, this.leftPos, this.topPos, 0, 0, this.imageWidth, this.imageHeight);
 
-        this.levelList.render(pGuiGraphics, pMouseX, pMouseY, pPartialTick);
+        for(Renderable renderable : this.renderables) {
+            renderable.render(pGuiGraphics, pMouseX, pMouseY, pPartialTick);
+        }
 
-        super.render(pGuiGraphics, pMouseX, pMouseY, pPartialTick);
+        this.levelList.render(pGuiGraphics, pMouseX, pMouseY, pPartialTick);
 
         pGuiGraphics.drawString(this.font, TITLE_LABEL, this.leftPos+8, this.topPos+8, AxessColors.MAIN.getRGB(), false);
     }
@@ -99,8 +102,8 @@ public class AccessLevelSelectionScreen extends Screen {
     }
 
     @Override
-    public boolean mouseScrolled(double pMouseX, double pMouseY, double pDelta) {
-        this.levelList.scroll((int) (pDelta) * -7);
-        return super.mouseScrolled(pMouseX, pMouseY, pDelta);
+    public boolean mouseScrolled(double pMouseX, double pMouseY, double scrollX, double scrollY) {
+        this.levelList.scroll((int) (scrollY) * -7);
+        return super.mouseScrolled(pMouseX, pMouseY, 0, scrollY);
     }
 }

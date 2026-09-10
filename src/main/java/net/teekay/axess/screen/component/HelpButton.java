@@ -10,9 +10,10 @@ import java.awt.*;
 import java.util.HashMap;
 import java.util.Map;
 
-public class HelpButton extends ImageButton {
+public class HelpButton extends LegacyImageButton {
     public static ResourceLocation HELP_BUTTON_TEX = ResourceLocation.fromNamespaceAndPath(Axess.MODID, "textures/gui/help_button.png");
 
+    @SuppressWarnings("this-escape")
     public HelpButton(int leftPos, int topPos, int width, int height, Component tooltip) {
         super(leftPos+width-7-3, topPos+3, 7, 7, 0, 0, 0, HELP_BUTTON_TEX, 32, 64, btn -> {});
         this.setTooltip(Tooltip.create(tooltip));

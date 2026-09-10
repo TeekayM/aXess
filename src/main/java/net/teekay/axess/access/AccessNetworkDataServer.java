@@ -4,8 +4,6 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.saveddata.SavedData;
-import net.minecraftforge.fml.common.Mod;
-import net.teekay.axess.Axess;
 import net.teekay.axess.AxessConfig;
 import net.teekay.axess.network.AxessPacketHandler;
 import net.teekay.axess.network.packets.client.StCNetworkDeletedPacket;
@@ -13,26 +11,24 @@ import net.teekay.axess.network.packets.client.StCNetworkModifiedPacket;
 import net.teekay.axess.utilities.AxessUtilities;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
+import net.minecraft.core.HolderLookup;
 
-@Mod.EventBusSubscriber(modid = Axess.MODID, bus = Mod.EventBusSubscriber.Bus.FORGE)
 public class AccessNetworkDataServer extends SavedData {
 
     private final HashMap<UUID, AccessNetwork> networkRegistry = new HashMap<>();
 
     public static AccessNetworkDataServer get(MinecraftServer server) {
-        return server.overworld().getDataStorage().computeIfAbsent(
-                AccessNetworkDataServer::load, AccessNetworkDataServer::new, "axess_networks"
+        return server.overworld().getDataStorage().computeIfAbsent(new SavedData.Factory<>(AccessNetworkDataServer::new, (tag, registries) -> load(tag)), "axess_networks"
         );
     }
 
     public AccessNetworkDataServer() {}
 
     @Override
-    public CompoundTag save(CompoundTag tag) {
+    public CompoundTag save(CompoundTag tag, HolderLookup.Provider registries) {
         for (HashMap.Entry<UUID, AccessNetwork> networkEntry :
                 networkRegistry.entrySet()) {
 
@@ -41,6 +37,17 @@ public class AccessNetworkDataServer extends SavedData {
 
         return tag;
     }
+
+    public CompoundTag toNbt(CompoundTag tag) {
+        for (HashMap.Entry<UUID, AccessNetwork> networkEntry :
+                networkRegistry.entrySet()) {
+
+            tag.put(networkEntry.getKey().toString(), networkEntry.getValue().toNBT());
+        }
+
+        return tag;
+    }
+
 
     public static AccessNetworkDataServer load(CompoundTag tag) {
         AccessNetworkDataServer data = new AccessNetworkDataServer();

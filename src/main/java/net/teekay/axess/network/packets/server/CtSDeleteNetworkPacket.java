@@ -1,15 +1,32 @@
 package net.teekay.axess.network.packets.server;
 
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraftforge.network.NetworkEvent;
+import net.minecraft.server.level.ServerPlayer;
 import net.teekay.axess.access.AccessNetworkDataServer;
 import net.teekay.axess.network.IAxessPacket;
 
 import java.util.Objects;
 import java.util.UUID;
-import java.util.function.Supplier;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.core.HolderLookup;
 
-public class CtSDeleteNetworkPacket implements IAxessPacket {
+
+
+public class CtSDeleteNetworkPacket implements IAxessPacket, CustomPacketPayload {
+    public static final CustomPacketPayload.Type<CtSDeleteNetworkPacket> TYPE =
+            new CustomPacketPayload.Type<>(ResourceLocation.fromNamespaceAndPath(net.teekay.axess.Axess.MODID, "ct_sdelete_network"));
+
+    public static final StreamCodec<FriendlyByteBuf, CtSDeleteNetworkPacket> STREAM_CODEC =
+            StreamCodec.of((buf, packet) -> packet.encode(buf), CtSDeleteNetworkPacket::new);
+
+    @Override
+    public CustomPacketPayload.Type<? extends CustomPacketPayload> type() {
+        return TYPE;
+    }
+
     public UUID deletedNetwork;
 
     public CtSDeleteNetworkPacket(UUID networkDeleted) {
@@ -26,23 +43,15 @@ public class CtSDeleteNetworkPacket implements IAxessPacket {
     }
 
     @Override
-    public void handle(Supplier<NetworkEvent.Context> contextSupplier) {
-        NetworkEvent.Context context = contextSupplier.get();
-
-        if (context.getDirection().getReceptionSide().isClient()) {
-            context.setPacketHandled(false);
+    public void handle(IPayloadContext context) {
+        if (context.flow().getReceptionSide().isClient()) {
             return;
         }
 
         try {
-            AccessNetworkDataServer serverData = AccessNetworkDataServer.get(Objects.requireNonNull(context.getSender()).server);
+            AccessNetworkDataServer serverData = AccessNetworkDataServer.get(Objects.requireNonNull(context.player().getServer()));
+            serverData.playerDeleteNetwork((ServerPlayer) context.player(), deletedNetwork);
+        } catch (Exception ignored) {}
 
-            context.setPacketHandled(serverData.playerDeleteNetwork(context.getSender(), deletedNetwork));
-        } catch (Exception e) {
-            context.setPacketHandled(false);
-            return;
-        }
-
-        context.setPacketHandled(true);
     }
 }
