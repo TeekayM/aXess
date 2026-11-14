@@ -1,3 +1,7 @@
+# v0.4.1
+**Fixes:**
+- Fixed CtSNetworkModifiedPacket failing to encode when sending it to more than 1 player by making toNBT() read-only. (closes #15)
+
 # v0.4.0
 **Changes:**
 - Added new Lockdown Receiver (Authored by [radiantgurl](https://github.com/TeekayM/aXess/pull/5))
