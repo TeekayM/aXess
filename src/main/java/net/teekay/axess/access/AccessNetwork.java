@@ -54,7 +54,7 @@ public class AccessNetwork {
 
         ListTag accessLevelListTag = new ListTag();
 
-        sortPriorities();
+        // sortPriorities();
 
         for (AccessLevel level : accessLevels) {
             accessLevelListTag.add(level.toNBT());
@@ -112,6 +112,8 @@ public class AccessNetwork {
 
             newNetwork.permissions.put(permTag.getUUID("PlayerUUID"), permissionEnumSet);
         }
+
+        newNetwork.sortPriorities();
 
         return newNetwork;
     }
